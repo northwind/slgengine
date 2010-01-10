@@ -27,25 +27,22 @@ var Unit = Component.extend({
 	//TODO 放到params中，做为可配全局变量
 	draw	: function(){
 		
+		var o = {};
 		switch( this.type ) {
-			case 0:
-				this.img = "images/grass.png";
+			case 100:
+				o.img = "images/caocao.png";
+				o.frames = 4;
 				break;
-			case 1:
-				this.img = "images/tree.png";
+			case 101:
+				o.img = "images/footman.png";
 				this.overlay = false;
 				break;
-			case 2:
-				this.img = "images/hill.png";
-				this.overlay = false;
-				break;				
 		}
 		
-		if (this.img) {
+		if (o.img) {
 			this.position( this.gx * CELL_WIDTH, this.gy * CELL_HEIGHT );
 			
-			this.setBgImage(this.img);
-			
+			this.setAnimation( o );
 		}	
 		return this;	
 	}

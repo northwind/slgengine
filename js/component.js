@@ -11,6 +11,8 @@ var Component = Observable.extend({
 		
     	if ( !this.el )
 			this.el = $("<div/>");
+		else
+			this.el = $( this.el );	
 		//默认都是绝对定位
 		if ( this.absolute )
 			this.el.css("position","absolute");
@@ -99,5 +101,27 @@ var Component = Observable.extend({
 	destroy	: function(){
 		if ( this.el )
 			this.el.remove();
-	}	
+	},
+	
+	setAnimation	: function( ani ){
+		if (this.animation) 
+			$.extend(this.animation, ani || {});
+		else {
+			if (ani.constructor != Animation) {
+				ani.el = this.el;
+				ani = new Animation(ani);
+			}
+			this.animation = ani;
+		}
+		return this;
+	},
+	
+	play					: function(){
+		if ( this.animation ){
+			 this.animation.play(  );
+		}
+		return this;
+	}
+	
+		
 });
