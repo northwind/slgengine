@@ -5,15 +5,17 @@
 	w h : 视窗的宽和高
 */
 var Panel = Component.extend({
+	w		: WINDOW_WIDTH,
+	h		: WINDOW_HEIGHT,
+	cls   : "_panel",
 	
 	init	: function( config ){
 		
-		$.extend( this, config );
+		this.el = $( config.el );
+		this.x = this.el.position().left;
+		this.y = this.el.position().top;
 		
-		this.el.addClass("_panel");
-		//设置宽高
-		this.el.height( WINDOW_HEIGHT );
-		this.el.width( WINDOW_WIDTH );		
+		this._super( config );
 		
 		//拖拽时滚动窗口
 		var x, y, drag = false, el=this.el;

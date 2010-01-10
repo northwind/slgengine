@@ -2,7 +2,7 @@
  * @author Norris
  */
 
-var BackgroundLayer = Layer.extend({
+var CellLayer = Layer.extend({
 	
 	init	: function(){
 		this.cells = [];
@@ -35,11 +35,11 @@ var BackgroundLayer = Layer.extend({
 	//生成所有的CELL
 	_initCells	: function(){
 		var tr, td;
-		for (var i=0; i< CELL_XNUM ; i++){
+		for (var i=0; i< CELL_YNUM; i++){
 			tr = $("<tr/>");
-			for (var j=0; j< CELL_YNUM ; j++){
+			for (var j=0; j< CELL_XNUM  ; j++){
 				td = $("<td/>").appendTo( tr );
-				this.cells.push( new Cell( { gx:i, gy:j, el:td, absolute : false } ) );
+				this.cells.push( new Cell( { gx:j, gy:i, el:td, absolute : false } ) );
 			}
 			this.grid.append( tr );	
 		}

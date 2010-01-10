@@ -13,20 +13,28 @@
 		<script type="text/javascript" src="js/class.js" charset="utf-8"></script>
 		<script type="text/javascript" src="js/manager.js" charset="utf-8"></script>
 		<script type="text/javascript" src="js/observable.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/animation.js" charset="utf-8"></script>
 		<script type="text/javascript" src="js/component.js" charset="utf-8"></script>
 		<script type="text/javascript" src="js/panel.js" charset="utf-8"></script>
 		
 		<script type="text/javascript" src="js/layer.js" charset="utf-8"></script>	
 		<script type="text/javascript" src="js/cell.js" charset="utf-8"></script>
-		<script type="text/javascript" src="js/layer_bg.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/layer_cell.js" charset="utf-8"></script>
 		<script type="text/javascript" src="js/unit.js" charset="utf-8"></script>
 		<script type="text/javascript" src="js/layer_unit.js" charset="utf-8"></script>
 		<script type="text/javascript" src="js/layermgr.js" charset="utf-8"></script>	
 		
 		<script type="text/javascript" src="js/builder.js" charset="utf-8"></script>
 		
+		<style>
+			#wrap span { margin:1px; display:-moz-inline-box; display:inline-block; width:200px; height:200px;  }			
+		</style>
     </head>
     <body>
-		<div id="panel"></div>
+    	<div style="height:40px;width:100%"></div>
+		<div id="wrap" style="width:100%;">
+			<span></span><span id="panel"></span>
+		</div>
+		<div style="height:40px;width:100%"></div>
     </body>
 </html>

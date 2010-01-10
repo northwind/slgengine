@@ -6,7 +6,7 @@ var UnitLayer = Layer.extend({
 	
 	init	: function(){
 		this._super.apply( this, arguments );
-		
+		this.units = [];
 		return this;
 	},
 	
@@ -15,25 +15,33 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
+	play		: function(){
+		$( this.units ).each( function(){
+			this.play();
+		} );		
+		return this;
+	},
+	
+	stop		: function(){
+		$( this.units ).each( function(){
+			this.stop();
+		} );				
+		return this;
+	},
+	
 	paint	: function(){
 		if (this.data) {
 			for (var i = 0; i < this.data.length; i++) {
-				var items = this.data[i];
-				for (var j = 0; j < items.length; j++) {
-					this._initUnit(i, j, items[j]);
-				}
-			}
+				var item = this.data[i];
+				this.units.push(this._initUnit(item));
+			}	
 		}
 		return this;
 	},
 	
-	_initUnit	: function( x, y, type ){
+	_initUnit	: function( config ){
+		config.ct = this.el;
 		//»æÍ¼		
-		( new Unit({
-			gx	: x,
-			gy	: y,
-			type: type,
-			ct	: this.el
-		}) ).draw();
+		return (new Unit(config )).draw();
 	}
 }); 
