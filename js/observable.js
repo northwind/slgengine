@@ -79,7 +79,7 @@ var Observable = Class.extend({
 	
 	init: function(){
 		this.events = {};
-		this._super( arguments[0] );
+		$.extend( this, arguments[0] || {} );
 		
 	    if(this.listeners){
 	        this.on(this.listeners);

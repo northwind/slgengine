@@ -7,7 +7,7 @@ var Component = Observable.extend({
 	absolute: true,
 	
 	init: function( config ){
-		$.extend( this, config || {} );
+		this._super( config );
 		
     	if ( !this.el )
 			this.el = $("<div/>");

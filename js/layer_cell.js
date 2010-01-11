@@ -3,6 +3,8 @@
  */
 
 var CellLayer = Layer.extend({
+	selected	: null,
+	clicked		: null,
 	
 	init	: function(){
 		this.cells = [];
@@ -11,9 +13,37 @@ var CellLayer = Layer.extend({
 		//TODO 延迟生成
 		this._paintGrid();
 		
+		//鼠标滑过时选中单元格
+		PANEL.on("mousemove", this.onMousemove, this );
+		PANEL.on("mouseclick", this.onMouseclick, this );
+				
+		//鼠标点击时
+		
 		return this;
 	},
 	
+	onMousemove	: function( e ){
+			var cell =  this.cells[ PANEL.getPoints( e ).p ];
+			if ( cell != this.selected ){
+				if ( this.selected )
+					this.selected.unselect();
+				if ( cell )
+					cell.select();
+				this.selected = cell;		
+			}
+	},
+	
+	onMouseclick	: function( e ){
+			var cell =  this.cells[ PANEL.getPoints( e ).p ];
+			if ( cell != this.clicked ){
+				if ( this.clicked )
+					this.clicked.unclick();
+				if ( cell )
+					cell.click();
+				this.clicked = cell;		
+			}
+	},
+		
 	showGridCls	: "_cellgridshow",
 	showGrid	: function(){
 		this.grid.addClass( this.showGridCls );

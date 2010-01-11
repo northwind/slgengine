@@ -8,10 +8,12 @@ var Cell = Component.extend({
 	
 	cls : "_cell",
 	w	: CELL_WIDTH,
-	y	: CELL_HEIGHT,
+	h	: CELL_HEIGHT,
 	
 	init	: function( config ){
 		this._super( config );
+		
+		this.addEvents("click","unclick","over","leave");
 		
 		return this;
 	},
@@ -28,15 +30,27 @@ var Cell = Component.extend({
 	},
 	
 	boxClass  : "_cellBox",
-	showBox		: function(){
+	select		: function(){
 		this.el.addClass( this.boxClass );
 		return this;		
 	},
-	hideBox		: function(){
+	unselect		: function(){
 		this.el.removeClass( this.boxClass );
 		return this;
 	},
 	
+	clickClass  : "_cellClick",
+	click		: function(){
+		this.el.addClass( this.clickClass );
+		this.fireEvent("click", this);
+		return this;		
+	},
+	unclick		: function(){
+		this.el.removeClass( this.clickClass );
+		this.fireEvent("unclick", this);
+		return this;
+	},
+		
 	attackClass : "_cellAttack",
 	showAttack		: function(){
 		this.el.addClass( this.attackClass );

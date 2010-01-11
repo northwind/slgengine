@@ -4,12 +4,12 @@
 
 $(function(){
  	//≥ı ºªØPANEL
-	myPanel = new Panel( {
+	PANEL = new Panel( {
 		el : $("#panel")
 	} );
-	myPanel.setBgColor("#008000");
+	PANEL.setBgColor("#008000");
 	
-	LayerMgr.setPanel( myPanel );
+	LayerMgr.setPanel( PANEL );
 	
 	var layerBg = LayerMgr.reg( 1, 800, 800 );
 	layerBg.setBgImage("images/bg_1.png");
