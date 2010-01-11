@@ -20,6 +20,11 @@ var Unit = Component.extend({
 	
 	init	: function( config ){
 		this._super( config );
+
+	},
+	
+	setCell		: function( cell ){
+		
 	},
 	
 	//»æÖÆÍ¼Ïñ

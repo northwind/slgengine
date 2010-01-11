@@ -26,8 +26,7 @@
 	background-color: #27a7d8 !important;
 }
 ._cellBox{
-	border: 1px dotted #4f4f4f;
-	background-color: transparent;	
+	border: 4px outset #ff8000;
 }
 ._cellAttack{
 	border: 2px solid #ff0000;
