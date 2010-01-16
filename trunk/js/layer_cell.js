@@ -8,22 +8,20 @@ var CellLayer = Layer.extend({
 	
 	init	: function(){
 		this.cells = [];
-		this._super.apply( this, arguments );
+		this._super( arguments[0] );
 		
 		//TODO 延迟生成
 		this._paintGrid();
 		
 		//鼠标滑过时选中单元格
 		PANEL.on("mousemove", this.onMousemove, this );
-		PANEL.on("mouseclick", this.onMouseclick, this );
+		PANEL.on("click", this.onMouseclick, this );
 				
-		//鼠标点击时
-		
 		return this;
 	},
 	
 	onMousemove	: function( e ){
-			var cell =  this.cells[ PANEL.getPoints( e ).p ];
+			var cell =  this.cells[ PANEL.getPoints( e ).index ];
 			if ( cell != this.selected ){
 				if ( this.selected )
 					this.selected.unselect();
@@ -34,7 +32,7 @@ var CellLayer = Layer.extend({
 	},
 	
 	onMouseclick	: function( e ){
-			var cell =  this.cells[ PANEL.getPoints( e ).p ];
+			var cell =  this.cells[ PANEL.getPoints( e ).index ];
 			if ( cell != this.clicked ){
 				if ( this.clicked )
 					this.clicked.unclick();
@@ -57,7 +55,7 @@ var CellLayer = Layer.extend({
 	_paintGrid	: function(){
 		this.grid = $("<table cellpadding='0' cellspacing='0'/>").addClass("_cellgrid")
 					.width( CELL_XNUM * CELL_WIDTH )
-					.height(CELL_YNUM * CELL_HEIGHT);
+					.height( CELL_YNUM * CELL_HEIGHT);
 		this._initCells();
 		this.grid.appendTo( this.el );
 	},
