@@ -22,12 +22,15 @@
 	background-color: transparent;
 }
 ._cellLight{
-	border: 1px solid #0080ff;
 	background-color: #27a7d8 !important;
+	opacity : 0.7;
+	filter:Alpha( opacity='70' );
 }
 ._cellBox{
-	border: 2px ridge  #ffffff;
+	border: 2px ridge  #ffffff !important;
 }
 ._cellAttack{
-	border: 2px solid #ff0000;
+	opacity : 0.7;
+	filter:Alpha( opacity='70' );	
+	border: 2px ridge #ff0000;
 }

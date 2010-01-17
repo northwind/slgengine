@@ -3,9 +3,10 @@
  */
 
 var UnitLayer = Layer.extend({
+	clicked : null,
 	
 	init	: function(){
-		this._super.apply( this, arguments );
+		this._super( arguments[0] );
 		this.units = [];
 		return this;
 	},
@@ -16,16 +17,16 @@ var UnitLayer = Layer.extend({
 	},
 	
 	play		: function(){
-		$( this.units ).each( function(){
-			this.play();
-		} );		
+		for( var key in this.units )
+			this.units[ key ].play();
+
 		return this;
 	},
 	
 	stop		: function(){
-		$( this.units ).each( function(){
-			this.stop();
-		} );				
+		for( var key in this.units )
+			this.units[ key ].stop();
+						
 		return this;
 	},
 	
@@ -33,11 +34,32 @@ var UnitLayer = Layer.extend({
 		if (this.data) {
 			for (var i = 0; i < this.data.length; i++) {
 				var item = this.data[i];
-				this.units.push(this._initUnit(item));
+				this.units[ PANEL.getIndex( item.gx, item.gx) ] = this._initUnit(item);
 			}	
 		}
+		
+		PANEL.on("click", this.onClick, this); 
+		PANEL.on("contextmenu", this.onContextmenu, this); 
+		
 		return this;
 	},
+	
+	onClick	: function( e, cell, p ){
+			var tmp = this.units[ p.index ];
+			if ( tmp && tmp != this.clicked ){
+				if ( this.clicked ){
+					this.clicked.unclick();
+				}
+				
+				this.clicked = tmp.click();
+			}		
+	},
+	onContextmenu	: function( e ){
+			if ( this.clicked )
+				this.clicked.unclick();	
+			
+			delete this.clicked;	
+	},	
 	
 	_initUnit	: function( config ){
 		config.ct = this.el;
