@@ -20,17 +20,10 @@ var Panel = Component.extend({
 		this.y = this.el.position().top;
 		
 		this._super( config );
-		
-		this.addEvents("click","mousemove","keydown");
-		var _self = this;
-		this.el.mousemove( function(e){
-			_self.fireEvent( "mousemove", e, _self );
-		} );
-		this.el.click( function(e){
-			_self.fireEvent( "click", e, _self );
-		} );		
+		this.addEvents("click","mousemove","contextmenu","keydown");
 		
 		//拖拽时滚动窗口
+		//TODO 支持鼠标中键滚动
 		var x, y, drag = false, el=this.el;
 		this.el.mousedown( function( e ){
 			if (e.which == 1) {
@@ -69,6 +62,20 @@ var Panel = Component.extend({
 		
 		LayerMgr.setWrap( this.el );
 		this._createCellLayer();
+		
+		var _self = this;
+		this.el.mousemove( function(e){
+			_self.fireEvent( "mousemove", e, _self );
+		} );
+		this.el.click( function(e){
+			var p = _self.getPoints( e );
+			_self.fireEvent( "click", e, _self.getCell( p.index ), p ,  _self );
+		} );		
+		this.el.bind("contextmenu",function( e ){
+				e.preventDefault();
+				e.stopPropagation();
+				_self.fireEvent("contextmenu", e);			
+		});	
 		
 		return this;		
 	},
@@ -137,11 +144,30 @@ var Panel = Component.extend({
 	},
 	//得到索引值
 	getIndex : function( left, top ){
-		return top * CELL_XNUM + left;
+		return left < 0 || top <0 || left > CELL_XNUM || top > CELL_YNUM ? -1 : top * CELL_XNUM + left;
 	},
 	
-	getCell	: function( index ){
-		return this.cells[ index ];
+	getCell	: function( index, top ){
+		if ( typeof top == "number" )
+			index = this.getIndex( index, top );
+		else	
+			//如果是 event
+			if ( typeof index != "number" )
+				index = this.getPoints( index ).index;
+		
+		return this.cellLayer.getCell( index );
+	},
+	
+	getActiveCells : function( cell, step ){
+		return this.cellLayer.getActiveCells( cell, step );
+	},
+	
+	getAttackCells : function( unit ){
+		return this.cellLayer.getAttackCells( 	
+								unit.cell, 			
+								unit.range ,     
+								unit.rangeType
+							);
 	},
 	
 	//实际内容的宽和高
