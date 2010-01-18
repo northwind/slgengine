@@ -97,6 +97,14 @@ var Cell = Component.extend({
 	
 	getDownRight	: function(){
 		return PANEL.getCell( this.gy +1, this.gx + 1 );
-	}					
+	},					
 	
+	/*	判断传入的CELL在自己的哪个方向
+	 * 			4		3		2
+	 * 			1		0		-1
+	 * 			-2		-3		-4
+	*/	
+	direct	: function( to ){
+		return (to.gy - this.gy) * 3 + to.gx - this.gx;
+	}
 }); 

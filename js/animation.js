@@ -19,6 +19,7 @@ var Animation =Observable.extend({
 	scope	   : null,
 	loop		: true, //替代Animation.ONCE
 	suspend	: false, //记录是否停止播放
+	updated	: false,
 	
 	x			: 0,
 	y			: 0,
@@ -46,7 +47,11 @@ var Animation =Observable.extend({
 	
 	play		: function(){
 		if ( this.el ){
-
+			this.suspend = false;
+			if ( this.updated ){
+				this.el.css("background-image", "url(" + this.img + ")");
+				this.updated = false;
+			}
 			var p = this.count++ % this.frames;
 			this._setPosition( p );
 			
@@ -81,6 +86,15 @@ var Animation =Observable.extend({
 		}
 		
 		return this;
+	},
+	
+	update	: function( config ){
+		$.extend(this, config || {});
+		this.count = 0;
+		this.updated = true;		
+		if ( !this.suspend ){
+			this.stop().play();
+		}
 	}	
 });
 	/*

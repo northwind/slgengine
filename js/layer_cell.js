@@ -88,13 +88,15 @@ var CellLayer = Layer.extend({
 			return {}[ cell.index ]  = cell ;
 		
 		var open = {}, closed = {};
+		//删除原指针
+		delete cell.parent;
 		open[ cell.index ] = cell;
 		
 		function prepare( x,y,parent ){
 			var key = PANEL.getIndex( x, y ), child =  PANEL.getCell( key );
 			//判断是否可以行走/是否已经计算过/如果有单位在单元格上判断是否可以叠加
 			if ( child && !open[key] && !closed[key] && MAP[y][x] ==0 && (child.unit ? child.unit.overlay : true  ) ) {
-				//child.showAttack();
+				child.parent = parent;
 				open[key] = child;
 			}	
 		}
@@ -119,7 +121,7 @@ var CellLayer = Layer.extend({
 				delete open[ key ];
 			}
 		}
-				
+		
 		return closed;
 	},
 	
