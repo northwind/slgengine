@@ -3,7 +3,7 @@
  */
 
 var Unit = Component.extend({
-	
+	name	: "footman",
 	moveable:false,    		//是否可以移动
 	type	:-1,			//类型
 	tipable :false,			//是否有提示框
@@ -22,7 +22,7 @@ var Unit = Component.extend({
 	h		: CELL_HEIGHT,
 	
 	init	: function( config ){
-		this.walks	= {};
+		this.moves	= {};
 		this.attacks= {};
 		
 		this._super( config );
@@ -62,10 +62,10 @@ var Unit = Component.extend({
 	},
 	
 	unclick	: function(){
-		$.each( this.walks || {} , function(){
+		$.each( this.moves || {} , function(){
 			this.recover();
 		} );
-		delete this.walks;
+		delete this.moves;
 		
 		$.each( this.attacks || {} , function(){
 			this.hideAttack();
@@ -77,7 +77,7 @@ var Unit = Component.extend({
 	
 	click		: function(){
 		this.getWalks();
-		$.each( this.walks || {} , function(){
+		$.each( this.moves || {} , function(){
 			this.highlight();
 		} );
 		
@@ -90,11 +90,80 @@ var Unit = Component.extend({
 	},
 	
 	getWalks	: function(){
-		this.walks = PANEL.getActiveCells( this.cell, this.step );
+		this.moves = PANEL.getActiveCells( this.cell, this.step );
 	},
 	
 	getAttacks	: function(){
 		this.attacks = PANEL.getAttackCells( this );	
-	}
+	},
 	
+	canMove	: function( cell ){
+		return this.moves && this.moves[ cell.index ];
+	},
+	
+	canAttack	: function( cell ){
+		return this.attacks && this.attacks[ cell.index ];
+	},
+	
+	moveTo		: function( cell, fn, scope ){
+		if( this.canMove( cell ) ){
+			//寻路
+			var way = [];
+			while( cell.parent && cell != this.cell ){
+				way.push( cell );
+				cell = cell.parent;
+			}
+			//way.push( this.cell );
+			//way.reverse();
+			
+			var from = this.cell, _self=this, name = _self.name, urlImg;
+			(function(){
+				var to = way.pop();
+				if (to) {
+					switch ( to.direct( from ) ) {
+						case 3:
+							urlImg = "images/" + name +  "_up.png";
+							break;
+						case -3:
+							urlImg = "images/" + name +  "_down.png";
+							break;
+						case 1:
+							urlImg = "images/" + name +  "_left.png";
+							break;
+						case -1:
+							urlImg = "images/" + name +  "_right.png";
+							break;														
+					}
+					_self.setAnimation({
+						img: urlImg
+					}).play();
+												
+					_self.el.animate({
+						top:  to.gy * CELL_HEIGHT,
+						left:  to.gx * CELL_WIDTH
+					}, arguments.callee);
+												
+					from = to;
+				}
+				else {
+					//回调
+					_self.setCell(cell);
+					if (fn) 
+						fn.call(scope || _self, _self);
+				}
+			})();
+		}
+		
+		return this;
+	},
+	
+	//迭代
+	standCell	: null,	
+	_move	: function( fn, scope ){
+		//if(  )
+	},
+	
+	attack			: function( cell ){
+		
+	}	
 }); 

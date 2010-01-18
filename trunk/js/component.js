@@ -104,8 +104,9 @@ var Component = Observable.extend({
 	},
 	
 	setAnimation	: function( ani ){
-		if (this.animation) 
-			$.extend(this.animation, ani || {});
+		if (this.animation){
+			this.animation.update( ani );
+		} 
 		else {
 			if (ani.constructor != Animation) {
 				ani.el = this.el;

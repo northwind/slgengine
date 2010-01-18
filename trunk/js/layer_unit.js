@@ -45,6 +45,19 @@ var UnitLayer = Layer.extend({
 	},
 	
 	onClick	: function( e, cell, p ){
+			//如果已经选中某个单元
+			if( this.clicked ){
+				//点中其可走范围内
+				if ( this.clicked.canMove( cell ) ){
+					this.clicked.moveTo( cell )
+				}
+				
+				//攻击
+				else if ( this.clicked.canAttack( cell ) ){
+					this.clicked.attack( cell )
+				}				
+			}
+			
 			var tmp = this.units[ p.index ];
 			if ( tmp && tmp != this.clicked ){
 				if ( this.clicked ){
