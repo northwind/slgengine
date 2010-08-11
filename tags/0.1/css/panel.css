@@ -1,0 +1,36 @@
+._panel{
+	margin:auto;
+	position:absolute;
+	z-index:1;
+	overflow:hidden;
+	-moz-user-select:none;
+}
+._panel img, .unselect{
+	-moz-user-select:none;
+	border:none;
+	outline:none;
+	background-repeat:no-repeat;		
+}
+._cellgrid{
+	border:none;
+}
+._cellgridshow td{
+	border: 1px dotted #4f4f4f;
+}
+._cell{
+	border: none;
+	background-color: transparent;
+}
+._cellLight{
+	background-color: #27a7d8 !important;
+	opacity : 0.7;
+	filter:Alpha( opacity='70' );
+}
+._cellBox{
+	border: 2px ridge  #ffffff !important;
+}
+._cellAttack{
+	opacity : 0.7;
+	filter:Alpha( opacity='70' );	
+	border: 2px ridge #ff0000;
+}
