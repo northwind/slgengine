@@ -14,68 +14,35 @@ var Panel = Component.extend({
 	
 	init		: function( config ){
 		PANEL = this;
-		this.el = $( config.el || document.body );
-		
-		this.x = this.el.position().left;
-		this.y = this.el.position().top;
-		
+		this.ct = $( config.ct || document.body );
 		this._super( config );
-		this.addEvents("click","mousemove","contextmenu","keydown");
 		
-		//拖拽时滚动窗口
-		//TODO 支持鼠标中键滚动
-		var x, y, drag = false, el=this.el;
-		this.el.mousedown( function( e ){
-			if (e.which == 1) {
-				x = e.pageX;
-				y = e.pageY;
-				//this.style.cursor = "pointer";
-				drag = true;
-				//支持IE
-				if ( this.setCapture )
-					this.setCapture();
-			}		
-		} );
+		this.canvas = $("<canvas>").appendTo( this.el );
+		this.cxt= this.canvas[0].getContext("2d");
 		
-		this.el.mousemove( function( e ){
-			if ( drag && e.which == 1 ) {
-				if (x != e.pageX) 
-					_self.scrollLeft = (this.scrollLeft -= e.pageX - x);
-				
-				if (y != e.pageY) 
-					_self.scrollTop = (this.scrollTop -= e.pageY - y);
-				
-				x = e.pageX;
-				y = e.pageY;
-			}			
-		} );
 		
-		//需要监听document
-		$(document).mouseup( function( e ){
-			if (e.which == 1) {
-				drag = false;
-				//支持IE
-				if (this.releaseCapture) 
-					this.releaseCapture();
-			}
-		} );
+		this.el[0].ondragstart = function(){
+			alert("start")
+		}
+		this.canvas[0].ondragstart = function(){
+			alert("start")
+		}
 		
-		LayerMgr.setWrap( this.el );
+/*
+		this.canvas.bind("dragstart", function( e ){
+			alert("start")
+		});
+		this.canvas.bind("dragend", function( e ){
+			alert("end")
+		});
+		
+		this.canvas.bind("mousewheel", function( e ){
+			alert("mousewheel")
+		});
+*/
+		
+		
 		this._createCellLayer();
-		
-		var _self = this;
-		this.el.mousemove( function(e){
-			_self.fireEvent( "mousemove", e, _self );
-		} );
-		this.el.click( function(e){
-			var p = _self.getPoints( e );
-			_self.fireEvent( "click", e, _self.getCell( p.index ), p ,  _self );
-		} );		
-		this.el.bind("contextmenu",function( e ){
-				e.preventDefault();
-				e.stopPropagation();
-				_self.fireEvent("contextmenu", e);			
-		});	
 		
 		return this;		
 	},
@@ -90,17 +57,19 @@ var Panel = Component.extend({
 	},
 	
 	//重载setBgImage 创建LAYER
-	setBgImage		: function( img, width, height ){
+	setBgImage		: function( url, width, height ){
 		if ( !this.bgLayer )
 			this.bgLayer = LayerMgr.reg( 1, width, height );
 		
-		//重新设置宽高	
-		if (  this.bgLayer.w != width ) 
-			this.bgLayer.width( width );
-		if ( this.bgLayer.h != height )	
-			this.bgLayer.height( height );
-			
 		this.bgLayer.setBgImage( img );
+		
+		var img = new Image(), cxt = this.cxt, canvas = this.canvas[0];
+		img.onload = function(){
+			canvas.width = width;
+			canvas.height = height;
+			cxt.drawImage(img,0,0);
+		}
+		img.src = url;
 		
 		return this;
 	},

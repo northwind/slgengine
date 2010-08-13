@@ -17,10 +17,9 @@ var LayerMgr = Manager.extend({
 									ct : this.wrap,
 									w	: w,
 									h  : h									
-									 } );
+						} );
 		
 		this._super( l );
-		
 		return l;
 	}
 	

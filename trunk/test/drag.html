@@ -1,0 +1,64 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<meta charset="utf-8"> 
+	<title>Test Drag</title> 
+	<style>
+		img{ position:absolute; }
+		.move { cursor: move; }
+		body{ width:100%; height:800px; }
+	</style>
+	<script src="../lib/jquery/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script> 
+	<script> 
+		$( function(){
+			
+			var x, y, t, l, drag, el = $("#img1");
+			
+			$("#img1").bind( "dragstart", function( e ){
+				
+				x = e.pageX;
+				y = e.pageY;
+				t = $("#img1").position().top;
+			    l = $("#img1").position().left;
+			
+				console.debug( "start drag " );
+				
+				console.debug( "x = " + e.pageX + " y = " + e.pageY );
+				//e.preventDefault();
+				 
+			} ).bind("dragend", function(){
+				drag = false;
+				
+				console.debug( "dragend" );
+			}).bind("drag", function( e ){
+				
+				
+				//console.debug( "x = " + e.offsetX + " y = " + e.offsetY );
+				//console.debug( e.pageY );
+				
+				if ( x != undefined && y != undefined  ){
+				
+					el.css( {
+						top	: t ,
+						left: l 
+					} );
+					//console.debug( "left : " + el.position().left + " top : " + el.position().top );
+				}
+										
+				//e.stopPropagation();
+			});
+			
+			
+			$("body").bind("drop", function(){
+				console.debug( "body ondrop");
+			});
+			
+		} );
+	</script> 
+</head> 
+<body id="canvasdemo"> 
+	<canvas id="canvas1"></canvas> 
+ 	<img id="img1" src="7.jpg" >
+</body> 
+
+</html>

@@ -14,8 +14,10 @@ var Component = Observable.extend({
 		else
 			this.el = $( this.el );	
 		//默认都是绝对定位
+/*
 		if ( this.absolute )
 			this.el.css("position","absolute");
+*/
 		
 		if ( this.w )
 			this.width( this.w );
