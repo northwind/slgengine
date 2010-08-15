@@ -45,14 +45,14 @@ var UnitLayer = Layer.extend({
 	},
 	
 	onClick	: function( e, cell, p ){
-			//Èç¹ûÒÑ¾­Ñ¡ÖÐÄ³¸öµ¥Ôª
+			//ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½Ñ¡ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ï¿½Ôª
 			if( this.clicked ){
-				//µãÖÐÆä¿É×ß·¶Î§ÄÚ
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß·ï¿½Î§ï¿½ï¿½
 				if ( this.clicked.canMove( cell ) ){
 					this.clicked.moveTo( cell )
 				}
 				
-				//¹¥»÷
+				//ï¿½ï¿½ï¿½ï¿½
 				else if ( this.clicked.canAttack( cell ) ){
 					this.clicked.attack( cell )
 				}				
@@ -74,9 +74,15 @@ var UnitLayer = Layer.extend({
 			delete this.clicked;	
 	},	
 	
+	showAt				: function( unit, x, y ){
+		
+		
+		return this;
+	},
+	
 	_initUnit	: function( config ){
 		config.ct = this.el;
-		//»æÍ¼		
+		//ï¿½ï¿½Í¼		
 		return (new Unit(config )).draw();
 	}
 }); 

@@ -2,7 +2,7 @@
  * @author Norris
  */
 /*
-	w h : ÊÓ´°µÄ¿íºÍ¸ß
+	w h : ï¿½Ó´ï¿½ï¿½Ä¿ï¿½Í¸ï¿½
 */
 var Panel = Component.extend({
 	w		: WINDOW_WIDTH,
@@ -47,7 +47,7 @@ var Panel = Component.extend({
 		return this;		
 	},
 	
-	//´´½¨µ¥Ôª¸ñLAYER
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½LAYER
 	_createCellLayer	: function(){
 		if ( this.cellLayer )
 			this.cellLayer.remove();
@@ -56,7 +56,7 @@ var Panel = Component.extend({
 
 	},
 	
-	//ÖØÔØsetBgImage ´´½¨LAYER
+	//ï¿½ï¿½ï¿½ï¿½setBgImage ï¿½ï¿½ï¿½ï¿½LAYER
 	setBgImage		: function( url, width, height ){
 		if ( !this.bgLayer )
 			this.bgLayer = LayerMgr.reg( 1, width, height );
@@ -83,14 +83,14 @@ var Panel = Component.extend({
 		return this;
 	},	
 	
-	//Ã¿¾Ö¿ªÊ¼Ê±µ÷ÓÃ´Ëº¯Êý
+	//Ã¿ï¿½Ö¿ï¿½Ê¼Ê±ï¿½ï¿½ï¿½Ã´Ëºï¿½ï¿½ï¿½
 	_paint	: function(){
 		
 		return this;
 	},
 	
-	//¸ù¾ÝÊó±êÎ»ÖÃµÃµ½ÏàÓ¦µÄ×ø±ê
-	// ²ÎÊý¿ÉÒÔÎª event/ Index / x, yÊó±êÎ»ÖÃ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ÃµÃµï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª event/ Index / x, yï¿½ï¿½ï¿½Î»ï¿½ï¿½
 	getPoints	: function( x, y ){
 		if ( y === undefined ){
 			if ( typeof x == "number" )
@@ -99,7 +99,7 @@ var Panel = Component.extend({
 					top	:  parseInt( x / CELL_XNUM ),
 					index: x
 				};
-			//´«ÈëµÄÊÇ event	
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ event	
 			y = x.pageY;
 			x = x.pageX;
 		}
@@ -111,7 +111,7 @@ var Panel = Component.extend({
 		o.index = this.getIndex( o.left, o.top );
 		return o;
 	},
-	//µÃµ½Ë÷ÒýÖµ
+	//ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½Öµ
 	getIndex : function( left, top ){
 		return left < 0 || top <0 || left > CELL_XNUM || top > CELL_YNUM ? -1 : top * CELL_XNUM + left;
 	},
@@ -120,7 +120,7 @@ var Panel = Component.extend({
 		if ( typeof top == "number" )
 			index = this.getIndex( index, top );
 		else	
-			//Èç¹ûÊÇ event
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ event
 			if ( typeof index != "number" )
 				index = this.getPoints( index ).index;
 		
@@ -139,8 +139,15 @@ var Panel = Component.extend({
 							);
 	},
 	
-	//Êµ¼ÊÄÚÈÝµÄ¿íºÍ¸ß
-	//ÄÚÈÝ¿ÉÄÜ»á±ÈÊÓ´°´ó£¬ÐèÒª¿¼ÂÇ¹öÆÁµÄÇé¿ö
+	showAt			: function( unit, x, y ){
+		this.unitsLayer.showAt( unit, x, y );
+		
+		return this;
+	},
+	
+	
+	//Êµï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ¿ï¿½Í¸ï¿½
+	//ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½Ü»ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ç¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	activeWidth : 0,
 	activeHeight : 0
 	

@@ -30,12 +30,18 @@
 				drag = false;
 				
 				console.debug( "dragend" );
-			}).bind("drag", function( e ){
+			});
+			/*
+			.bind("drag", function( e ){
 				
 				
 				//console.debug( "x = " + e.offsetX + " y = " + e.offsetY );
 				//console.debug( e.pageY );
-				
+				var str = "";
+				for( var key in e.originalEvent ){
+					str += key + ":" + e.originalEvent[ key ] + ",";
+				}
+				//console.debug( str );
 				if ( x != undefined && y != undefined  ){
 				
 					el.css( {
@@ -47,18 +53,26 @@
 										
 				//e.stopPropagation();
 			});
+			*/
 			
 			
-			$("body").bind("drop", function(){
+			/*
+$("body").bind("drop", function(){
 				console.debug( "body ondrop");
 			});
+*/
 			
 		} );
+		
+
+		
+		
+			
 	</script> 
 </head> 
 <body id="canvasdemo"> 
 	<canvas id="canvas1"></canvas> 
  	<img id="img1" src="7.jpg" >
 </body> 
-
+<script></script>
 </html>
