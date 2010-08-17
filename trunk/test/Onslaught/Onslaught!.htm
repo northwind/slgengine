@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Onslaught!</title>
+        <meta name="description" content="Onslaught! is an HTML5 game made by Lost Decade Games. Fight off the horde with medieval weapons and powerups!">
+        <meta name="keywords" content="onslaught, html5, indie, browser-based, lost decade games, javascript, chiptunes, arcade, retro, oldschool, geoff blair, matt hackett, joshua morse">
+        <style type="text/css">
+            html, body {
+                background: #000;
+                margin: 0;
+                padding: 0;
+            }
+            
+            h1, p {
+                display: none;
+            }
+            
+            canvas {
+                cursor: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Onslaught! by Lost Decade Games</h1>
+        <p>
+            <strong>Onslaught!</strong>
+            is an HTML5 game made by <a href="http://lostdecadegames.com/">Lost Decade Games</a>.
+        </p>
+        <script src="files/ga.js" async="" type="text/javascript">
+        </script>
+        <script src="files/soundmanager2.js">
+        </script>
+        <div firebugversion="1.5.4" style="display: none;" id="_firebugConsole">
+        </div>
+        <script>
+            soundManager.url = "lib/sm2/";
+        </script>
+        <script src="files/base.js">
+        </script>
+        <script src="files/timer.js">
+        </script>
+        <script src="files/sound.js">
+        </script>
+        <script src="files/size.js">
+        </script>
+        <script src="files/vector2.js">
+        </script>
+        <script src="files/rect.js">
+        </script>
+        <script src="files/keyboard.js">
+        </script>
+        <script src="files/engine.js">
+        </script>
+        <script src="files/object.js">
+        </script>
+        <script src="files/object_types.js">
+        </script>
+        <script src="files/image_loader.js">
+        </script>
+        <script src="files/spawn_point.js">
+        </script>
+        <script src="files/spawn_wave.js">
+        </script>
+        <script>
+            (function(){
+                var e = new horde.Engine();
+                e.run();
+            }());
+        </script>
+        <canvas height="480" width="640" id="display">
+        </canvas>
+        <div style="position: fixed; width: 8px; height: 8px; bottom: 0px; left: 0px; overflow: hidden;" class="movieContainer high_performance" id="sm2-container">
+            <embed allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" bgcolor="#ffffff" allowscriptaccess="always" quality="high" src="files/soundmanager2.swf" id="sm2movie" name="sm2movie" width="100%" height="100%">
+        </div>
+    </body>
+</html>
