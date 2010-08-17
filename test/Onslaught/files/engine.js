@@ -22,7 +22,7 @@ horde.Engine = function horde_Engine () {
 	this.keyboard = new horde.Keyboard();
 	this.view = new horde.Size(SCREEN_WIDTH, SCREEN_HEIGHT);
 	this.images = null;
-	this.debug = false; // Debugging toggle
+	this.debug = true; // Debugging toggle
 	this.konamiEntered = false;
 	
 	this.gateDirection = ""; // Set to "up" or "down"
@@ -140,55 +140,6 @@ proto.init = function horde_Engine_proto_init () {
 		"characters": "img/sheet_characters.png?freeplay",
 		"objects": "img/sheet_objects.png?freeplay"
 	}, this.handleImagesLoaded, this);
-	
-	this.initSound();
-	
-};
-
-/**
- * Initializes music and sound effects
- * @return {void}
- */
-proto.initSound = function horde_Engine_proto_initSound () {
-	
-	horde.sound.init(function () {
-	
-		var s = horde.sound;
-		
-		s.create("normal_battle_music", "sound/music/normal_battle.mp3", true, 20);
-		s.create("final_battle_music", "sound/music/final_battle.mp3", true, 20);
-
-		s.create("eat_food", "sound/effects/chest_food.mp3");
-		s.create("coins", "sound/effects/chest_gold.mp3");
-		s.create("chest_opens", "sound/effects/chest_opens.mp3");
-		s.create("chest_weapon", "sound/effects/chest_weapon.mp3");horde.sound.play
-
-		s.create("gate_opens", "sound/effects/gate_opens.mp3");
-		s.create("gate_closes", "sound/effects/gate_closes.mp3");
-
-		s.create("hero_attacks", "sound/effects/char_attacks.mp3");
-		s.create("hero_damage", "sound/effects/char_damage_3.mp3");
-		s.create("hero_dies", "sound/effects/char_dies.mp3");
-		
-		s.create("fire_attack", "sound/effects/char_attacks_fire.mp3");
-		
-		s.create("bat_damage", "sound/effects/bat_damage.mp3");
-		s.create("bat_dies", "sound/effects/bat_dies.mp3");
-		
-		s.create("goblin_attacks", "sound/effects/goblin_attacks.mp3");
-		s.create("goblin_damage", "sound/effects/goblin_damage.mp3");
-		s.create("goblin_dies", "sound/effects/goblin_dies.mp3");
-		
-		s.create("cyclops_attacks", "sound/effects/cyclops_attacks.mp3");
-		s.create("cyclops_damage", "sound/effects/cyclops_damage.mp3");
-		s.create("cyclops_dies", "sound/effects/cyclops_dies.mp3");
-
-		s.create("dragon_attacks", "sound/effects/dragon_attacks.mp3");
-		s.create("dragon_damage", "sound/effects/dragon_damage.mp3");
-		s.create("dragon_dies", "sound/effects/dragon_dies.mp3");
-		
-	});
-	
 };
 
 proto.initGame = function () {
@@ -488,12 +439,12 @@ horde.Engine.prototype.update = function horde_Engine_proto_update () {
 			
 		// The game!
 		case "running":
-			this.handleInput();
+		//	this.handleInput();
 			if (!this.paused) {
-				this.updateWaves(elapsed);
-				this.updateSpawnPoints(elapsed);
+		//		this.updateWaves(elapsed);
+		//		this.updateSpawnPoints(elapsed);
 				this.updateObjects(elapsed);
-				this.updateFauxGates(elapsed);
+		//		this.updateFauxGates(elapsed);
 			}
 			this.render();
 			break;
@@ -868,12 +819,6 @@ proto.handleInput = function horde_Engine_proto_handleInput () {
 		if (this.keyboard.isKeyPressed(80)) {
 			this.togglePause();
 		}
-
-		// Toggle sound with "M" for "mute".
-		if (this.keyboard.isKeyPressed(77)) {
-			horde.sound.toggleMuted();
-		}
-
 	}
 
 	if (this.state === "title") {
@@ -1039,10 +984,10 @@ proto.render = function horde_Engine_proto_render () {
 		case "running":
 			this.drawBackground(ctx);
 			this.drawObjects(ctx);
-			this.drawFauxGates(ctx);
-			this.drawShadow(ctx);
-			this.drawUI(ctx);
-			if (this.paused) this.drawPaused(ctx);
+		//	this.drawFauxGates(ctx);
+		//	this.drawShadow(ctx);
+		//	this.drawUI(ctx);
+		//	if (this.paused) this.drawPaused(ctx);
 			break;
 		
 		case "game_over":
