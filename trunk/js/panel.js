@@ -18,31 +18,46 @@ var Panel = Component.extend({
 		this._super( config );
 		
 		this.canvas = $("<canvas>").appendTo( this.el );
-		this.cxt= this.canvas[0].getContext("2d");
+		this.ctx= this.canvas[0].getContext("2d");
 		
+		//支持拖拽
+		var x, y, drag = false, el=this.el, _self = this.el;
+		this.el.mousedown( function( e ){
+			if (e.which == 1) {
+				x = e.pageX;
+				y = e.pageY;
+				//this.style.cursor = "pointer";
+				drag = true;
+				
+				if ( this.setCapture )
+					this.setCapture();
+			}		
+		} );
 		
-		this.el[0].ondragstart = function(){
-			alert("start")
-		}
-		this.canvas[0].ondragstart = function(){
-			alert("start")
-		}
+		this.el.mousemove( function( e ){
+			if ( drag && e.which == 1 ) {
+				if (x != e.pageX) 
+					_self.scrollLeft = (this.scrollLeft -= e.pageX - x);
+				
+				if (y != e.pageY) 
+					_self.scrollTop = (this.scrollTop -= e.pageY - y);
+				
+				x = e.pageX;
+				y = e.pageY;
+			}			
+		} );
 		
-/*
-		this.canvas.bind("dragstart", function( e ){
-			alert("start")
-		});
-		this.canvas.bind("dragend", function( e ){
-			alert("end")
-		});
+		//��Ҫ����document
+		$(document).mouseup( function( e ){
+			if (e.which == 1) {
+				drag = false;
+				//֧��IE
+				if (this.releaseCapture) 
+					this.releaseCapture();
+			}
+		} );
 		
-		this.canvas.bind("mousewheel", function( e ){
-			alert("mousewheel")
-		});
-*/
-		
-		
-		this._createCellLayer();
+		//this._createCellLayer();
 		
 		return this;		
 	},
@@ -53,16 +68,33 @@ var Panel = Component.extend({
 			this.cellLayer.remove();
 		
 		this.cellLayer = LayerMgr.reg( 100, CELL_XNUM*CELL_WIDTH, CELL_YNUM*CELL_HEIGHT, CellLayer );
-
+	},
+	
+	showGrid			: function(){
+		var ctx = this.ctx;
+		ctx.strokeStyle  = "rgba(255,165,0,1)";   
+		ctx.beginPath();
+		ctx.moveTo( 10, 10 ); 
+		ctx.lineTo( 125, 10 );
+		ctx.stroke();
+		
+		return this;
 	},
 	
 	//����setBgImage ����LAYER
 	setBgImage		: function( url, width, height ){
-		if ( !this.bgLayer )
-			this.bgLayer = LayerMgr.reg( 1, width, height );
+		//if ( !this.bgLayer )
+		//	this.bgLayer = LayerMgr.reg( 1, width, height );
 		
-		this.bgLayer.setBgImage( img );
+		//this.bgLayer.setBgImage( img );
 		
+		this.canvas.attr({
+			width	: width,
+			height	: height
+		}).css( {
+			background : "url('" + url + "') no-repeat"
+		 } );
+/*
 		var img = new Image(), cxt = this.cxt, canvas = this.canvas[0];
 		img.onload = function(){
 			canvas.width = width;
@@ -70,6 +102,7 @@ var Panel = Component.extend({
 			cxt.drawImage(img,0,0);
 		}
 		img.src = url;
+*/
 		
 		return this;
 	},
