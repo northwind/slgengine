@@ -1,9 +1,12 @@
 ._panel{
 	margin:auto;
-	position:absolute;
+	position:relative;
 	z-index:1;
 	overflow:hidden;
 	-moz-user-select:none;
+}
+._panel canvas{
+	position : absolute;
 }
 ._panel img, .unselect{
 	-moz-user-select:none;

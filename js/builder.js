@@ -3,11 +3,12 @@
  */
 
 $(function(){
- 	//³õÊ¼»¯PANEL
+ 	//ï¿½ï¿½Ê¼ï¿½ï¿½PANEL
 	PANEL = new Panel( {
 		ct : $("#container")
 	} );
 	PANEL.setBgColor("#008000")
 		.setBgImage( "images/bg_1.png", 800, 800 )
+		.showGrid();
 		//.setUnits( UNITS );	
  });
