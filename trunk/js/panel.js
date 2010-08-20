@@ -2,7 +2,7 @@
  * @author Norris
  */
 /*
-	w h : ï¿½Ó´ï¿½ï¿½Ä¿ï¿½Í¸ï¿½
+	w h : ï¿½Ó´ï¿½ï¿½Ä¿ï¿½Í¸ï¿„1¤7
 */
 var Panel = Component.extend({
 	w		: WINDOW_WIDTH,
@@ -14,14 +14,15 @@ var Panel = Component.extend({
 	
 	init		: function( config ){
 		PANEL = this;
+		
 		this.ct = $( config.ct || document.body );
 		this._super( config );
+		this.addEvents("click","mousemove","contextmenu","keydown");
 		
-		this.canvas = $("<canvas>").appendTo( this.el );
-		this.ctx= this.canvas[0].getContext("2d");
+		this._createCellLayer();
 		
-		//æ”¯æŒæ‹–æ‹½
-		var x, y, drag = false, el=this.el, _self = this.el;
+		//Ö§³ÖÍÏ×§
+		var x, y, drag = false, el=this.el, _self = this;
 		this.el.mousedown( function( e ){
 			if (e.which == 1) {
 				x = e.pageX;
@@ -37,14 +38,16 @@ var Panel = Component.extend({
 		this.el.mousemove( function( e ){
 			if ( drag && e.which == 1 ) {
 				if (x != e.pageX) 
-					_self.scrollLeft = (this.scrollLeft -= e.pageX - x);
+					el.scrollLeft = (this.scrollLeft -= e.pageX - x);
 				
 				if (y != e.pageY) 
-					_self.scrollTop = (this.scrollTop -= e.pageY - y);
+					el.scrollTop = (this.scrollTop -= e.pageY - y);
 				
 				x = e.pageX;
 				y = e.pageY;
-			}			
+			}
+			
+			_self.fireEvent( "mousemove", e, _self );			
 		} );
 		
 		//ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½document
@@ -57,7 +60,8 @@ var Panel = Component.extend({
 			}
 		} );
 		
-		//this._createCellLayer();
+		this.on("mousemove", this.activeCell, this );
+		
 		
 		return this;		
 	},
@@ -67,93 +71,85 @@ var Panel = Component.extend({
 		if ( this.cellLayer )
 			this.cellLayer.remove();
 		
-		this.cellLayer = LayerMgr.reg( 100, CELL_XNUM*CELL_WIDTH, CELL_YNUM*CELL_HEIGHT, CellLayer );
+		this.cellLayer = LayerMgr.reg( 100, MAX_W, MAX_H, CellLayer );
 	},
 	
-	showGrid			: function(){
-		var ctx = this.ctx;
-		ctx.strokeStyle  = "rgba(255,165,0,1)";   
-		ctx.beginPath();
-		ctx.moveTo( 10, 10 ); 
-		ctx.lineTo( 125, 10 );
-		ctx.stroke();
+	activeCell			: function( x, y ){
+		var o = this.getPoints( x, y );
 		
+		//´«Èë×ø±ê
+		this.cellLayer.activeCell( o.x, o.y );
 		return this;
 	},
 	
+	showGrid			: function(){
+		this.cellLayer.showGrid();
+		return this;
+	},
+
+	hideGrid			: function(){
+		this.cellLayer.hideGrid();
+		return this;
+	},
+		
+	moveTo			: function(x, y){
+		if (x != undefined) 
+			this.el[0].scrollLeft = (this.scrollLeft = x);
+		
+		if (y != undefined) 
+			this.el[0].scrollTop = (this.scrollTop = y);
+			
+		return this;			
+	},
+	
 	//ï¿½ï¿½ï¿½ï¿½setBgImage ï¿½ï¿½ï¿½ï¿½LAYER
-	setBgImage		: function( url, width, height ){
-		//if ( !this.bgLayer )
-		//	this.bgLayer = LayerMgr.reg( 1, width, height );
-		
-		//this.bgLayer.setBgImage( img );
-		
-		this.canvas.attr({
-			width	: width,
-			height	: height
-		}).css( {
-			background : "url('" + url + "') no-repeat"
-		 } );
-/*
-		var img = new Image(), cxt = this.cxt, canvas = this.canvas[0];
-		img.onload = function(){
-			canvas.width = width;
-			canvas.height = height;
-			cxt.drawImage(img,0,0);
-		}
-		img.src = url;
-*/
-		
+	setBgImage		: function( url ){
+		this.cellLayer.setBgImage(  url );
 		return this;
 	},
 	
 	setUnits		: function( data ){
 		if ( !this.unitsLayer )
-			this.unitsLayer = LayerMgr.reg( 200, CELL_XNUM*CELL_WIDTH, CELL_YNUM*CELL_HEIGHT, UnitLayer );
+			this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
 				
 		this.unitsLayer.setData( data ).paint().play();
 		
 		return this;
 	},	
 	
-	//Ã¿ï¿½Ö¿ï¿½Ê¼Ê±ï¿½ï¿½ï¿½Ã´Ëºï¿½ï¿½ï¿½
+	//Ã¿¾Ö¿ªÊ¼Ê±µ÷ÓÃ´Ëº¯Êı
 	_paint	: function(){
 		
 		return this;
 	},
 	
-	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ÃµÃµï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½
-	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª event/ Index / x, yï¿½ï¿½ï¿½Î»ï¿½ï¿½
+	//¸ù¾İÊó±êÎ»ÖÃµÃµ½ÏàÓ¦µÄ×ø±ê
+	// ²ÎÊı¿ÉÒÔÎª event/ Index / x, yÊó±êÎ»ÖÃ
 	getPoints	: function( x, y ){
-		if ( y === undefined ){
-			if ( typeof x == "number" )
-				return{
-					left 	:  x % CELL_XNUM,
-					top	:  parseInt( x / CELL_XNUM ),
-					index: x
-				};
-			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ event	
+		if (typeof x == "number") {
+			return {
+				x: x % CELL_XNUM,
+				y: parseInt(y / CELL_YNUM)
+			}
+		}
+		
+		if ( x.pageX ){
+			//´«ÈëµÄÊÇ event	
 			y = x.pageY;
 			x = x.pageX;
 		}
 		
-		var o =  {
-			left    : parseInt( (x-this.x + this.scrollLeft ) / CELL_WIDTH ),
-			top	 : parseInt( (y-this.y + this.scrollTop ) / CELL_HEIGHT)
-		};
-		o.index = this.getIndex( o.left, o.top );
-		return o;
-	},
-	//ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½Öµ
-	getIndex : function( left, top ){
-		return left < 0 || top <0 || left > CELL_XNUM || top > CELL_YNUM ? -1 : top * CELL_XNUM + left;
+		return  {
+			x    : (x + this.scrollLeft ) % CELL_WIDTH ,
+			y	 : (y + this.scrollTop ) % CELL_HEIGHT
+		}
 	},
 	
 	getCell	: function( index, top ){
 		if ( typeof top == "number" )
 			index = this.getIndex( index, top );
 		else	
-			//ï¿½ï¿½ï¿½ï¿½ï¿½ event
+			//ï¿½ï¿½ï¿½ï¿½ï¿„1¤7 event
 			if ( typeof index != "number" )
 				index = this.getPoints( index ).index;
 		
@@ -179,7 +175,7 @@ var Panel = Component.extend({
 	},
 	
 	
-	//Êµï¿½ï¿½ï¿½ï¿½ï¿½İµÄ¿ï¿½Í¸ï¿½
+	//Êµï¿½ï¿½ï¿½ï¿½ï¿½İµÄ¿ï¿½Í¸ï¿„1¤7
 	//ï¿½ï¿½ï¿½İ¿ï¿½ï¿½Ü»ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ç¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	activeWidth : 0,
 	activeHeight : 0

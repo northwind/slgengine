@@ -4,17 +4,17 @@
 
 var Unit = Component.extend({
 	name	: "footman",
-	moveable:false,    		//ÊÇ·ñ¿ÉÒÔÒÆ¶¯
-	type	:-1,			//ÀàĞÍ
-	tipable :false,			//ÊÇ·ñÓĞÌáÊ¾¿ò
-	active  : true,			//ÊÇ·ñÓĞĞ§
-	overlay	: false,			//ÊÇ·ñ¿ÉÒÔµş¼Ó
-	cell	: null,			//¹ØÁªµÄCELL
-	gx		: -1,			//Ëù´¦ĞĞ
-	gy		: -1,			//Ëù´¦ÁĞ
-	step		: 5,          //ĞĞ¶¯Á¦
-	range	: 1, 			//¹¥»÷³¤¶È
-	rangeType : 1,      //¹¥»÷ÀàĞÍ
+	moveable:false,    		//æ˜¯å¦å¯ä»¥ç§»åŠ¨
+	type	:-1,			//ç±»å‹
+	tipable :false,			//æ˜¯å¦æœ‰æç¤ºæ¡†
+	active  : true,			//æ˜¯å¦æœ‰æ•ˆ
+	overlay	: false,			//æ˜¯å¦å¯ä»¥å åŠ 
+	//cell	: null,			//å…³è”çš„CELL
+	gx		: -1,			//æ‰€å¤„è¡Œ
+	gy		: -1,			//æ‰€å¤„åˆ—
+	step		: 5,          //è¡ŒåŠ¨åŠ›
+	range	: 1, 			//æ”»å‡»é•¿åº¦
+	rangeType : 1,      //æ”»å‡»ç±»å‹
 	
 	ui		: null,
 	
@@ -26,7 +26,7 @@ var Unit = Component.extend({
 		this.attacks= {};
 		
 		this._super( config );
-		this.setCell( PANEL.getCell(  this.gx, this.gy  ) );
+	//	this.setCell( PANEL.getCell(  this.gx, this.gy  ) );
 		
 		return this;
 	},
@@ -36,9 +36,9 @@ var Unit = Component.extend({
 		return cell.unit  = this;
 	},
 	
-	//»æÖÆÍ¼Ïñ
-	//¼Ì³ĞÕßĞèÒª¸²¸Ç´Î·½·¨
-	//TODO ·Åµ½paramsÖĞ£¬×öÎª¿ÉÅäÈ«¾Ö±äÁ¿
+	//ç»˜åˆ¶å›¾åƒ
+	//ç»§æ‰¿è€…éœ€è¦è¦†ç›–æ¬¡æ–¹æ³•
+	//TODO æ”¾åˆ°paramsä¸­ï¼Œåšä¸ºå¯é…å…¨å±€å˜é‡
 	draw	: function(){
 		
 		var o = {};
@@ -107,7 +107,7 @@ var Unit = Component.extend({
 	
 	moveTo		: function( cell, fn, scope ){
 		if( this.canMove( cell ) ){
-			//Ñ°Â·
+			//å¯»è·¯
 			var way = [];
 			while( cell.parent && cell != this.cell ){
 				way.push( cell );
@@ -146,7 +146,7 @@ var Unit = Component.extend({
 					from = to;
 				}
 				else {
-					//»Øµ÷
+					//å›è°ƒ
 					_self.setCell(cell);
 					if (fn) 
 						fn.call(scope || _self, _self);
@@ -157,7 +157,7 @@ var Unit = Component.extend({
 		return this;
 	},
 	
-	//µü´ú
+	//è¿­ä»£
 	standCell	: null,	
 	_move	: function( fn, scope ){
 		//if(  )

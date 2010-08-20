@@ -40,7 +40,7 @@ var proto = horde.Engine.prototype;
 proto.run = function horde_Engine_proto_run () {
 	this.init();
 	this.lastUpdate = horde.now();
-	this.interval = horde.setInterval(0, this.update, this);
+	this.interval = horde.setInterval(1000, this.update, this);
 };
 
 /**
