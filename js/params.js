@@ -8,12 +8,16 @@ CELL_WIDTH	= 32,
 CELL_HEIGHT	= 32,
 CELL_XNUM	= 25,
 CELL_YNUM	= 25,
+
+MAX_H = CELL_HEIGHT * CELL_YNUM,
+MAX_W = CELL_WIDTH * CELL_XNUM,
+			
 PANEL = null,
-//´°¿ÚµÄ¿í¸ß
+//çª—å£çš„å®½é«˜
 WINDOW_WIDTH = 480,
 WINDOW_HEIGHT=480,
 
-//UNIT¼¯ºÏ£¬ÅäÖÃÏî²Î¿¼UNITÀà
+//UNITé›†åˆï¼Œé…ç½®é¡¹å‚è€ƒUNITç±»
 UNITS	= [{
 	gx :  10,  gy : 10,  type : 100, moveable : true, overlay : false
 },{
@@ -21,12 +25,12 @@ UNITS	= [{
 }],
 
 /*
-	0  ²ÝµØ
-	1  Ê÷Ä¾
-	2  É½µØ
-	3  ºÓÁ÷
-	4  ÇÅÁº
-	5  ÕÊÅñ
+	0  è‰åœ°
+	1  æ ‘æœ¨
+	2  å±±åœ°
+	3  æ²³æµ
+	4  æ¡¥æ¢
+	5  å¸ç¯·
 */
 MAP	= 	[[ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 		 [ 1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,1,1],

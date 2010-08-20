@@ -7,8 +7,17 @@ var Layer = Component.extend({
 	init: function( config ){
 		this.objects = [];
 		
+		this.el = this.el || 
+			$("<canvas>").appendTo( PANEL.el ).attr( { width: config.width, height : config.height } ) ;
+		
     	this._super( config );
 		this.pri( config.level );
+		this.ctx= this.el[0].getContext("2d");
+		
+		//canvas的宽高必须通过属性设置
+		//设置后copy值
+		this.w = config.width;
+		this.h = config.height;
 		
 		return this;
   	},
@@ -36,7 +45,7 @@ var Layer = Component.extend({
 	},		
 	
 	destroy	: function(){
-		//��������ϵ����е�Ԫ
+		//销毁这层上的所有单元
 		for (var i=0; i< this.objects.length; i++) {
 			if ( this.objects[i].destroy )
 				this.objects[i].destroy();

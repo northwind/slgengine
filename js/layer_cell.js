@@ -10,67 +10,51 @@ var CellLayer = Layer.extend({
 		this.cells = [];
 		this._super( arguments[0] );
 		
-		//TODO ÑÓ³ÙÉú³É
-		this._paintGrid();
-		
-		//Êó±ê»¬¹ıÊ±Ñ¡ÖĞµ¥Ôª¸ñ
-		PANEL.on("mousemove", this.onMousemove, this );
-		PANEL.on("click", this.onMouseclick, this );
-				
 		return this;
 	},
 	
-	onMousemove	: function( e ){
-			var cell =  this.cells[ PANEL.getPoints( e ).index ];
-			if ( cell != this.selected ){
-				if ( this.selected )
-					this.selected.unselect();
-				if ( cell )
-					cell.select();
-				this.selected = cell;		
-			}
-	},
-	
-	onMouseclick	: function( e ){
-			var cell =  this.cells[ PANEL.getPoints( e ).index ];
-			if ( cell != this.clicked ){
-				if ( this.clicked )
-					this.clicked.unclick();
-				if ( cell )
-					cell.click();
-				this.clicked = cell;		
-			}
-	},
-		
 	showGridCls	: "_cellgridshow",
+	
 	showGrid	: function(){
-		this.grid.addClass( this.showGridCls );
+		var ctx = this.ctx;
+		ctx.strokeStyle  = "rgba(0,0,0,1)";
+		ctx.beginPath();
+		
+		//ç«–çº¿
+		for (var i=1; i<CELL_XNUM; i++) {
+			ctx.moveTo( i * CELL_WIDTH  , 0 ); 
+			ctx.lineTo( i * CELL_WIDTH  , MAX_H );
+		}
+		//æ¨ªçº¿
+		for (var i=1; i<CELL_YNUM; i++) {
+			ctx.moveTo( 0, i * CELL_HEIGHT ); 
+			ctx.lineTo( MAX_W, i * CELL_HEIGHT);		
+		}
+					
+		ctx.stroke();
+		
 		return this;
 	},
+	
 	hideGrid	: function(){
-		this.grid.removeClass( this.showGridCls );
+		this.ctx.clearRect( 0, 0, this.w, this.h );
 		return this;		
 	},
 	
-	_paintGrid	: function(){
-		this.grid = $("<table cellpadding='0' cellspacing='0'/>").addClass("_cellgrid")
-					.width( CELL_XNUM * CELL_WIDTH )
-					.height( CELL_YNUM * CELL_HEIGHT);
-		this._initCells();
-		this.grid.appendTo( this.el );
+	setBgImage	: function( url ){
+		this.el.css( {
+			background : "url('" + url + "') no-repeat"
+		} );	
 	},
 	
-	//Éú³ÉËùÓĞµÄCELL
-	_initCells	: function(){
-		var tr, td;
-		for (var i=0; i< CELL_YNUM; i++){
-			tr = $("<tr/>");
-			for (var j=0; j< CELL_XNUM  ; j++){
-				td = $("<td/>").appendTo( tr );
-				this.cells.push( new Cell( { gx:j, gy:i, el:td, absolute : false } ) );
-			}
-			this.grid.append( tr );	
-		}
+	activeCell	: function(x, y){
+		var ctx = this.ctx;
+		ctx.save();
+		ctx.strokeStyle = "#ffffff";
+		ctx.strokeRect( x * CELL_WIDTH , y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT );
+		ctx.restore();
+		
+		return this;
 	},
 	
 	getCell	: function( index ){
@@ -88,13 +72,13 @@ var CellLayer = Layer.extend({
 			return {}[ cell.index ]  = cell ;
 		
 		var open = {}, closed = {};
-		//É¾³ıÔ­Ö¸Õë
+		//åˆ é™¤åŸæŒ‡é’ˆ
 		delete cell.parent;
 		open[ cell.index ] = cell;
 		
 		function prepare( x,y,parent ){
 			var key = PANEL.getIndex( x, y ), child =  PANEL.getCell( key );
-			//ÅĞ¶ÏÊÇ·ñ¿ÉÒÔĞĞ×ß/ÊÇ·ñÒÑ¾­¼ÆËã¹ı/Èç¹ûÓĞµ¥Î»ÔÚµ¥Ôª¸ñÉÏÅĞ¶ÏÊÇ·ñ¿ÉÒÔµş¼Ó
+			//åˆ¤æ–­æ˜¯å¦å¯ä»¥è¡Œèµ°/æ˜¯å¦å·²ç»è®¡ç®—è¿‡/å¦‚æœæœ‰å•ä½åœ¨å•å…ƒæ ¼ä¸Šåˆ¤æ–­æ˜¯å¦å¯ä»¥å åŠ 
 			if ( child && !open[key] && !closed[key] && MAP[y][x] ==0 && (child.unit ? child.unit.overlay : true  ) ) {
 				child.parent = parent;
 				open[key] = child;
@@ -104,10 +88,10 @@ var CellLayer = Layer.extend({
 		while( !this._isEmpty( open ) && step-- >0 ){
 			for (var key in open ) {
 				node = open[ key ];
-				//Ìí¼Óµ½ÒÑ´¦Àí¹ıµÄclosed±í
+				//æ·»åŠ åˆ°å·²å¤„ç†è¿‡çš„closedè¡¨
 				closed[ key ] = node;
 				
-				//Ìí¼Ó×Ó½Úµã
+				//æ·»åŠ å­èŠ‚ç‚¹
 				//up
 				prepare( node.gx, node.gy-1, node );	
 				//down
@@ -117,7 +101,7 @@ var CellLayer = Layer.extend({
 				//right
 				prepare( node.gx +1, node.gy, node );
 				
-				//²¢´ÓOPEN±íÖĞÉ¾³ı
+				//å¹¶ä»OPENè¡¨ä¸­åˆ é™¤
 				delete open[ key ];
 			}
 		}
@@ -129,7 +113,7 @@ var CellLayer = Layer.extend({
 		var all = {};
 		
 		switch( type ) {
-			case 1:	//È«·½Î»¹¥»÷
+			case 1:	//å…¨æ–¹ä½æ”»å‡»
 				var tmp, i, j;
 				for ( i= cell.gx-range ; i<=cell.gx + range; i++) {
 					for ( j= cell.gy-range ; j<=cell.gy + range; j++) {
@@ -138,7 +122,7 @@ var CellLayer = Layer.extend({
 					}
 				}			
 				break;
-			case 2:	//Ê®×ÖĞÍ
+			case 2:	//åå­—å‹
 				var open = {}, tmp;
 				open[ cell.index ] = cell;
 				
@@ -162,7 +146,7 @@ var CellLayer = Layer.extend({
 				break;
 		}
 		
-		//°Ñ×ÔÉíÅÙ³öÈ¥
+		//æŠŠè‡ªèº«åˆ¨å‡ºå»
 		delete all[ cell.index ];
 		return all;
 	}
