@@ -19,9 +19,9 @@ WINDOW_HEIGHT=480,
 
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
-	gx :  10,  gy : 10,  type : 100, moveable : true, overlay : false
+	gx :  10,  gy : 10,  type : 100, moveable : true, overlay : false, urlImg : "images/caocao.png", range : 1, rangeType : 1
 },{
-	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false
+	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/footman.png", range : 2, rangeType : 2
 }],
 
 /*
