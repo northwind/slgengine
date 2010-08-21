@@ -2,19 +2,23 @@
  * @author Norris
  */
 
-var Unit = Component.extend({
+var Unit = Observable.extend({
 	name	: "footman",
 	moveable:false,    		//是否可以移动
 	type	:-1,			//类型
 	tipable :false,			//是否有提示框
 	active  : true,			//是否有效
 	overlay	: false,			//是否可以叠加
-	//cell	: null,			//关联的CELL
 	gx		: -1,			//所处行
 	gy		: -1,			//所处列
 	step		: 5,          //行动力
 	range	: 1, 			//攻击长度
 	rangeType : 1,      //攻击类型
+	
+	timestamp	: 0,
+	inter		: 300,
+	p			: 1,
+	team	: 1,		//所处队伍
 	
 	ui		: null,
 	
@@ -24,40 +28,42 @@ var Unit = Component.extend({
 	init	: function( config ){
 		this.moves	= {};
 		this.attacks= {};
+		this.pos = [0,  CELL_HEIGHT ];
 		
 		this._super( config );
-	//	this.setCell( PANEL.getCell(  this.gx, this.gy  ) );
 		
 		return this;
-	},
-	
-	setCell		: function( cell ){
-		this.cell = cell;
-		return cell.unit  = this;
 	},
 	
 	//绘制图像
 	//继承者需要覆盖次方法
 	//TODO 放到params中，做为可配全局变量
-	draw	: function(){
+	draw	: function( timestamp ){
+		var ctx = this.ctx;
 		
-		var o = {};
-		switch( this.type ) {
-			case 100:
-				o.img = "images/caocao.png";
-				o.frames = 4;
-				break;
-			case 101:
-				o.img = "images/footman.png";
-				this.overlay = false;
-				break;
+		var diff = timestamp - this.timestamp;
+		if (diff > this.inter) {
+			this.p = this.p == 1 ? 0 : 1;
+			this.timestamp = timestamp;
 		}
 		
-		if (o.img) {
-			this.position( this.gx * CELL_WIDTH, this.gy * CELL_HEIGHT );
-			
-			this.setAnimation( o );
+		var y = this.pos[ this.p ];
+		
+		ctx.save();
+		if (this.img) {
+			ctx.drawImage( this.img, 0, y, CELL_WIDTH, CELL_HEIGHT ,
+										this.gx * CELL_WIDTH, this.gy * CELL_HEIGHT,  CELL_WIDTH, CELL_HEIGHT);
+		}else if ( this.urlImg ){
+				this.img = new Image();
+				var _self = this;
+				this.img.onload = function(){
+					ctx.drawImage( this, 0, y,  CELL_WIDTH, CELL_HEIGHT,
+												_self.gx * CELL_WIDTH, _self.gy * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT );
+				};
+				this.img.src = this.urlImg;
 		}	
+		ctx.restore();
+		
 		return this;	
 	},
 	
@@ -75,34 +81,12 @@ var Unit = Component.extend({
 		return this;
 	},
 	
-	click		: function(){
-		this.getWalks();
-		$.each( this.moves || {} , function(){
-			this.highlight();
-		} );
-		
-		this.getAttacks();
-		$.each( this.attacks || {} , function(){
-			this.showAttack();
-		} );		
-		
-		return this;		
+	canMove	: function( index ){
+		return this.moves && this.moves[ index ];
 	},
 	
-	getWalks	: function(){
-		this.moves = PANEL.getActiveCells( this.cell, this.step );
-	},
-	
-	getAttacks	: function(){
-		this.attacks = PANEL.getAttackCells( this );	
-	},
-	
-	canMove	: function( cell ){
-		return this.moves && this.moves[ cell.index ];
-	},
-	
-	canAttack	: function( cell ){
-		return this.attacks && this.attacks[ cell.index ];
+	canAttack	: function( index ){
+		return this.attacks && this.attacks[ index ];
 	},
 	
 	moveTo		: function( cell, fn, scope ){

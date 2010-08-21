@@ -8,14 +8,15 @@ $(function(){
 		ct : $("#container")
 	} );
 	
-	var p = new Unit();
+	var p = new Unit({
+		gx :  2,  gy : 2,  moveable : true, overlay : false, urlImg : "images/footman.png"
+	});
 	
 	PANEL.setBgColor("#008000")
-		.setBgImage( "images/sina.jpg" )
+		.setBgImage( "images/bg_1.png" )
 		.moveTo( 100, 200 )
-		//.setUnits( MAP )
-		//.showAt( 5, 5 )
+		.setUnits( UNITS )
+		.showAt( p, 5, 5 )
 		.showGrid()
 		.hideGrid();
-		//.setUnits( UNITS );	
  });

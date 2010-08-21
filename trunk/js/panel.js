@@ -2,12 +2,13 @@
  * @author Norris
  */
 /*
-	w h : ï¿½Ó´ï¿½ï¿½Ä¿ï¿½Í¸ï¿„1¤7
+	w h : ï¿½Ó´ï¿½ï¿½Ä¿ï¿½Í¸ï¿„1ï¿½7
 */
 var Panel = Component.extend({
 	w		: WINDOW_WIDTH,
 	h		: WINDOW_HEIGHT,
 	cls   : "_panel",
+	suspend	: false,
 	
 	scrollLeft : 0,
 	scrollTop : 0,
@@ -17,11 +18,11 @@ var Panel = Component.extend({
 		
 		this.ct = $( config.ct || document.body );
 		this._super( config );
-		this.addEvents("click","mousemove","contextmenu","keydown");
+		this.addEvents("click","mousemove","contextmenu","keydown", "update");
 		
 		this._createCellLayer();
 		
-		//Ö§³ÖÍÏ×§
+		//Ö§ï¿½ï¿½ï¿½ï¿½×§
 		var x, y, drag = false, el=this.el, _self = this;
 		this.el.mousedown( function( e ){
 			if (e.which == 1) {
@@ -60,8 +61,21 @@ var Panel = Component.extend({
 			}
 		} );
 		
-		this.on("mousemove", this.activeCell, this );
+		this.el.click( function( e ){
+			_self.fireEvent( "click", e );	
+		} );
 		
+		//è§¦å‘å™¨
+		this.timer = setInterval( function(){
+			if ( !_self.suspend )
+				_self.fireEvent( "update", (new Date()).getTime() );			
+		} , 0);
+		
+		this.el.bind("contextmenu",function( e ){
+				e.preventDefault();
+				e.stopPropagation();
+				_self.fireEvent("contextmenu", e);			
+		});	
 		
 		return this;		
 	},
@@ -72,14 +86,6 @@ var Panel = Component.extend({
 			this.cellLayer.remove();
 		
 		this.cellLayer = LayerMgr.reg( 100, MAX_W, MAX_H, CellLayer );
-	},
-	
-	activeCell			: function( x, y ){
-		var o = this.getPoints( x, y );
-		
-		//´«Èë×ø±ê
-		this.cellLayer.activeCell( o.x, o.y );
-		return this;
 	},
 	
 	showGrid			: function(){
@@ -112,19 +118,18 @@ var Panel = Component.extend({
 		if ( !this.unitsLayer )
 			this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
 				
-		this.unitsLayer.setData( data ).paint().play();
-		
+		this.unitsLayer.setData( data );
 		return this;
 	},	
 	
-	//Ã¿¾Ö¿ªÊ¼Ê±µ÷ÓÃ´Ëº¯Êý
+	//Ã¿ï¿½Ö¿ï¿½Ê¼Ê±ï¿½ï¿½ï¿½Ã´Ëºï¿½ï¿½ï¿½
 	_paint	: function(){
 		
 		return this;
 	},
 	
-	//¸ù¾ÝÊó±êÎ»ÖÃµÃµ½ÏàÓ¦µÄ×ø±ê
-	// ²ÎÊý¿ÉÒÔÎª event/ Index / x, yÊó±êÎ»ÖÃ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ÃµÃµï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª event/ Index / x, yï¿½ï¿½ï¿½Î»ï¿½ï¿½
 	getPoints	: function( x, y ){
 		if (typeof x == "number") {
 			return {
@@ -134,30 +139,27 @@ var Panel = Component.extend({
 		}
 		
 		if ( x.pageX ){
-			//´«ÈëµÄÊÇ event	
-			y = x.pageY;
-			x = x.pageX;
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ event	
+			y = x.layerY;
+			x = x.layerX;
 		}
 		
-		return  {
-			x    : (x + this.scrollLeft ) % CELL_WIDTH ,
-			y	 : (y + this.scrollTop ) % CELL_HEIGHT
+		var o =  {
+			x    :   parseInt ( x   / CELL_WIDTH ),
+			y	 :  parseInt( y   / CELL_HEIGHT)
 		}
+		return o;
 	},
 	
 	getCell	: function( index, top ){
 		if ( typeof top == "number" )
 			index = this.getIndex( index, top );
 		else	
-			//ï¿½ï¿½ï¿½ï¿½ï¿„1¤7 event
+			//ï¿½ï¿½ï¿½ï¿½ï¿„1ï¿½7 event
 			if ( typeof index != "number" )
 				index = this.getPoints( index ).index;
 		
 		return this.cellLayer.getCell( index );
-	},
-	
-	getActiveCells : function( cell, step ){
-		return this.cellLayer.getActiveCells( cell, step );
 	},
 	
 	getAttackCells : function( unit ){
@@ -174,8 +176,11 @@ var Panel = Component.extend({
 		return this;
 	},
 	
+	getIndex		: function( x, y ){
+		return x * CELL_YNUM + y;
+	},
 	
-	//Êµï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ¿ï¿½Í¸ï¿„1¤7
+	//Êµï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ¿ï¿½Í¸ï¿„1ï¿½7
 	//ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½Ü»ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ç¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	activeWidth : 0,
 	activeHeight : 0
