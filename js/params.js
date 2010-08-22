@@ -17,6 +17,9 @@ PANEL = null,
 WINDOW_WIDTH = 480,
 WINDOW_HEIGHT=480,
 
+SPEED	= 320,	//调节unit切换图片的速度
+STEP	= 30 ,	//调节多长时间走一格
+
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
 	gx :  10,  gy : 10,  type : 100, moveable : true, overlay : false, urlImg : "images/caocao.png", range : 1, rangeType : 1

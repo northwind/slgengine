@@ -9,6 +9,7 @@ var CellLayer = Layer.extend({
 	
 	init	: function(){
 		this.cells = {};
+		this.borders = {};
 		this._super( arguments[0] );
 		PANEL.on("update", this.update, this );
 		PANEL.on("mousemove", this.activeCell, this );
@@ -65,7 +66,7 @@ var CellLayer = Layer.extend({
 				ctx.moveTo( 0, i * CELL_HEIGHT ); 
 				ctx.lineTo( MAX_W, i * CELL_HEIGHT);		
 			}
-						
+			ctx.closePath()			
 			ctx.stroke();			
 		}
 		//绘制cell
@@ -74,35 +75,75 @@ var CellLayer = Layer.extend({
 			ctx.fillStyle = color;
 			var obj = this.cells[ color ];
 			for( var key in obj ){
-				var arr = obj[ key ];
-				ctx.fillRect( arr[0] * CELL_WIDTH , arr[1] * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT );
+				var cell = obj[ key ];
+				ctx.fillRect( cell.dx , cell.dy, CELL_WIDTH, CELL_HEIGHT );
 			}
 			ctx.restore();			
 		}
+		//只绘制cell边框
+		for( var color in  this.borders ){
+			ctx.save();
+			ctx.strokeStyle = color;
+			var w = 4, half = w/ 2;
+			ctx.lineWidth = w;  
+			//确保画到正确位置
+			ctx.translate( half, half  );
+			//纠正方块宽高
+			var width = CELL_WIDTH - w -1 , 
+					height = CELL_HEIGHT - w - 1;
+/*
+			ctx.shadowOffsetX = 2;  
+			ctx.shadowOffsetY = 2;  
+			ctx.shadowColor = "rgba(0, 0, 0, 0.5)";  	
+*/
+						
+			var obj = this.borders[ color ];
+			for( var key in obj ){
+				var cell = obj[ key ];
+				ctx.strokeRect( cell.dx + 1 , cell.dy + 1, width , height );
+			}
+			ctx.restore();			
+		}		
 		//鼠标滑过
 		if ( this.x >= 0 && this.y >= 0 ){
 			ctx.save();
-		    ctx.shadowOffsetX = 1;  
-		    ctx.shadowOffsetY = 1;  
-		    ctx.shadowBlur = 1;  
-		    ctx.shadowColor = "rgba(0, 0, 0, 0.3)";  		
+			var w = 2, half = w/ 2;
+			ctx.lineWidth = w;
+/*
+			ctx.shadowOffsetX = 1;  
+			ctx.shadowOffsetY = 1;  
+			ctx.shadowColor = "rgba(0, 0, 0, 0.5)";  
+*/
+				
 			ctx.strokeStyle = "#ffffff";
-			ctx.strokeRect( this.x * CELL_WIDTH , this.y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT );
+			ctx.strokeRect( this.x * CELL_WIDTH + half , this.y * CELL_HEIGHT + half, CELL_WIDTH - w, CELL_HEIGHT -w );
 			ctx.restore();
 		}
 	},
 	
-	paintCells				: function( color, x, y ){
-		if ( this.cells[ color ] == undefined )
-			  this.cells[ color ] = {};
+	strokeCells			: function( color, cell ){
+		if ( this.borders[ color ] == undefined )
+			  this.borders[ color ] = {};
 		
-		if ( typeof x == "object" )
-			this.cells[ color ] = x;
+		if ( cell.constructor == Cell )
+			this.borders[ color ][ cell.index ] = cell;
 		else
-			this.cells[ color ][ PANEL.getIndex(x,y) ] = [x,y];
+			this.borders[ color ] = cell;
 			
 		return this;		
 	},
+	
+	paintCells				: function( color, cell ){
+		if ( this.cells[ color ] == undefined )
+			  this.cells[ color ] = {};
+		
+		if ( cell.constructor == Cell )
+			this.cells[ color ][ cell.index ] = cell;
+		else
+			this.cells[ color ] = cell;
+			
+		return this;		
+	},	
 	
 	clear			: function( color ){
 		if ( color )
