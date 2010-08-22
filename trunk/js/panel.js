@@ -138,7 +138,7 @@ var Panel = Component.extend({
 			}
 		}
 		
-		if ( x.pageX ){
+		if ( x.layerY ){
 			//������� event	
 			y = x.layerY;
 			x = x.layerX;
@@ -151,15 +151,12 @@ var Panel = Component.extend({
 		return o;
 	},
 	
-	getCell	: function( index, top ){
-		if ( typeof top == "number" )
-			index = this.getIndex( index, top );
-		else	
-			//����ￄ1�7 event
-			if ( typeof index != "number" )
-				index = this.getPoints( index ).index;
-		
-		return this.cellLayer.getCell( index );
+	getCell	: function( x, y ){
+		if ( typeof x == "number" )
+			return CellMgr.get( x, y );
+			
+		var p = this.getPoints( x, y );
+		return CellMgr.get( p.x, p.y );
 	},
 	
 	getAttackCells : function( unit ){

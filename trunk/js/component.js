@@ -13,7 +13,7 @@ var Component = Observable.extend({
 			this.el = $("<div/>");
 		else
 			this.el = $( this.el );	
-		//Ä¬ÈÏ¶¼ÊÇ¾ø¶Ô¶¨Î»
+		//Ä¬ï¿½Ï¶ï¿½ï¿½Ç¾ï¿½Ô¶ï¿½Î»
 /*
 		if ( this.absolute )
 			this.el.css("position","absolute");
@@ -25,9 +25,6 @@ var Component = Observable.extend({
 		if ( this.h )
 			this.height( this.h );
 			
-		if ( this.x != undefined && this.y != undefined )	
-			this.position( this.x, this.y );
-			
 		if ( this.cls )
 			this.el.addClass( this.cls );	
 
@@ -37,7 +34,7 @@ var Component = Observable.extend({
 		return this;	
   	},
 	
-	//TODO X Y µßµ¹ÁË
+	//TODO X Y ï¿½ßµï¿½ï¿½ï¿½
 	position	: function( x,y ){
 		if ( x == undefined )
 			return this.el.position();
@@ -58,7 +55,7 @@ var Component = Observable.extend({
 	
 	setBgImage : function( img ){
 		this.el.css("background-image", "url(" + img + ")")
-			//²»ÔÊÐíÍÏ×§Í¼Æ¬
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×§Í¼Æ¬
 			.addClass("unselect");
 		return this;
 	},
@@ -72,7 +69,7 @@ var Component = Observable.extend({
 		return this.el.height( h );
 	},	
 	
-	 //ÓÅÏÈ¼¶
+	 //ï¿½ï¿½ï¿½È¼ï¿½
 	pri		: function( level ){
 		if (typeof level == "number") {
 			this.el.css("zIndex", this._pri = level);

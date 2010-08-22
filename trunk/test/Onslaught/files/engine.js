@@ -40,7 +40,7 @@ var proto = horde.Engine.prototype;
 proto.run = function horde_Engine_proto_run () {
 	this.init();
 	this.lastUpdate = horde.now();
-	this.interval = horde.setInterval(1000, this.update, this);
+	this.interval = horde.setInterval(0, this.update, this);
 };
 
 /**
@@ -439,12 +439,12 @@ horde.Engine.prototype.update = function horde_Engine_proto_update () {
 			
 		// The game!
 		case "running":
-		//	this.handleInput();
+			this.handleInput();
 			if (!this.paused) {
-		//		this.updateWaves(elapsed);
-		//		this.updateSpawnPoints(elapsed);
+				this.updateWaves(elapsed);
+				this.updateSpawnPoints(elapsed);
 				this.updateObjects(elapsed);
-		//		this.updateFauxGates(elapsed);
+				this.updateFauxGates(elapsed);
 			}
 			this.render();
 			break;

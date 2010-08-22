@@ -15,8 +15,10 @@ var Unit = Observable.extend({
 	range	: 1, 			//攻击长度
 	rangeType : 1,      //攻击类型
 	
-	timestamp	: 0,
-	inter		: 300,
+	stampStatus	: 0,
+	stampStep		: 0,
+	moving : false,
+	
 	p			: 1,
 	team	: 1,		//所处队伍
 	
@@ -29,8 +31,11 @@ var Unit = Observable.extend({
 		this.moves	= {};
 		this.attacks= {};
 		this.pos = [0,  CELL_HEIGHT ];
+		this.way = [];
 		
 		this._super( config );
+		
+		this.cell = PANEL.getCell( this.gx, this.gy );
 		
 		return this;
 	},
@@ -39,112 +44,99 @@ var Unit = Observable.extend({
 	//继承者需要覆盖次方法
 	//TODO 放到params中，做为可配全局变量
 	draw	: function( timestamp ){
+		this.changeStatus( timestamp );
+		
 		var ctx = this.ctx;
-		
-		var diff = timestamp - this.timestamp;
-		if (diff > this.inter) {
-			this.p = this.p == 1 ? 0 : 1;
-			this.timestamp = timestamp;
-		}
-		
-		var y = this.pos[ this.p ];
-		
+		var y = this.pos[ this.p ],
+			 dx = this.cell.dx, dy = this.cell.dy;
+		//TODO 图像反转
 		ctx.save();
 		if (this.img) {
 			ctx.drawImage( this.img, 0, y, CELL_WIDTH, CELL_HEIGHT ,
-										this.gx * CELL_WIDTH, this.gy * CELL_HEIGHT,  CELL_WIDTH, CELL_HEIGHT);
+										dx, dy,  CELL_WIDTH, CELL_HEIGHT);
 		}else if ( this.urlImg ){
 				this.img = new Image();
 				var _self = this;
 				this.img.onload = function(){
 					ctx.drawImage( this, 0, y,  CELL_WIDTH, CELL_HEIGHT,
-												_self.gx * CELL_WIDTH, _self.gy * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT );
+												dx, dy,  CELL_WIDTH, CELL_HEIGHT );
 				};
 				this.img.src = this.urlImg;
 		}	
 		ctx.restore();
 		
-		return this;	
-	},
-	
-	unclick	: function(){
-		$.each( this.moves || {} , function(){
-			this.recover();
-		} );
-		delete this.moves;
+		//移动过后回调
+		if ( this.moving && this.way == 0){
+			this.moving = false;
+			if (this.fn) {
+				this.fn.call( this.scope || this, this );
+				delete this.fn;
+				delete this.scope;
+			}
+		} 
 		
-		$.each( this.attacks || {} , function(){
-			this.hideAttack();
-		} );			
-		delete this.attacks;
+		return;	
+	},
+	
+	changeStatus	: function( timestamp ){
+		var diff = timestamp - this.stampStep;
+		if ( this.way.length > 0 && diff > STEP) {
+			this.stampStep = timestamp;
+			this.stampStatus = timestamp; 	//角色发生转向后不再需要更新状态
+			
+			var cell = this.way.pop(),
+				  direct = this.cell.direct( cell );
+			switch( direct ) {
+				case 3: //下
+					this.pos = [ CELL_HEIGHT * 0, CELL_HEIGHT * 1 ];
+					break;	
+				case -3://上
+					this.pos = [ CELL_HEIGHT * 2, CELL_HEIGHT * 3 ];
+					break;
+				case -1://左
+					this.pos = [ CELL_HEIGHT * 4, CELL_HEIGHT * 5 ];
+					break;
+				case 1://右
+					this.pos = [ CELL_HEIGHT * 4, CELL_HEIGHT * 5 ];
+					break;
+			}
+
+			this.p = 0;
+			this.cell = cell;
+		}
 		
-		return this;
+		if( timestamp - this.stampStatus > SPEED ){
+			this.stampStatus = timestamp;
+			this.p = this.p == 1 ? 0 : 1;
+		}
+		
 	},
 	
-	canMove	: function( index ){
-		return this.moves && this.moves[ index ];
+	canMove	: function( cell ){
+		return this.moves && this.moves[ cell.index ];
 	},
 	
-	canAttack	: function( index ){
-		return this.attacks && this.attacks[ index ];
+	canAttack	: function( cell ){
+		return this.attacks && this.attacks[ cell.index ];
 	},
 	
 	moveTo		: function( cell, fn, scope ){
-		if( this.canMove( cell ) ){
+		if (!this.moving) {
 			//寻路
 			var way = [];
-			while( cell.parent && cell != this.cell ){
-				way.push( cell );
+			while (cell.parent && cell != this.cell) {
+				way.push(cell);
 				cell = cell.parent;
 			}
-			//way.push( this.cell );
-			//way.reverse();
-			
-			var from = this.cell, _self=this, name = _self.name, urlImg;
-			(function(){
-				var to = way.pop();
-				if (to) {
-					switch ( to.direct( from ) ) {
-						case 3:
-							urlImg = "images/" + name +  "_up.png";
-							break;
-						case -3:
-							urlImg = "images/" + name +  "_down.png";
-							break;
-						case 1:
-							urlImg = "images/" + name +  "_left.png";
-							break;
-						case -1:
-							urlImg = "images/" + name +  "_right.png";
-							break;														
-					}
-					_self.setAnimation({
-						img: urlImg
-					}).play();
-												
-					_self.el.animate({
-						top:  to.gy * CELL_HEIGHT,
-						left:  to.gx * CELL_WIDTH
-					}, arguments.callee);
-												
-					from = to;
-				}
-				else {
-					//回调
-					_self.setCell(cell);
-					if (fn) 
-						fn.call(scope || _self, _self);
-				}
-			})();
-		}
+			this.way = way;
+			this.fn = fn;
+			this.scope = scope;
+			this.moving = true;
+		//way.push( this.cell );
+		//way.reverse();
 		
+		}
 		return this;
-	},
-	
-	//迭代
-	standCell	: null,	
-	_move	: function( fn, scope ){
-		//if(  )
 	},
 	
 	attack			: function( cell ){

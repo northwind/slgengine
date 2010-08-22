@@ -5,7 +5,7 @@
 var UnitLayer = Layer.extend({
 	clicked : null,
 	moveColor	: "rgba(39,167,216,0.7)", 
-	attaColor		: "rgba(255,0,0,0.7)", 
+	attaColor		: "rgba(255,0,0,1)", 
 	
 	init	: function(){
 		this._super( arguments[0] );
@@ -31,24 +31,11 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
-	play		: function(){
-		for( var key in this.units )
-			this.units[ key ].play();
-
-		return this;
-	},
-	
-	stop		: function(){
-		for( var key in this.units )
-			this.units[ key ].stop();
-						
-		return this;
-	},
-	
 	update	: function( timestamp ){
 		var ctx = this.ctx;
 		
 		if (this.units) {
+			//TODO 优化为只需要重新的地方才清除
 			ctx.clearRect( 0,0, this.w, this.h );
 			
 			for( var key in this.units ){
@@ -60,67 +47,75 @@ var UnitLayer = Layer.extend({
 	},
 	
 	onClick	: function( e ){
-			var p = PANEL.getPoints( e ),
-					index = PANEL.getIndex( p.x, p.y );
+			var  cell = PANEL.getCell( e );
 							
 			//����Ѿ�ѡ��ĳ����Ԫ
 			if( this.clicked ){
 				//��������߷�Χ��
-				if ( this.clicked.canMove( index ) ){
-					this.clicked.moveTo( p.x, p.y )
+				if ( this.clicked.canMove( cell ) ){
+					this.clicked.moveTo( cell );
+					this._removeCells();
 				}
 				
 				//����
 				else if ( this.clicked.canAttack( index ) ){
-					this.clicked.attack( p.x, p.y )
+					this.clicked.attack( p.x, p.y );
+					this._removeCells();
 				}				
 			}
 			
-			var unit = this.units[ index ];
+			var unit = this.units[ cell.index ];
 			if ( unit && unit != this.clicked ){
 				//获得可移动格子
-				var  obj = this.getActiveCells( p.x, p.y, unit.step );
+				var  obj = this.getWalkCells( cell, unit.step );
 				PANEL.cellLayer.paintCells( this.moveColor, obj );
 				unit.moves = obj;
 				//获得可攻击的格子
-				obj = this.getAttackCells( p.x, p.y, unit.range, unit.rangeType, unit.team );
-				PANEL.cellLayer.paintCells( this.attaColor, obj );
+				obj = this.getAttackCells( cell, unit.range, unit.rangeType, unit.team );
+				PANEL.cellLayer.strokeCells( this.attaColor, obj );
 				unit.attacks = obj;
 				
 				this.clicked = unit;
 			}		
 	},
+	
+	_removeCells			: function(){
+		PANEL.cellLayer.paintCells( this.moveColor, {} );
+		PANEL.cellLayer.paintCells( this.attaColor, {} );
+		delete this.clicked;
+	},
 
-	getAttackCells	: function( x, y,	range, type,team ){
-		var all = {}, index = PANEL.getIndex( x, y );
+	getAttackCells	: function( cell,	range, type,team ){
+		var all = {}, index = cell.index, x = cell.x, y = cell.y;
 		
 		switch( type ) {
 			case 1:	//全方位攻击
 				var tmp, i, j;
 				for ( i= x-range ; i<=x + range; i++) {
 					for ( j= y-range ; j<=y + range; j++) {
-							all[ PANEL.getIndex( i, j ) ] = [i,j];
+							var node = PANEL.getCell( i, j);
+							all[ node.index ] = node;
 					}
 				}			
 				break;
 			case 2:	//十字型
-				var open = {}, tmp;
-				open[ index ] = [x,y];
+				var open = {}, node;
+				open[ index ] = cell;
 				
 				function prepare( x, y ){
-					var i = PANEL.getIndex( x, y );
+					var tmp = PANEL.getCell( x, y ), i = tmp.index;
 					if ( !open[ i ] && !all[ i ] )
-						open[ i ] = [x,y];
+						open[ i ] = tmp;
 				}
 				
 				while( range-- > 0 ){			
 					for( var key in open){
-						all[ key ] = tmp =  open[ key ];
+						all[ key ] = node =  open[ key ];
 						
-						prepare( tmp[0], tmp[1] -1 );
-						prepare( tmp[0], tmp[1]+1 );
-						prepare( tmp[0]-1, tmp[1] );
-						prepare( tmp[0]+1, tmp[1] );
+						prepare( node.x, node.y -1 );
+						prepare( node.x, node.y+1 );
+						prepare( node.x-1, node.y );
+						prepare( node.x+1, node.y );
 						
 						delete open[ key ];
 					}
@@ -130,27 +125,35 @@ var UnitLayer = Layer.extend({
 		
 		//把自身刨出去
 		delete all[ index ];
+		//不能攻击队友, 友军, 无敌, 障碍物等
+		//TODO 真正攻击时才去判断
+/*
 		for( var key in all ){
-			var unit = this.units[ key ], p = all[ key ];
-			if ( !(unit ? unit.team != team : true && MAP[p[1]][p[0]] == 0) )
+			var unit = this.units[ index ];
+			if ( MAP[y][x] == 0 && unit && ( !unit || (unit.canAttack && unit.team != team) )  ){
+				
+			}else
 				delete all[ key ];
 		}
+*/
 		return all;		
 	},
 	
-	getActiveCells : function( x, y, step ){
+	getWalkCells : function( cell, step ){
 		if ( step <= 0 )
-			return {}[ PANEL.getIndex( x, y ) ] = [ x,y ];
+				return {}[ cell.index ]  = cell ;
 		
 		var open = {}, closed = {}, units = this.units;
 		//删除原指针
-		open[  PANEL.getIndex(x,y)  ] = [x,y];
+		delete cell.parent;
+		open[ cell.index ] = cell;
 		
-		function prepare( x,y,node ){
-			var key = PANEL.getIndex( x, y ), unit = units[ key ];
+		function prepare( x,y,parent ){
+			var key = PANEL.getIndex( x, y ), unit = units[ key ], child =  PANEL.getCell( x, y );
 			//判断是否可以行走/是否已经计算过/如果有单位在单元格上判断是否可以叠加
-			if ( !open[key] && !closed[key] && MAP[y][x] ==0 && (unit ? unit.overlay : true  ) ) {
-				open[key] = [x,y];
+			if ( child && !open[key] && !closed[key] && MAP[y][x] ==0 && (unit ? unit.overlay : true  ) ) {
+				child.parent = parent;
+				open[key] = child;
 			}	
 		}
 			
@@ -162,13 +165,13 @@ var UnitLayer = Layer.extend({
 				
 				//添加子节点
 				//up
-				prepare( node[0], node[1]-1, node );	
+				prepare( node.x, node.y-1, node );	
 				//down
-				prepare( node[0], node[1] +1 , node );
+				prepare( node.x, node.y +1 , node );
 				//left
-				prepare( node[0] -1, node[1], node );
+				prepare( node.x -1, node.y, node );
 				//right
-				prepare( node[0] +1, node[1], node );
+				prepare( node.x +1, node.y, node );
 				
 				//并从OPEN表中删除
 				delete open[ key ];
@@ -206,6 +209,6 @@ var UnitLayer = Layer.extend({
 	_initUnit	: function( config ){
 		config.ctx = this.ctx;
 		
-		return (new Unit(config )).draw();
+		return new Unit(config );
 	}
 }); 
