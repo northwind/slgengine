@@ -53,8 +53,13 @@ var UnitLayer = Layer.extend({
 			if( this.clicked ){
 				//��������߷�Χ��
 				if ( this.clicked.canMove( cell ) ){
-					this.clicked.moveTo( cell );
+					this.clicked.moveTo( cell, function(){
+						PANEL.popMenu( this.clicked, cell.dx - CELL_WIDTH * 2 , cell.dy - CELL_HEIGHT  );
+					}, this );
 					this._removeCells();
+					//重新设置unit的index
+					
+					//delete this.units[  ]
 				}
 				
 				//����
@@ -81,7 +86,7 @@ var UnitLayer = Layer.extend({
 	
 	_removeCells			: function(){
 		PANEL.cellLayer.paintCells( this.moveColor, {} );
-		PANEL.cellLayer.paintCells( this.attaColor, {} );
+		PANEL.cellLayer.strokeCells( this.attaColor, {} );
 		delete this.clicked;
 	},
 

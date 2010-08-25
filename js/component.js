@@ -35,7 +35,7 @@ var Component = Observable.extend({
   	},
 	
 	//TODO X Y �ߵ���
-	position	: function( x,y ){
+	showAt	: function( x,y ){
 		if ( x == undefined )
 			return this.el.position();
 		else if ( x.constructor == Array )
@@ -47,6 +47,8 @@ var Component = Observable.extend({
 				left	: x,
 				top		: y
 			});		
+			
+		return this;	
 	},
 	
 	width	: function( w ){
@@ -100,28 +102,5 @@ var Component = Observable.extend({
 	destroy	: function(){
 		if ( this.el )
 			this.el.remove();
-	},
-	
-	setAnimation	: function( ani ){
-		if (this.animation){
-			this.animation.update( ani );
-		} 
-		else {
-			if (ani.constructor != Animation) {
-				ani.el = this.el;
-				ani = new Animation(ani);
-			}
-			this.animation = ani;
-		}
-		return this;
-	},
-	
-	play					: function(){
-		if ( this.animation ){
-			 this.animation.play(  );
-		}
-		return this;
 	}
-	
-		
 });

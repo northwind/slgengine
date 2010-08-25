@@ -25,6 +25,8 @@ UNITS	= [{
 	gx :  10,  gy : 10,  type : 100, moveable : true, overlay : false, urlImg : "images/caocao.png", range : 1, rangeType : 1
 },{
 	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/footman.png", range : 2, rangeType : 2
+},{
+	gx :  23,  gy : 5,  step: 9, type : 101, moveable : true, overlay : false, urlImg : "images/footman.png", range : 2, rangeType : 2
 }],
 
 /*

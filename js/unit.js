@@ -21,6 +21,8 @@ var Unit = Observable.extend({
 	
 	p			: 1,
 	team	: 1,		//所处队伍
+	cell		: null,   //当前所在的位置
+	oriCell : null,   //移动前所在的位置
 	
 	ui		: null,
 	
@@ -35,7 +37,7 @@ var Unit = Observable.extend({
 		
 		this._super( config );
 		
-		this.cell = PANEL.getCell( this.gx, this.gy );
+		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		
 		return this;
 	},
@@ -55,19 +57,21 @@ var Unit = Observable.extend({
 			ctx.drawImage( this.img, 0, y, CELL_WIDTH, CELL_HEIGHT ,
 										dx, dy,  CELL_WIDTH, CELL_HEIGHT);
 		}else if ( this.urlImg ){
-				this.img = new Image();
+				var img = new Image();
 				var _self = this;
-				this.img.onload = function(){
+				img.onload = function(){
+					_self.img = img;
 					ctx.drawImage( this, 0, y,  CELL_WIDTH, CELL_HEIGHT,
 												dx, dy,  CELL_WIDTH, CELL_HEIGHT );
 				};
-				this.img.src = this.urlImg;
+				img.src = this.urlImg;
 		}	
 		ctx.restore();
 		
 		//移动过后回调
 		if ( this.moving && this.way == 0){
 			this.moving = false;
+			
 			if (this.fn) {
 				this.fn.call( this.scope || this, this );
 				delete this.fn;
