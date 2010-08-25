@@ -20,7 +20,9 @@ var Panel = Component.extend({
 		this._super( config );
 		this.addEvents("click","mousemove","contextmenu","keydown", "update");
 		
+		LayerMgr.setWrap( this.el );
 		this._createCellLayer();
+		this._createWinLayer();
 		
 		//֧����ק
 		var x, y, drag = false, el=this.el, _self = this;
@@ -87,7 +89,13 @@ var Panel = Component.extend({
 		
 		this.cellLayer = LayerMgr.reg( 100, MAX_W, MAX_H, CellLayer );
 	},
-	
+	_createWinLayer	: function(){
+		if ( this.winLayer )
+			this.winLayer.remove();
+		
+		this.winLayer = LayerMgr.reg( 300, MAX_W, MAX_H, WinLayer );
+	},
+		
 	showGrid			: function(){
 		this.cellLayer.showGrid();
 		return this;
@@ -122,11 +130,6 @@ var Panel = Component.extend({
 		return this;
 	},	
 	
-	//ÿ�ֿ�ʼʱ���ô˺���
-	_paint	: function(){
-		
-		return this;
-	},
 	
 	//������λ�õõ���Ӧ�����
 	// �������Ϊ event/ Index / x, y���λ��
@@ -167,7 +170,7 @@ var Panel = Component.extend({
 							);
 	},
 	
-	showAt			: function( unit, x, y ){
+	showUnit			: function( unit, x, y ){
 		this.unitsLayer.showAt( unit, x, y );
 		
 		return this;
@@ -177,10 +180,10 @@ var Panel = Component.extend({
 		return x * CELL_YNUM + y;
 	},
 	
-	//ʵ�����ݵĿ�͸ￄ1�7
-	//���ݿ��ܻ���Ӵ�����Ҫ���ǹ��������
-	activeWidth : 0,
-	activeHeight : 0
+	popMenu		: function( unit, x, y ){
+		this.winLayer.popMenu( unit, x, y );
+		return this;
+	}
 	
 });
 

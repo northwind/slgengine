@@ -8,16 +8,18 @@ var Layer = Component.extend({
 		this.objects = [];
 		
 		this.el = this.el || 
-			$("<canvas>").appendTo( PANEL.el ).attr( { width: config.width, height : config.height } ) ;
+						$("<canvas>").attr( { width: config.wCanvas, height : config.hCanvas } ) ;
 		
     	this._super( config );
 		this.pri( config.level );
-		this.ctx= this.el[0].getContext("2d");
+		
+		if ( this.el[0].getContext )
+			this.ctx= this.el[0].getContext("2d");
 		
 		//canvas的宽高必须通过属性设置
 		//设置后copy值
-		this.w = config.width;
-		this.h = config.height;
+		this.w = config.wCanvas;
+		this.h = config.hCanvas;
 		
 		return this;
   	},

@@ -16,7 +16,7 @@ $(function(){
 		.setBgImage( "images/bg_1.png" )
 		.moveTo( 100, 200 )
 		.setUnits( UNITS )
-		.showAt( p, 5, 5 )
-		.showGrid()
-		.hideGrid();
+		.showUnit( p, 5, 5 )
+		//.showGrid()
+		//.hideGrid();
  });
