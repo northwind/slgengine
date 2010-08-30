@@ -14,9 +14,18 @@
 	outline:none;
 	background-repeat:no-repeat;		
 }
-._winLayer{ position:absolute; background:#ffffff; }
+._winLayer{ position:absolute;  }
 ._win{
 	position:absolute;
 	z-index:310;
 	padding:5px;
+	background:#ffffff;
 }
+._win ul, ._win li{ list-style:none; }
+._win li button{ padding-left:24px; background-repeat:no-repeat;  background-position:-5px -5px; 
+  outline:none;
+  -moz-user-focus:none;
+  -moz-user-select:none;
+ }
+ ._cansel{ width:100%; margin-top:8px; }
+
