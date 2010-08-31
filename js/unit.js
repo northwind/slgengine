@@ -2,7 +2,15 @@
  * @author Norris
  */
 
+	//载入image
+function	_loadImg( src, fn ){
+	var img = new Image();
+	img.onload = fn;
+	img.src = src;
+}
+
 var Unit = Observable.extend({
+	loaded	: false,
 	name	: "footman",
 	moveable:false,    		//是否可以移动
 	type	:-1,			//类型
@@ -29,7 +37,7 @@ var Unit = Observable.extend({
 	w		: CELL_WIDTH,
 	h		: CELL_HEIGHT,
 	
-	init	: function( config ){
+	init	: function( config, callback ){
 		this.moves	= {};
 		this.attacks= {};
 		this.pos = [0,  CELL_HEIGHT ];
@@ -39,13 +47,63 @@ var Unit = Observable.extend({
 		
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		
+		//获取ImageData
+		this._getImageData( callback );
+		
 		return this;
+	},
+	
+	_getImageData	: function( callback ){
+		var _self = this, 
+				loaded = 0,
+				ctx = this.ctx;
+		
+		function done(){
+			if (loaded++ >= 0) {
+				_self.loaded = true;
+				callback();
+			}
+		}
+		
+		//移动		
+		var fn	= function(){
+			ctx.drawImage( this, 0, 0  );
+			var img = ctx.getImageData( 0,0,  this.width, this.height);
+			
+			//生成上下左右ImageData 
+			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
+			_self.down = [
+							PS.createImageData( ctx, img, CELL_HEIGHT*6, CELL_WIDTH, CELL_HEIGHT ),  
+							PS.createImageData( ctx, img, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ),
+							PS.createImageData( ctx, img, CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT ) ];
+							
+			_self.up = [ PS.createImageData( ctx, img, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
+							PS.createImageData( ctx, img, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ),
+							PS.createImageData( ctx, img, CELL_HEIGHT *3, CELL_WIDTH, CELL_HEIGHT ) ];
+							
+			_self.left = [PS.createImageData( ctx, img, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
+							PS.createImageData( ctx, img, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
+							PS.createImageData( ctx, img, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
+							
+			_self.right = [PS.createImageDataTurn( ctx, img, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
+							PS.createImageDataTurn( ctx, img, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
+							PS.createImageDataTurn( ctx, img, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
+
+			_self.fall = [	PS.createImageData( ctx, img, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
+							PS.createImageData( ctx, img, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
+																				
+			done();
+		}
+		_loadImg( this.urlImg, fn );	
 	},
 	
 	//绘制图像
 	//继承者需要覆盖次方法
 	//TODO 放到params中，做为可配全局变量
 	draw	: function( timestamp ){
+		if ( !this.loaded )
+			return false;
+		
 		this.changeStatus( timestamp );
 		
 		var ctx = this.ctx;
@@ -53,6 +111,11 @@ var Unit = Observable.extend({
 			 dx = this.cell.dx, dy = this.cell.dy;
 		//TODO 图像反转
 		ctx.save();
+		
+		//this.up = PS.gray( ctx, this.up );
+		
+			ctx.putImageData( this.right[0], dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
+/*
 		if (this.img) {
 			ctx.drawImage( this.img, 0, y, CELL_WIDTH, CELL_HEIGHT ,
 										dx, dy,  CELL_WIDTH, CELL_HEIGHT);
@@ -66,6 +129,8 @@ var Unit = Observable.extend({
 				};
 				img.src = this.urlImg;
 		}	
+*/
+		
 		ctx.restore();
 		
 		//移动过后回调

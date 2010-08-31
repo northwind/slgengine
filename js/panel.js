@@ -71,7 +71,7 @@ var Panel = Component.extend({
 		this.timer = setInterval( function(){
 			if ( !_self.suspend )
 				_self.fireEvent( "update", (new Date()).getTime() );			
-		} , 0);
+		} , 10);
 		
 		this.el.bind("contextmenu",function( e ){
 				e.preventDefault();
