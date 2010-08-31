@@ -22,11 +22,17 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
-	setData : function( data ){
+	setData : function( data, fn, scope ){
 		this.data = data;
+		var count = 0, sum = data.length;
+		var callback = function(){
+			if ( count++ >= sum && fn ){
+				fn.call( scope || this );
+			}
+		};
 		for (var i = 0; i < this.data.length; i++) {
 			var item = this.data[i];
-			this.units[ PANEL.getIndex( item.gx, item.gy) ] = this._initUnit(item);
+			this.units[ PANEL.getIndex( item.gx, item.gy) ] = this._initUnit(item, callback);
 		}			
 		return this;
 	},
@@ -211,9 +217,9 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
-	_initUnit	: function( config ){
+	_initUnit	: function( config, callback ){
 		config.ctx = this.ctx;
 		
-		return new Unit(config );
+		return new Unit(config, callback );
 	}
 }); 
