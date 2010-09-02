@@ -27,10 +27,42 @@ var Unit = Observable.extend({
 	stampStep		: 0,
 	moving : false,
 	
+	face		: null, //头像
+	level		: 1,	//级别
+	exp			: 0,    //经验
+	role		: 0, 	//职业
+	
+	hpMax		: -1,	//血量
+	hp			: -1,	//血量
+	mpMax		: -1,	//魔法
+	mp			: -1,	//魔法
+	atknumMax	: -1,	//攻击力上限
+	atknumMin	: -1,   //攻击力下限
+	defnum	: -1,	//防御力
+	strength: -1,	//力量
+	agility : -1,	//敏捷
+	intelligence : -1,	//智力
+	
+	miss		: 0,  //百分数 躲闪的概率
+	burst		: 0,	//百分数 暴击的概率
+	
+	regainHP	: 0,  //回血数量
+	regainMP	: 0,  //回魔数量
+	
+	qHead		: null,	//头部装备
+	qClothes	: null, //衣服
+	qWeapon		: null, //武器
+	qFoot		: null, //脚
+	qAccessory	: null,	//左侧饰品	
+	qAccessory2	: null, //右侧饰品
+	
 	p			: 1,
 	team	: 1,		//所处队伍
 	cell		: null,   //当前所在的位置
 	oriCell : null,   //移动前所在的位置
+	
+	//buff	: {},	//增益buff
+	 //debuff: {},   //损益buff
 	
 	ui		: null,
 	
@@ -42,6 +74,9 @@ var Unit = Observable.extend({
 		this.attacks= {};
 		this.pos = [0,  CELL_HEIGHT ];
 		this.way = [];
+		
+		this.buff = {};
+		this.debuff = {};
 		
 		this._super( config );
 		
