@@ -12,6 +12,7 @@ function	_loadImg( src, fn ){
 var Unit = Observable.extend({
 	loaded	: false,
 	name	: "footman",
+	symbol	: "footman",	//区别角色UI样式
 	moveable:false,    		//是否可以移动
 	type	:-1,			//类型
 	tipable :false,			//是否有提示框
@@ -84,6 +85,13 @@ var Unit = Observable.extend({
 		
 		//获取ImageData
 		this._getImageData( callback );
+		
+		return this;
+	},
+	
+		
+	setUI	: function(){
+		this.ui = UIMgr.get( this.symbol, this );
 		
 		return this;
 	},
