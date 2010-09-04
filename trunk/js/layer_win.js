@@ -22,7 +22,8 @@ var WinLayer = Layer.extend({
 	popMenu			: function( unit, x, y ){
 		if ( !this.menuAction ){
 			this.menuAction = new ActionMenu({
-				ct	: this.el
+				ct	: this.el,
+				unit	: unit
 			});
 		}
 		this.menuAction.showAt( x, y ).show();

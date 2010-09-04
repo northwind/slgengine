@@ -134,6 +134,9 @@ var Unit = Observable.extend({
 
 			_self.fall = [	PS.createImageData( ctx, img, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
 							PS.createImageData( ctx, img, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
+			
+			//清除所绘区域
+			ctx.clearRect( 0,0, this.width, this.height );
 																				
 			done();
 		}
@@ -192,6 +195,7 @@ var Unit = Observable.extend({
 	
 	changeStatus	: function( timestamp ){
 		var diff = timestamp - this.stampStep;
+		//更改角色移动时的图片
 		if ( this.way.length > 0 && diff > STEP) {
 			this.stampStep = timestamp;
 			this.stampStatus = timestamp; 	//角色发生转向后不再需要更新状态
@@ -244,10 +248,18 @@ var Unit = Observable.extend({
 			this.fn = fn;
 			this.scope = scope;
 			this.moving = true;
-		//way.push( this.cell );
-		//way.reverse();
+			//way.push( this.cell );
+			//way.reverse();
 		
 		}
+		return this;
+	},
+	
+	homing		: function(){
+		this.cell = this.oriCell;
+		this.moving = false;
+		this.way = [];
+		
 		return this;
 	},
 	

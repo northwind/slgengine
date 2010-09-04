@@ -57,7 +57,7 @@ var UnitLayer = Layer.extend({
 							
 			//����Ѿ�ѡ��ĳ����Ԫ
 			if( this.clicked ){
-				//��������߷�Χ��
+				//如果可以移动
 				if ( this.clicked.canMove( cell ) ){
 					this.clicked.moveTo( cell, function(){
 						PANEL.popMenu( this.clicked, cell.dx - CELL_WIDTH * 2 , cell.dy - CELL_HEIGHT  );
@@ -68,8 +68,8 @@ var UnitLayer = Layer.extend({
 					//delete this.units[  ]
 				}
 				
-				//����
-				else if ( this.clicked.canAttack( index ) ){
+				//如果可以攻击
+				else if ( this.clicked.canAttack( cell ) ){
 					this.clicked.attack( p.x, p.y );
 					this._removeCells();
 				}				
@@ -93,7 +93,16 @@ var UnitLayer = Layer.extend({
 	_removeCells			: function(){
 		PANEL.cellLayer.paintCells( this.moveColor, {} );
 		PANEL.cellLayer.strokeCells( this.attaColor, {} );
+		//delete this.clicked;
+	},
+	
+	//使已选角色回到移动之前并删除已选角色
+	unClick	: function(){
+		if ( this.clicked )
+			this.clicked.homing();
+			
 		delete this.clicked;
+		return this;
 	},
 
 	getAttackCells	: function( cell,	range, type,team ){
@@ -162,7 +171,7 @@ var UnitLayer = Layer.extend({
 		function prepare( x,y,parent ){
 			var key = PANEL.getIndex( x, y ), unit = units[ key ], child =  PANEL.getCell( x, y );
 			//判断是否可以行走/是否已经计算过/如果有单位在单元格上判断是否可以叠加
-			if ( child && !open[key] && !closed[key] && MAP[y][x] ==0 && (unit ? unit.overlay : true  ) ) {
+			if ( child && !open[key] && !closed[key] && MAP[y] && MAP[y][x] ==0 && (unit ? unit.overlay : true  ) ) {
 				child.parent = parent;
 				open[key] = child;
 			}	
@@ -199,8 +208,7 @@ var UnitLayer = Layer.extend({
 	},
 			
 	onContextmenu	: function( e ){
-			delete this.clicked;	
-			PANEL.cellLayer.clear();
+			this._removeCells();
 	},	
 	
 	showAt				: function( unit, x, y ){

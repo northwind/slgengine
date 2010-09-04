@@ -13,6 +13,10 @@ var Panel = Component.extend({
 	scrollLeft : 0,
 	scrollTop : 0,
 	
+	cellLayer	: null,    //zIndex : 100
+	unitsLayer : null, //zIndex : 200
+	winLayer : null,   //zIndex : 300
+	
 	init		: function( config ){
 		PANEL = this;
 		
@@ -36,9 +40,8 @@ var Panel = Component.extend({
 				if ( this.setCapture )
 					this.setCapture();
 			}		
-		} );
-		
-		this.el.mousemove( function( e ){
+		} )
+		.mousemove( function( e ){
 			if ( drag && e.which == 1 ) {
 				if (x != e.pageX) 
 					el.scrollLeft = (this.scrollLeft -= e.pageX - x);
@@ -51,20 +54,26 @@ var Panel = Component.extend({
 			}
 			
 			_self.fireEvent( "mousemove", e, _self );			
-		} );
+		} )
+		.click( function( e ){
+			_self.fireEvent( "click", e );	
+		} )
+		.bind("contextmenu",function( e ){
+				e.preventDefault();
+				e.stopPropagation();
+				_self.fireEvent("contextmenu", e);			
+		});	
 		
 		//��Ҫ����document
 		$(document).mouseup( function( e ){
 			if (e.which == 1) {
 				drag = false;
-				//֧��IE
+				//拖拽兼容IE
 				if (this.releaseCapture) 
 					this.releaseCapture();
 			}
-		} );
-		
-		this.el.click( function( e ){
-			_self.fireEvent( "click", e );	
+		} ).keydown( function( e ){
+			_self.fireEvent( "keydown", e );	
 		} );
 		
 		//触发器
@@ -72,12 +81,6 @@ var Panel = Component.extend({
 			if ( !_self.suspend )
 				_self.fireEvent( "update", (new Date()).getTime() );			
 		} , 10);
-		
-		this.el.bind("contextmenu",function( e ){
-				e.preventDefault();
-				e.stopPropagation();
-				_self.fireEvent("contextmenu", e);			
-		});	
 		
 		return this;		
 	},
