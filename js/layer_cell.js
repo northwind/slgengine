@@ -36,12 +36,20 @@ var CellLayer = Layer.extend({
 	
 	x	: -1,
 	y	: -1,	
+	
+	//获得当前鼠标经过的CELL
 	activeCell	: function(x, y){
 		var o = PANEL.getPoints( x, y );
 		
 		this.x = o.x;
 		this.y = o.y;
 		
+		return this;
+	},
+	
+	//不再显示鼠标滑过时的效果
+	unactiveCell	: function(){
+		this.x = this.y = -1;
 		return this;
 	},
 	

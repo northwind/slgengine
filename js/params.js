@@ -22,15 +22,15 @@ STEP	= 30 ,	//调节多长时间走一格
 
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
-	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, urlImg : "images/move/110-1.bmp", range : 1, rangeType : 1,
+	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, urlImg : "images/move/110-1.png", range : 1, rangeType : 1,
 	imgMove	: "",
 	imgAtk	: "",
 	imgSpc	: "",
 	imgFace	: ""
 },{
-	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.bmp", range : 2, rangeType : 2
+	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2
 },{
-	gx :  19,  gy : 5,  step: 9, type : 101, moveable : true, overlay : false, urlImg : "images/move/26-1.bmp", range : 2, rangeType : 2
+	gx :  19,  gy : 5,  step: 9, type : 101, moveable : true, overlay : false, urlImg : "images/move/26-1.png", range : 2, rangeType : 2
 }],
 
 /*

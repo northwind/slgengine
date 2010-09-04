@@ -15,7 +15,7 @@ $(function(){
 */
 	
 	PANEL.setBgColor("#008000")
-		.setBgImage( "images/bigmap/1-1.bmp" )
+		.setBgImage( "images/bigmap/1-1.png" )
 		.moveTo( 100, 200 )
 		.setUnits( UNITS )
 		//.showUnit( p, 5, 5 )
