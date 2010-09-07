@@ -22,7 +22,7 @@ var Panel = Component.extend({
 		
 		this.ct = $( config.ct || document.body );
 		this._super( config );
-		this.addEvents("click","mousemove","contextmenu","keydown", "update");
+		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update");
 		
 		LayerMgr.setWrap( this.el );
 		this._createCellLayer();
@@ -74,6 +74,8 @@ var Panel = Component.extend({
 			}
 		} ).keydown( function( e ){
 			_self.fireEvent( "keydown", e );	
+		} ).keyup( function( e ){
+			_self.fireEvent( "keyup", e );	
 		} );
 		
 		//触发器
@@ -82,9 +84,16 @@ var Panel = Component.extend({
 				_self.fireEvent( "update", (new Date()).getTime() );			
 		} , 10);
 		
+		this.on( "keydown", this.onKeydown, this );
+		
+		
 		return this;		
 	},
-	
+
+	onKeydown	: function( e ){
+
+	},	
+		
 	//������Ԫ��LAYER
 	_createCellLayer	: function(){
 		if ( this.cellLayer )

@@ -160,12 +160,45 @@ var UnitUI = Observable.extend({
 		ctx.putImageData( img, dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
 		
 		//绘制血条等主要信息
-		if ( unit.major ){
-					
-			var y = dy - 14;
-			y = y < 0 ?  dy + 14 : y;
-			ctx.fillRect( dx, y, CELL_WIDTH, 8 );
+		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
+		
+			var y = dy - 9;
+			y = y < 0 ? 1 : y;
+			//血条黑色背景
+			ctx.fillRect(dx, y, CELL_WIDTH, HPHEIGHT);
+			//血条
+			var colors = HPCLR[Math.min(4, parseInt(unit.hpPercent / 20))];
+			var lingrad = ctx.createLinearGradient(dx, y + 1, dx, y + HPHEIGHT - 1);
+			lingrad.addColorStop(0, colors[0]);
+			lingrad.addColorStop(0.5, colors[1]);
+			lingrad.addColorStop(1, colors[0]);
 			
+			ctx.fillStyle = lingrad;
+			ctx.fillRect(dx, y + 1, CELL_WIDTH * unit.hpPercent / 100, HPHEIGHT - 2);
+		}
+		//绘制血条等主要信息
+		if ( unit.major ){	
+			//主要信息
+			//边框
+			var off = 5, h = 30;
+			if ( dy - 9 < 0 )
+				y += h + CELL_HEIGHT + 5;			
+			ctx.lineJoin = "round";
+			ctx.miterLimit = 15;
+			ctx.lineWidth = 2;
+			ctx.strokeStyle = MAJOR[ 0 ];
+			ctx.strokeRect(  dx - off,  y - 30 - 3, CELL_WIDTH + off * 2 ,  h  );
+			ctx.fillStyle = MAJOR[1];
+			ctx.fillRect(  dx - off,  y - 30 - off + 2, CELL_WIDTH + off * 2 ,  h - 2  );
+			
+			//名称
+			ctx.lineWidth = 1;
+			ctx.font = "10px 宋体";
+			ctx.strokeStyle = "#e5e6e9";
+			ctx.strokeText( unit.name,  dx,  y - 20 );
+			
+			//级别
+			ctx.strokeText( "级别　" + unit.level,  dx,  y - 8 );   			
 		}
 		
 		ctx.restore();

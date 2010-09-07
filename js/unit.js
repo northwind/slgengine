@@ -2,7 +2,7 @@
  * @author Norris
  */
 var Unit = Observable.extend({
-	name	: "footman",
+	name	: "步兵",
 	symbol	: "footman",	//区别角色UI样式
 	moveable:false,    		//是否可以移动
 	type	:-1,			//类型
@@ -26,6 +26,7 @@ var Unit = Observable.extend({
 	
 	hpMax		: -1,	//血量
 	hp			: -1,	//血量
+	hpPercent   :   100, 	//血量百分比
 	mpMax		: -1,	//魔法
 	mp			: -1,	//魔法
 	atknumMax	: -1,	//攻击力上限
@@ -55,6 +56,8 @@ var Unit = Observable.extend({
 	ortDirect : "down", //移动前方向
 	
 	major	: false,		//是否显示简要信息
+	hpLine : false,    //是否显示血条
+	hpLineForce : false, //是否一定显示
 	
 	//buff	: {},	//增益buff
 	 //debuff: {},   //损益buff
@@ -63,6 +66,7 @@ var Unit = Observable.extend({
 	
 	w		: CELL_WIDTH,
 	h		: CELL_HEIGHT,
+	
 	
 	init	: function( config, callback ){
 		this.moves	= {};
@@ -109,11 +113,13 @@ var Unit = Observable.extend({
 	
 	showMajor	: function(){
 		this.major = true;
+		this.hpLine = true;
 		return this;
 	},
 	
 	hideMajor	: function(){
 		this.major = false;
+		this.hpLine = false;
 		return this;
 	},	
 	

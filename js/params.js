@@ -23,14 +23,49 @@ STEP	= 60 ,	//调节走路速度
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
 	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, urlImg : "images/move/110-1.png", range : 1, rangeType : 1,
-	symbol	: "caocao",
+	symbol	: "caocao", hpPercent : 80, name : "曹操",
 	imgMove	:"images/move/110-1.png",
 	imgAtk	: "images/atk/110-1.png",
 	imgSpc	: "images/spc/110-1.png",
 	imgFace	: "images/face/1-1.png"
 },{
+	gx :  10,  gy : 7,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
+	symbol	: "footman",  hpPercent : 60,
+	imgMove	:"images/move/1-1.png",
+	imgAtk	: "images/atk/1-1.png",
+	imgSpc	: "images/spc/1-1.png",
+	imgFace	: "images/face/23-1.png"	
+},{
+	gx :  10,  gy : 0,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
+	symbol	: "footman",  hpPercent : 60,
+	imgMove	:"images/move/1-1.png",
+	imgAtk	: "images/atk/1-1.png",
+	imgSpc	: "images/spc/1-1.png",
+	imgFace	: "images/face/23-1.png"	
+},{
+	gx :  11,  gy : 4,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
+	symbol	: "footman",  hpPercent : 40,
+	imgMove	:"images/move/1-1.png",
+	imgAtk	: "images/atk/1-1.png",
+	imgSpc	: "images/spc/1-1.png",
+	imgFace	: "images/face/23-1.png"	
+},{
+	gx :  11,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
+	symbol	: "footman",  hpPercent : 20,
+	imgMove	:"images/move/1-1.png",
+	imgAtk	: "images/atk/1-1.png",
+	imgSpc	: "images/spc/1-1.png",
+	imgFace	: "images/face/23-1.png"	
+},{
 	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman",
+	symbol	: "footman",  hpPercent : 5,
+	imgMove	:"images/move/1-1.png",
+	imgAtk	: "images/atk/1-1.png",
+	imgSpc	: "images/spc/1-1.png",
+	imgFace	: "images/face/23-1.png"	
+},{
+	gx :  0,  gy : 19,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
+	symbol	: "footman",  hpPercent : 60,
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
@@ -73,6 +108,16 @@ MAP	= 	[
 			[ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ],
 			[ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ],
 			[ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ]
-		];  
+		],
+		//血条的高度
+		HPHEIGHT = 7,
+		//血条颜色展示 共五档，每档用两个色值
+HPCLR	= [ ["#3f3e3e", "#272727"] ,  ["#7a2200", "#8d2b00"] ,  ["#7a7100", "#978c00"] ,
+					  ["#297a00", "#329700"] ,  ["#007a00", "#009700"]      ],
+		//主要信息颜色 边框、背景
+		MAJOR = [  "#fdc92b", "rgba(31,41,61,0.4)" ],
+		//单元格颜色信息
+		CELLCOLOR = [ "rgba(255,255,255,0.6)"  ]			  
+		;  
 		
 		
