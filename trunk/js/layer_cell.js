@@ -123,7 +123,7 @@ var CellLayer = Layer.extend({
 			ctx.shadowColor = "rgba(0, 0, 0, 0.5)";  
 */
 				
-			ctx.strokeStyle = "#ffffff";
+			ctx.strokeStyle = CELLCOLOR[0];
 			ctx.strokeRect( this.x * CELL_WIDTH + half , this.y * CELL_HEIGHT + half, CELL_WIDTH - w, CELL_HEIGHT -w );
 			ctx.restore();
 		}

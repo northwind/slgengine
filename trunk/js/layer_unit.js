@@ -14,6 +14,8 @@ var UnitLayer = Layer.extend({
 	overed	 : null,  //滑过的
 	moveColor	: "rgba(39,167,216,0.7)", 
 	attaColor		: "rgba(255,0,0,1)", 
+
+	hpLineForce : false,	//是否强制显示血条
 	
 	init	: function(){
 		this._super( arguments[0] );
@@ -25,6 +27,8 @@ var UnitLayer = Layer.extend({
 		PANEL.on("click", this.onClick, this);
 		PANEL.on("contextmenu", this.onContextmenu, this);
 		PANEL.on("mousemove", this.onMousemove, this);
+		PANEL.on("keydown", this.onKeydown, this);
+		PANEL.on("keyup", this.onKeyup, this);
 				
 		return this;
 	},
@@ -58,6 +62,20 @@ var UnitLayer = Layer.extend({
 			}
 		}		
 	},
+	
+	onKeydown	: function( e ){
+		//按ALT时
+		//alert( e.which )
+		if ( e.which == 18 )
+			this.hpLineForce = true;		
+	},	
+	
+	onKeyup	: function( e ){
+		//按ALT时
+		//alert( e.which )
+		if ( e.which == 18 )
+			this.hpLineForce = false;		
+	},		
 	
 	onMousemove	: function( e ){
 		var  cell = PANEL.getCell( e );
