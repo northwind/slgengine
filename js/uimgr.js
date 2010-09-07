@@ -10,11 +10,11 @@ var UIMgr = function( config ){
 UIMgr.prototype = {
 	items	: {},
 	
-	get		: function( key, unit ){
+	get		: function( key, config ){
 		if ( this.items[ key ] )
 			return this.items[ key ];
 		else{
-			var ui = this.create( unit );
+			var ui = this.create( config );
 			this.items[ key ] = ui;
 			return ui;
 		}
@@ -25,8 +25,8 @@ UIMgr.prototype = {
 		return this;
 	},
 	
-	create	: function( unit ){
-		return new UnitUI( { unit : unit } );
+	create	: function( config ){
+		return new UnitUI( config );
 	} 
 	
 };

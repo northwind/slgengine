@@ -39,7 +39,7 @@ PS.prototype = {
 	},
 	
 	// 生成ImageData
-	 createImageData	: function( ctx, ori, from, w, h ){
+	createImageData	: function( ctx, ori, from, w, h ){
 			var	ret = ctx.createImageData( w, h );
 			var total = w * h * 4;
 			from = from * w * 4;

@@ -1,16 +1,7 @@
 /**
  * @author Norris
  */
-
-	//载入image
-function	_loadImg( src, fn ){
-	var img = new Image();
-	img.onload = fn;
-	img.src = src;
-}
-
 var Unit = Observable.extend({
-	loaded	: false,
 	name	: "footman",
 	symbol	: "footman",	//区别角色UI样式
 	moveable:false,    		//是否可以移动
@@ -61,6 +52,9 @@ var Unit = Observable.extend({
 	team	: 1,		//所处队伍
 	cell		: null,   //当前所在的位置
 	oriCell : null,   //移动前所在的位置
+	ortDirect : "down", //移动前方向
+	
+	major	: false,		//是否显示简要信息
 	
 	//buff	: {},	//增益buff
 	 //debuff: {},   //损益buff
@@ -73,7 +67,6 @@ var Unit = Observable.extend({
 	init	: function( config, callback ){
 		this.moves	= {};
 		this.attacks= {};
-		this.pos = [0,  CELL_HEIGHT ];
 		this.way = [];
 		
 		this.buff = {};
@@ -82,9 +75,9 @@ var Unit = Observable.extend({
 		this._super( config );
 		
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
+		this.direct = this.ortDirect = "down";
 		
-		//获取ImageData
-		this._getImageData( callback );
+		this.setUI();
 		
 		return this;
 	},
@@ -96,102 +89,33 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
-	_getImageData	: function( callback ){
-		var _self = this, 
-				loaded = 0,
-				ctx = this.ctx;
-		
-		function done(){
-			if (loaded++ >= 0) {
-				_self.loaded = true;
-				callback();
-			}
-		}
-		
-		//移动		
-		var fn	= function(){
-			ctx.drawImage( this, 0, 0  );
-			var img = ctx.getImageData( 0,0,  this.width, this.height);
-			
-			//生成上下左右ImageData 
-			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
-			_self.down = [
-							PS.createImageData( ctx, img, CELL_HEIGHT*6, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.createImageData( ctx, img, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.up = [ PS.createImageData( ctx, img, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
-							PS.createImageData( ctx, img, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT *3, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.left = [PS.createImageData( ctx, img, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.createImageData( ctx, img, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.right = [PS.createImageDataTurn( ctx, img, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.createImageDataTurn( ctx, img, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageDataTurn( ctx, img, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
-
-			_self.fall = [	PS.createImageData( ctx, img, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
-			
-			//清除所绘区域
-			ctx.clearRect( 0,0, this.width, this.height );
-																				
-			done();
-		}
-		_loadImg( this.urlImg, fn );	
-	},
-	
 	//绘制图像
 	//继承者需要覆盖次方法
-	//TODO 放到params中，做为可配全局变量
 	draw	: function( timestamp ){
-		if ( !this.loaded )
-			return false;
-		
 		this.changeStatus( timestamp );
-		
-		var ctx = this.ctx;
-		var y = this.pos[ this.p ],
-			 dx = this.cell.dx, dy = this.cell.dy;
-		//TODO 图像反转
-		ctx.save();
-		
-		//this.up = PS.gray( ctx, this.up );
-		
-			ctx.putImageData( this.right[0], dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
-/*
-		if (this.img) {
-			ctx.drawImage( this.img, 0, y, CELL_WIDTH, CELL_HEIGHT ,
-										dx, dy,  CELL_WIDTH, CELL_HEIGHT);
-		}else if ( this.urlImg ){
-				var img = new Image();
-				var _self = this;
-				img.onload = function(){
-					_self.img = img;
-					ctx.drawImage( this, 0, y,  CELL_WIDTH, CELL_HEIGHT,
-												dx, dy,  CELL_WIDTH, CELL_HEIGHT );
-				};
-				img.src = this.urlImg;
-		}	
-*/
-		
-		ctx.restore();
+		this.ui.draw( this );
 		
 		//移动过后回调
 		if ( this.moving && this.way == 0){
-			this.moving = false;
+			//this.moving = false;
 			
 			if (this.fn) {
 				this.fn.call( this.scope || this, this );
 				delete this.fn;
 				delete this.scope;
 			}
-		} 
-		
-		return;	
+		}		
 	},
+	
+	showMajor	: function(){
+		this.major = true;
+		return this;
+	},
+	
+	hideMajor	: function(){
+		this.major = false;
+		return this;
+	},	
 	
 	changeStatus	: function( timestamp ){
 		var diff = timestamp - this.stampStep;
@@ -204,32 +128,32 @@ var Unit = Observable.extend({
 				  direct = this.cell.direct( cell );
 			switch( direct ) {
 				case 3: //下
-					this.pos = [ CELL_HEIGHT * 0, CELL_HEIGHT * 1 ];
+					this.direct = "down";
 					break;	
 				case -3://上
-					this.pos = [ CELL_HEIGHT * 2, CELL_HEIGHT * 3 ];
+					this.direct = "up";
 					break;
 				case -1://左
-					this.pos = [ CELL_HEIGHT * 4, CELL_HEIGHT * 5 ];
+					this.direct = "left";
 					break;
 				case 1://右
-					this.pos = [ CELL_HEIGHT * 4, CELL_HEIGHT * 5 ];
+					this.direct = "right";
 					break;
 			}
 
-			this.p = 0;
+			//this.p = 0;
 			this.cell = cell;
 		}
 		
 		if( timestamp - this.stampStatus > SPEED ){
 			this.stampStatus = timestamp;
-			this.p = this.p == 1 ? 0 : 1;
+			this.p = this.p == 2 ? 1 : 2;
 		}
 		
 	},
 	
 	canMove	: function( cell ){
-		return this.moves && this.moves[ cell.index ];
+		return !this.moving && this.moves && this.moves[ cell.index ];
 	},
 	
 	canAttack	: function( cell ){
@@ -238,6 +162,10 @@ var Unit = Observable.extend({
 	
 	moveTo		: function( cell, fn, scope ){
 		if (!this.moving) {
+			this.moving = true;
+			
+			this.oriCell = this.cell;
+			this.oriDirect = this.direct;
 			//寻路
 			var way = [];
 			while (cell.parent && cell != this.cell) {
@@ -247,7 +175,6 @@ var Unit = Observable.extend({
 			this.way = way;
 			this.fn = fn;
 			this.scope = scope;
-			this.moving = true;
 			//way.push( this.cell );
 			//way.reverse();
 		
@@ -257,6 +184,7 @@ var Unit = Observable.extend({
 	
 	homing		: function(){
 		this.cell = this.oriCell;
+		this.direct = this.oriDirect;
 		this.moving = false;
 		this.way = [];
 		
