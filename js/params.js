@@ -17,7 +17,7 @@ PANEL = null,
 WINDOW_WIDTH = 960,
 WINDOW_HEIGHT= 480,
 
-SPEED	= 300,	//调节unit切换图片的速度
+SPEED	= 340,	//调节unit切换图片的速度
 STEP	= 60 ,	//调节走路速度
 
 //UNIT集合，配置项参考UNIT类

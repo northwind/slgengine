@@ -152,6 +152,10 @@ var UnitUI = Observable.extend({
 			 dx = cell.dx, dy = cell.dy;
 		
 		ctx.save();
+		
+		//ctx.globalCompositeOperation = "source-over";
+		//ctx.globalCompositeOperation = "xor";
+		
 		//绘制图像
 		ctx.putImageData( img, dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
 		
