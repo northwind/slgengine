@@ -2,8 +2,16 @@
  * @author Norris
  */
 
+//判断是否为空
+ function _isEmpty( obj ){
+	for( var i in obj )
+		return false;
+	return true;	
+}
+
 var UnitLayer = Layer.extend({
-	clicked : null,
+	clicked : null,	//已点击
+	overed	 : null,  //滑过的
 	moveColor	: "rgba(39,167,216,0.7)", 
 	attaColor		: "rgba(255,0,0,1)", 
 	
@@ -13,11 +21,10 @@ var UnitLayer = Layer.extend({
 
 		//定时更新
 		PANEL.on("update", this.update, this );
-		
 		//点击画布
 		PANEL.on("click", this.onClick, this);
-		
 		PANEL.on("contextmenu", this.onContextmenu, this);
+		PANEL.on("mousemove", this.onMousemove, this);
 				
 		return this;
 	},
@@ -52,6 +59,19 @@ var UnitLayer = Layer.extend({
 		}		
 	},
 	
+	onMousemove	: function( e ){
+		var  cell = PANEL.getCell( e );
+		var unit = this.units[ cell.index ];
+		//已经存在则隐藏
+		if (this.overed && unit != this.overed) {
+			this.overed.hideMajor();
+			delete this.overed;
+		}
+		if ( unit && this.overed != unit ){
+			this.overed = unit.showMajor();
+		}
+	},
+	
 	onClick	: function( e ){
 			var  cell = PANEL.getCell( e );
 							
@@ -70,7 +90,7 @@ var UnitLayer = Layer.extend({
 				
 				//如果可以攻击
 				else if ( this.clicked.canAttack( cell ) ){
-					this.clicked.attack( p.x, p.y );
+					this.clicked.attack( cell );
 					this._removeCells();
 				}				
 			}
@@ -177,7 +197,7 @@ var UnitLayer = Layer.extend({
 			}	
 		}
 			
-		while( !this._isEmpty( open ) && step-- >0 ){
+		while( !_isEmpty( open ) && step-- >0 ){
 			for (var key in open ) {
 				node = open[ key ];
 				//添加到已处理过的closed表
@@ -199,12 +219,6 @@ var UnitLayer = Layer.extend({
 		}
 		
 		return closed;
-	},
-
-	_isEmpty : function( obj ){
-		for( var i in obj )
-			return false;
-		return true;	
 	},
 			
 	onContextmenu	: function( e ){
