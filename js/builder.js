@@ -3,7 +3,13 @@
  */
 
 $(function(){
- 	//��ʼ��PANEL
+ 	//不支持IE
+	if ( $.browser.msie ){
+		$("#download").show();
+		
+		return false;
+	}
+	
 	PANEL = new Panel( {
 		ct : $("#container")
 	} );
@@ -12,8 +18,8 @@ $(function(){
 		.setBgImage( "images/bigmap/1-1.jpg" )
 		.setUnits( UNITS );
 	
-	
 	//控制区域
+	$("#control").show();
 	$("#grid").toggle( function(){
 		PANEL.showGrid();
 	}, function(){
