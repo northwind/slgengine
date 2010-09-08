@@ -79,10 +79,11 @@ var Panel = Component.extend({
 		} );
 		
 		//触发器
+		//this.timer = setInterval( function(){
 		this.timer = setInterval( function(){
 			if ( !_self.suspend )
 				_self.fireEvent( "update", (new Date()).getTime() );			
-		} , 10);
+		} , 0);
 		
 		this.on( "keydown", this.onKeydown, this );
 		
@@ -183,11 +184,17 @@ var Panel = Component.extend({
 	},
 	
 	showUnit			: function( unit, x, y ){
-		this.unitsLayer.showAt( unit, x, y );
+		x = parseInt( x == undefined ? unit.gx : x );
+		y = parseInt( y == undefined ? unit.gy : y );
+		this.unitsLayer.showAt( unit,x,y );
 		
 		return this;
 	},
-	
+	delUnit			: function( id ){
+		this.unitsLayer.delUnit( id );
+		
+		return this;		
+	},
 	getIndex		: function( x, y ){
 		return x * CELL_YNUM + y;
 	},

@@ -22,7 +22,7 @@ var UnitUI = Observable.extend({
 		this._super();
 		
 		this._getImageData( function(){
-			console.debug( "_getImageData donw" );
+			//console.debug( "_getImageData donw" );
 		} );
 		
 		return this;
@@ -179,7 +179,8 @@ var UnitUI = Observable.extend({
 		//绘制血条等主要信息
 		if ( unit.major ){	
 			//主要信息
-			//边框
+			//边框 
+			//TODO 根据队伍区分边框颜色
 			var off = 5, h = 30;
 			if ( dy - 9 < 0 )
 				y += h + CELL_HEIGHT + 5;			

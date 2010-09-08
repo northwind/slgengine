@@ -244,17 +244,29 @@ var UnitLayer = Layer.extend({
 	},	
 	
 	showAt				: function( unit, x, y ){
+		unit.gx = x;
+		unit.gy = y;
+		
 		if ( unit.constructor != Unit )
 			unit = this._initUnit( unit );
 		else
 			unit.ctx =  this.ctx;
 		
-		unit.gx = x;
-		unit.gy = y;
-		
 		this.units[ PANEL.getIndex( x, y ) ] = unit; 
 		
 		return this;
+	},
+	
+	delUnit		: function( id ){
+		if ( this.units ){
+			for( var key in this.units ){
+				if (this.units[key].id == id) {
+					delete this.units[key];
+					break;
+				}
+			}
+		}
+		return this;		
 	},
 	
 	_initUnit	: function( config, callback ){
