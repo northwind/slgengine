@@ -10,12 +10,16 @@ var UIMgr = function( config ){
 UIMgr.prototype = {
 	items	: {},
 	
-	get		: function( key, config ){
-		if ( this.items[ key ] )
-			return this.items[ key ];
-		else{
-			var ui = this.create( config );
-			this.items[ key ] = ui;
+	get		: function( key, config, callback ){
+		var item = this.items[key];
+		if ( item ) {
+			if ( callback )
+				callback( item );
+			return item;
+		}
+		else {
+			var ui = this.create(config, callback);
+			this.items[key] = ui;
 			return ui;
 		}
 	},
@@ -25,8 +29,8 @@ UIMgr.prototype = {
 		return this;
 	},
 	
-	create	: function( config ){
-		return new UnitUI( config );
+	create	: function( config, callback ){
+		return new UnitUI( config, callback );
 	} 
 	
 };

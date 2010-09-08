@@ -81,14 +81,15 @@ var Unit = Observable.extend({
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		this.direct = this.ortDirect = "down";
 		
-		this.setUI();
+		this.callback = callback || function(){};
+		this.setUI( callback );
 		
 		return this;
 	},
 	
 		
-	setUI	: function(){
-		this.ui = UIMgr.get( this.symbol, this );
+	setUI	: function( callback ){
+		this.ui = UIMgr.get( this.symbol, this, callback );
 		
 		return this;
 	},

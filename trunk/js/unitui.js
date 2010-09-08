@@ -21,9 +21,7 @@ var UnitUI = Observable.extend({
 		
 		this._super();
 		
-		this._getImageData( function(){
-			//console.debug( "_getImageData donw" );
-		} );
+		this._getImageData( callback );
 		
 		return this;
 	},
@@ -38,7 +36,7 @@ var UnitUI = Observable.extend({
 		function done(){
 			if (loaded++ >= 3) {
 				_self.loaded = true;
-				callback();
+				callback( _self );
 			}
 		}
 		

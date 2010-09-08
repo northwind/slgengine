@@ -24,6 +24,7 @@ var Layer = Component.extend({
 		return this;
   	},
 		
+/*
 	show	: function(){
 		if (this.hidden) {
 			for (var i = 0; i < this.objects.length; i++) {
@@ -45,6 +46,12 @@ var Layer = Component.extend({
 		}
 		return this;
 	},		
+*/
+	
+	clear	: function(){
+		if ( this.ctx )
+			this.ctx.clearRect( 0,0, this.w, this.h );
+	},
 	
 	destroy	: function(){
 		//销毁这层上的所有单元

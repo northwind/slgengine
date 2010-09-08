@@ -19,6 +19,7 @@ var UnitLayer = Layer.extend({
 	
 	init	: function(){
 		this._super( arguments[0] );
+		this.hide();
 		this.units = {};
 
 		//定时更新
@@ -35,10 +36,15 @@ var UnitLayer = Layer.extend({
 	
 	setData : function( data, fn, scope ){
 		this.data = data;
-		var count = 0, sum = data.length;
+		var count = 1, sum = data.length, _self = this;
 		var callback = function(){
-			if ( count++ >= sum && fn ){
-				fn.call( scope || this );
+			//console.debug( "callback" );
+			if ( count++ >= sum ){
+				_self.clear();
+				_self.show();
+				
+				if ( fn )
+					fn.call( scope || _self );
 			}
 		};
 		for (var i = 0; i < this.data.length; i++) {
