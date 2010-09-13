@@ -12,8 +12,8 @@
 var UnitLayer = Layer.extend({
 	clicked : null,	//已点击
 	overed	 : null,  //滑过的
-	moveColor	: "rgba(39,167,216,0.7)", 
-	attaColor		: "rgba(255,0,0,1)", 
+	moveColor	: "rgba(39,167,216,0.6)", 
+	attaColor		: "rgba(255,0,0,0.5)", 
 
 	hpLineForce : false,	//是否强制显示血条
 	
@@ -100,42 +100,48 @@ var UnitLayer = Layer.extend({
 			var  cell = PANEL.getCell( e );
 							
 			//����Ѿ�ѡ��ĳ����Ԫ
-			if( this.clicked ){
-				//如果可以移动
-				if ( this.clicked.canMove( cell ) ){
-					this.clicked.moveTo( cell, function(){
-						PANEL.popMenu( this.clicked, cell.dx - CELL_WIDTH * 2 , cell.dy - CELL_HEIGHT  );
-					}, this );
+			if (this.clicked) {
+				//如果可以攻击
+				if (this.clicked.canAttack(cell)) {
+					this.clicked.attack(cell, function(){
+						
+					}, this);
 					this._removeCells();
+					
+					delete this.clicked;
+				}
+				else 
+					//如果可以移动
+					if (this.clicked.canMove(cell)) {
+						this.clicked.moveTo(cell, function(){
+							PANEL.popMenu(this.clicked, cell.dx - CELL_WIDTH * 2, cell.dy - CELL_HEIGHT);
+						}, this);
+						this._removeCells();
 					//重新设置unit的index
 					
 					//delete this.units[  ]
-				}
-				
-				//如果可以攻击
-				else if ( this.clicked.canAttack( cell ) ){
-					this.clicked.attack( cell );
-					this._removeCells();
-				}				
+					}
 			}
-			
-			var unit = this.units[ cell.index ];
-			if ( unit && unit != this.clicked ){
-				//获得可移动格子
-				var  obj = this.getWalkCells( cell, unit.step );
-				PANEL.cellLayer.paintCells( this.moveColor, obj );
-				unit.moves = obj;
-				//获得可攻击的格子
-				obj = this.getAttackCells( cell, unit.range, unit.rangeType, unit.team );
-				PANEL.cellLayer.strokeCells( this.attaColor, obj );
-				unit.attacks = obj;
-				
-				this.clicked = unit;
-			}		
+			else {
+				var unit = this.units[cell.index];
+				if (unit && unit != this.clicked) {
+					//获得可移动格子
+					var obj = this.getWalkCells(cell, unit.step);
+					PANEL.cellLayer.paintCells(this.moveColor, obj);
+					unit.moves = obj;
+					//获得可攻击的格子
+					//obj = this.getAttackCells( cell, unit.range, unit.rangeType, unit.team );
+					//PANEL.cellLayer.strokeCells( this.attaColor, obj );
+					//unit.attacks = obj;
+					
+					this.clicked = unit;
+				}
+			}
 	},
 	
 	_removeCells			: function(){
 		PANEL.cellLayer.paintCells( this.moveColor, {} );
+		PANEL.cellLayer.paintCells( this.attaColor, {} );
 		PANEL.cellLayer.strokeCells( this.attaColor, {} );
 		//delete this.clicked;
 	},
@@ -277,6 +283,7 @@ var UnitLayer = Layer.extend({
 	
 	_initUnit	: function( config, callback ){
 		config.ctx = this.ctx;
+		config.layer = this;
 		
 		return new Unit(config, callback );
 	}

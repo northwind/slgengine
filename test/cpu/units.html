@@ -12,25 +12,33 @@
 		$( function(){
 			
 			var img = new Image();
-			img.src = "footman.png";
+			img.src = "big.png";
 			
-			var w = h = 15;
-			var n = w * h; //100			
+			var w = h = 50;
+			var n = 100; //100			
 			var inter = 20;
+			t = 48;
 			
 			var ct = $("#ct");
 			var ctx = $("<canvas>").attr( {
-						width	: h * w,
-						height	: w * h
+						width	: t * w,
+						height	: t * h
 					} ).css( "zIndex", 1 ).appendTo( ct )[ 0 ].getContext("2d");
+			
+			var data = ctx.getImageData( 0,0, t* w, h* t );
 			
 			setInterval( function(){
 				
+				//ctx.putImageData( data, 0,0, w *t, h*t );
+				//ctx.clearRect( 0, 0, t*w, t*h );
+				ctx.clearRect( 0, 0, 800, 600 );
+				
 				for (var i=0; i< n; i++) {
-					var x = (i % w) * w, y = parseInt(i/ w) * h;
+					var x = (i % w) * t, y = parseInt(i/ w) * t;
 					
 					//ctx.drawImage( img, x, y, w, h );
-					ctx.drawImage( img, 0, 0, w, h, x, y, w, h );
+					//ctx.clearRect(  x, y, t, t  );
+					ctx.drawImage( img, 0, 0, t, t, x, y, t, t );
 				}
 				
 				
@@ -55,6 +63,10 @@
 	<p>
 		n = 15, i =20, cpu = 28%
 		图片的大小对于CPU影响不大
+		<br/>
+		n = 10, i =200, w=h =48, cpu = 5%
+		<br/>
+		n = 10, i =20, n =100, w=h =48, cpu = 5%
 	</p>	
 </body> 
 <script></script>
