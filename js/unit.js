@@ -80,6 +80,8 @@ var Unit = Observable.extend({
 		
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		this.direct = this.ortDirect = "down";
+		//增加角色事件
+		this.addEvents( "dead","attack","move","speak","defend","show","standby" );
 		
 		this.callback = callback || function(){};
 		this.setUI( callback );

@@ -1,4 +1,11 @@
 
+/*
+ * 观察者设计模式
+ * 所有对象具有事件响应的能力
+ * 
+ * one : 只执行一次
+*/
+
 var Event = function(obj, name){
     this.name = name;
     this.obj = obj;
@@ -58,7 +65,7 @@ Event.prototype = {
     },
 
     fire : function(){
-        var ls = this.listeners, scope, len = ls.length;
+        var ls = this.listeners.slice(0), scope, len = ls.length;
         if(len > 0){
             this.firing = true;
             var args = Array.prototype.slice.call(arguments, 0);
@@ -68,6 +75,10 @@ Event.prototype = {
                     this.firing = false;
                     return false;
                 }
+				//删除单次执行
+				if ( l.options.one ){
+		            this.listeners.splice(i, 1);
+				}
             }
             this.firing = false;
         }
