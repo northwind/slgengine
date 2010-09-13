@@ -1,0 +1,73 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<meta charset="utf-8"> 
+	<title>ImageDatas</title> 
+	<style>
+		canvas{ position:absolute; }
+		p{ position:absolute; bottom:0px; }
+	</style>
+	<script src="../../lib/jquery/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script> 
+	<script> 
+		$( function(){
+			
+			var img = new Image();
+			img.src = "footman.png";
+			
+			var w = h = 15;
+			var n = w * h; //100			
+			var inter = 20;
+			var l =1;
+			
+			var ct = $("#ct");
+			//分成l个层
+			var ct = $("#ct"), items = [];
+			for (var i=0; i<l; i++) {
+				items.push( 
+					$("<canvas>").attr( {
+						width	: h * w,
+						height	: w * h
+					} ).css( "zIndex", i ).appendTo( ct )[ 0 ].getContext("2d")
+				);
+			};
+			
+			
+			items[0].drawImage( img, 0, 0, img.width, img.height );
+			var data = items[0].getImageData( 0, 0, w, h );
+			items[0].clearRect( 0,0, n, n );
+			
+			
+			setInterval( function(){
+				
+				for (var i=0; i< n; i++) {
+					var x = (i % w) * w, y = parseInt(i/ w) * h;
+					var ctx = items[ i % l ];
+					
+					ctx.clearRect( 0, 0, n, n );
+					
+					ctx.putImageData( data, x, y, w, h );
+				}
+				
+				
+			}, inter );
+
+		} );
+		
+		
+			
+	</script> 
+</head> 
+<body id="canvasdemo"> 
+	<div id="ct">
+		
+	</div>
+	<p>
+		n = 15, i =20, cpu = 10%
+		<br/>
+		使用clearRect 
+		n = 15, i =20, cpu = 25%
+		
+	</p>	
+</body> 
+<script></script>
+</html>
