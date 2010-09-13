@@ -59,6 +59,9 @@ var Unit = Observable.extend({
 	hpLine : false,    //是否显示血条
 	hpLineForce : false, //是否一定显示
 	
+	preAttack	: false,	//是否准备攻击
+	attacking		: false, //是否正在攻击
+	
 	//buff	: {},	//增益buff
 	 //debuff: {},   //损益buff
 	
@@ -85,6 +88,9 @@ var Unit = Observable.extend({
 		
 		this.callback = callback || function(){};
 		this.setUI( callback );
+		
+		//增加事件
+		this.addEvents( "dead" );
 		
 		return this;
 	},
@@ -195,12 +201,25 @@ var Unit = Observable.extend({
 		this.cell = this.oriCell;
 		this.direct = this.oriDirect;
 		this.moving = false;
+		this.preAttack = false;
 		this.way = [];
 		
 		return this;
 	},
 	
-	attack			: function( cell ){
+	attack			: function( cell, callback, scope ){
+		this.ui.attack( cell, callback, scope );
+		this.attacking = true;
 		
-	}	
+		return this;
+	},
+	
+	showAttack	: function(){
+		//获得可攻击的格子
+		obj = this.layer.getAttackCells( this.cell, this.range, this.rangeType, this.team );
+		PANEL.cellLayer.paintCells( this.layer.attaColor, obj );
+		this.attacks = obj;
+		this.preAttack = true;
+	}
+		
 }); 

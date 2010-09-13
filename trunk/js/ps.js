@@ -52,6 +52,7 @@ PS.prototype = {
 	
 	//生成ImageData
 	//对称图像反转
+	//TODO  transform 优化
 	 createImageDataTurn	: function( ctx, ori, from, w, h ){
 			var	ret = ctx.createImageData( w, h );
 			var total = w * h * 4;

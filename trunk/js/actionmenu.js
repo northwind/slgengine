@@ -3,6 +3,7 @@
 */
 var ActionMenu = Win.extend({
 	unit	: null,
+	beshow : false, 	//鼠标右键是否该重新现实
 	
 	init: function( config ){
 		this._super( config );
@@ -14,8 +15,7 @@ var ActionMenu = Win.extend({
 		this.btnAttack = this.createAction( "道具", "images/system/82-1.png", this.onProp );
 		this.btnAttack = this.createAction( "待命", "images/system/98-1.png", this.onStandBy );
 		
-		
-		
+
 		return this;	
   	},
 	
@@ -30,7 +30,11 @@ var ActionMenu = Win.extend({
 	},
 	
 	onAttack	: function( e ){
-		alert( "attck : " +  e.which );
+		this.unit.showAttack( function(){
+			this.beshow = false;
+		}, this );
+		this.hide();
+		this.beshow = true;
 	},
 	
 	onMagic	: function( e ){
@@ -45,8 +49,14 @@ var ActionMenu = Win.extend({
 	
 	//覆盖父类 增加角色回退功能
 	onCansel	: function( e ){
-		this._super( e );
-		PANEL.unitsLayer.unClick();
+		if (this.beshow) {
+			this.beshow = false;
+			this.show();
+		}
+		else {
+			this._super(e);
+			PANEL.unitsLayer.unClick();
+		}
 	}
 	
 });

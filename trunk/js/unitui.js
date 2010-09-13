@@ -80,26 +80,28 @@ var UnitUI = Observable.extend({
 			ctx.drawImage( this, 0, 0  );
 			var img = ctx.getImageData( 0,0,  this.width, this.height);
 			
-			//攻击的图像为
-			var h = 64;
 			//生成上下左右ImageData 
 			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
 			_self.adown = [
-							PS.createImageData( ctx, img, h * 0, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, h, CELL_WIDTH, CELL_HEIGHT ) ];
+							PS.createImageData( ctx, img, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ),
+							PS.createImageData( ctx, img, CELL_HEIGHT      , CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.createImageData( ctx, img, CELL_HEIGHT * 2, CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.createImageData( ctx, img, CELL_HEIGHT * 3, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.aup = [ PS.createImageData( ctx, img, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
-							PS.createImageData( ctx, img, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT *3, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.aup =[PS.createImageData( ctx, img, CELL_HEIGHT * 4, CELL_WIDTH, CELL_HEIGHT ),
+							PS.createImageData( ctx, img, CELL_HEIGHT   *   5   , CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.createImageData( ctx, img, CELL_HEIGHT     * 6, CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.createImageData( ctx, img, CELL_HEIGHT     * 7, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.aleft = [PS.createImageData( ctx, img, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.createImageData( ctx, img, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.aleft =[PS.createImageData( ctx, img, CELL_HEIGHT * 8, CELL_WIDTH, CELL_HEIGHT ),
+							PS.createImageData( ctx, img, CELL_HEIGHT    *  9  , CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.createImageData( ctx, img, CELL_HEIGHT * 10, CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.createImageData( ctx, img, CELL_HEIGHT * 11, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.aright = [PS.createImageDataTurn( ctx, img, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.createImageDataTurn( ctx, img, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageDataTurn( ctx, img, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
-																				
+			_self.aright =[PS.createImageDataTurn( ctx, img, CELL_HEIGHT * 8, CELL_WIDTH, CELL_HEIGHT ),
+							PS.createImageDataTurn( ctx, img, CELL_HEIGHT    *  9  , CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.createImageDataTurn( ctx, img, CELL_HEIGHT * 10, CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.createImageDataTurn( ctx, img, CELL_HEIGHT * 11, CELL_WIDTH, CELL_HEIGHT ) ];													
 			done();
 		}
 		//TODO 处理64宽高图像		
@@ -151,9 +153,6 @@ var UnitUI = Observable.extend({
 		
 		ctx.save();
 		
-		//ctx.globalCompositeOperation = "source-over";
-		//ctx.globalCompositeOperation = "xor";
-		
 		//绘制图像
 		ctx.putImageData( img, dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
 		
@@ -201,6 +200,15 @@ var UnitUI = Observable.extend({
 		}
 		
 		ctx.restore();
+	},
+	
+	attack	: function( cell, fn, scope ){
+		//判断方向
+		
+		this.fn = fn;
+		this.scope = scope;
+		
+		return this;
 	}
 	
 }); 
