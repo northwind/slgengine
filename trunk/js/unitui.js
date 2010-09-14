@@ -1,13 +1,6 @@
 /**
  * @author Norris
  */
-//载入image
-function	_loadImg( src, fn ){
-	var img = new Image();
-	img.onload = fn;
-	img.src = src;
-}
-
 var UnitUI = Observable.extend({
 	unit	: null, 	//unit主体
 	imgMove	: "",		//移动
@@ -29,8 +22,7 @@ var UnitUI = Observable.extend({
 	_getImageData	: function( callback ){
 		var _self = this, 
 				loaded = 0,
-				unit = this.unit,
-				ctx = unit.ctx;
+				unit = this.unit;
 		
 		//4张图片全部加载完之后
 		function done(){
@@ -147,7 +139,7 @@ var UnitUI = Observable.extend({
 		if ( !this.loaded )
 			return false;
 		
-		var ctx = unit.ctx,  cell = unit.cell;
+		var cell = unit.cell;
 		var img =this[ unit.direct ][ unit.p ],
 			 dx = cell.dx, dy = cell.dy;
 		

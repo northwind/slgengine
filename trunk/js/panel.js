@@ -1,14 +1,12 @@
 /**
  * @author Norris
  */
-/*
-	w h : �Ӵ��Ŀ�͸ￄ1�7
-*/
 var Panel = Component.extend({
 	w		: WINDOW_WIDTH,
 	h		: WINDOW_HEIGHT,
 	cls   : "_panel",
-	suspend	: false,
+	suspend	: false,  //停止更新
+	drawable: true,   //可以绘画
 	
 	scrollLeft : 0,
 	scrollTop : 0,
@@ -17,18 +15,30 @@ var Panel = Component.extend({
 	unitsLayer : null, //zIndex : 200
 	winLayer : null,   //zIndex : 300
 	
+	dps		 : 16, //帧数
+	sequence : 20, //多久更新一次
+	
 	init		: function( config ){
 		PANEL = this;
 		
 		this.ct = $( config.ct || document.body );
 		this._super( config );
-		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update");
+		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update", "paint");
 		
 		LayerMgr.setWrap( this.el );
+		
+		//全局
+		canvas = $("<canvas>").appendTo( this.el )[0];
+		canvas.width = MAX_W;
+		canvas.height = MAX_H;
+		ctx = canvas.getContext("2d");
+		
+		//创建的顺序既是绘画时的先后顺序
 		this._createCellLayer();
+		this._createUnitLayer();
 		this._createWinLayer();
 		
-		//֧����ק
+		//绑定事件
 		var x, y, drag = false, el=this.el, _self = this;
 		this.el.mousedown( function( e ){
 			if (e.which == 1) {
@@ -64,7 +74,6 @@ var Panel = Component.extend({
 				_self.fireEvent("contextmenu", e);			
 		});	
 		
-		//��Ҫ����document
 		$(document).mouseup( function( e ){
 			if (e.which == 1) {
 				drag = false;
@@ -74,19 +83,31 @@ var Panel = Component.extend({
 			}
 		} ).keydown( function( e ){
 			_self.fireEvent( "keydown", e );	
+			_self.onKeydown( e );
 		} ).keyup( function( e ){
 			_self.fireEvent( "keyup", e );	
 		} );
 		
 		//触发器
-		//this.timer = setInterval( function(){
+		var mem = 0, inter = 1000 / this.dps;
 		this.timer = setInterval( function(){
-			if ( !_self.suspend )
-				_self.fireEvent( "update", (new Date()).getTime() );			
-		} , 0);
+			if (!_self.suspend) { //停止更新
+				var d = (new Date()).getTime();
+				_self.fireEvent("update", d );
+				
+				//在超过1000 / this.dps时间段之后绘画
+				if (_self.drawable && d - mem > inter ) {
+					mem = d;
+					
+					//TODO 优化为只需要重新的地方才清除
+					ctx.clearRect( 0,0, MAX_W, MAX_H );
+			
+					_self.fireEvent("paint", d);
+				}
+			}
+		} , this.sequence);
 		
-		this.on( "keydown", this.onKeydown, this );
-		
+		//this.on( "keydown", this.onKeydown, this );
 		
 		return this;		
 	},
@@ -95,13 +116,18 @@ var Panel = Component.extend({
 
 	},	
 		
-	//������Ԫ��LAYER
 	_createCellLayer	: function(){
 		if ( this.cellLayer )
 			this.cellLayer.remove();
 		
 		this.cellLayer = LayerMgr.reg( 100, MAX_W, MAX_H, CellLayer );
 	},
+	_createUnitLayer	: function(){
+		if ( this.unitsLayer )
+			this.unitsLayer.remove();
+		
+		this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
+	},	
 	_createWinLayer	: function(){
 		if ( this.winLayer )
 			this.winLayer.remove();
@@ -129,49 +155,21 @@ var Panel = Component.extend({
 		return this;			
 	},
 	
-	//����setBgImage ����LAYER
-	setBgImage		: function( url ){
-		this.cellLayer.setBgImage(  url );
+	setBgImage	: function( url ){
+		canvas.style.background = "url('" + url + "') no-repeat";
 		return this;
 	},
 	
 	setUnits		: function( data ){
-		if ( !this.unitsLayer )
-			this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
-				
 		this.unitsLayer.setData( data );
 		return this;
 	},	
-	
-	
-	//������λ�õõ���Ӧ�����
-	// �������Ϊ event/ Index / x, y���λ��
-	getPoints	: function( x, y ){
-		if (typeof x == "number") {
-			return {
-				x: x % CELL_XNUM,
-				y: parseInt(y / CELL_YNUM)
-			}
-		}
-		
-		if ( x.layerY ){
-			//������� event	
-			y = x.layerY;
-			x = x.layerX;
-		}
-		
-		var o =  {
-			x    :   parseInt ( x   / CELL_WIDTH ),
-			y	 :  parseInt( y   / CELL_HEIGHT)
-		}
-		return o;
-	},
 	
 	getCell	: function( x, y ){
 		if ( typeof x == "number" )
 			return CellMgr.get( x, y );
 			
-		var p = this.getPoints( x, y );
+		var p = getPoints( x, y );
 		return CellMgr.get( p.x, p.y );
 	},
 	
@@ -190,13 +188,11 @@ var Panel = Component.extend({
 		
 		return this;
 	},
+	
 	delUnit			: function( id ){
 		this.unitsLayer.delUnit( id );
 		
 		return this;		
-	},
-	getIndex		: function( x, y ){
-		return x * CELL_YNUM + y;
 	},
 	
 	popMenu		: function( unit, x, y ){

@@ -1,37 +1,26 @@
 /**
  * @author Norris
+ * 只继承 Observable
  */
 
-var Layer = Component.extend({
+var Layer = Observable.extend({
 	
 	init: function( config ){
 		this.objects = [];
 		
-		this.el = this.el || 
-						$("<canvas>").attr( { width: config.wCanvas, height : config.hCanvas } ) ;
-		
     	this._super( config );
-		this.pri( config.level );
-		
-		if ( this.el[0].getContext )
-			this.ctx= this.el[0].getContext("2d");
-		
-		//canvas的宽高必须通过属性设置
-		//设置后copy值
-		this.w = config.wCanvas;
-		this.h = config.hCanvas;
+		//加载完毕后执行init事件
+		this.addEvents( "init" );
 		
 		return this;
   	},
 		
-/*
 	show	: function(){
 		if (this.hidden) {
 			for (var i = 0; i < this.objects.length; i++) {
 				if ( this.objects[i].show )
 					this.objects[i].show();
 			};
-			this._super();
 		}
 		return this;
 	},	
@@ -42,16 +31,14 @@ var Layer = Component.extend({
 				if (this.objects[i].hide)
 					this.objects[i].hide();
 			};
-			this._super();
 		}
 		return this;
-	},		
-*/
-	
-	clear	: function(){
-		if ( this.ctx )
-			this.ctx.clearRect( 0,0, this.w, this.h );
 	},
+	
+	//interface
+	clear	: function(){
+		
+	},		
 	
 	destroy	: function(){
 		//销毁这层上的所有单元
