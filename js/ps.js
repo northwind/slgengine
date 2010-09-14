@@ -4,11 +4,62 @@
 
 var PS = function( config ){
 	$.extend( this, config );
+	
+	this.canvas = $("<canvas>").addClass("_bboard").appendTo("body")[0];
+	this.ctx = this.canvas.getContext("2d");
+	
 	return this;
 }
 
 PS.prototype = {
 	
+	/*
+	 * 复制ctx中某一区域图像，转成Image
+*/
+	getCanImage	: function( ctxOri, x,y, w, h ){
+		var img = new Image(), can = this.canvas;
+		
+		var data = ctxOri.getImageData( x,y, w,h );
+		
+		can.width = w;
+		can.height = h;
+		this.ctx.putImageData( data, 0 ,0 );
+		data = can.toDataURL();
+		
+		img.src = data;
+		return img;
+	},
+
+	getCanImageTurn	: function( img ){
+		var ret = new Image(), can = this.canvas, c = this.ctx;
+		var w = img.width, h = img.height;
+		
+		can.width = w;
+		can.height = h;
+		
+		c.save();
+		var matrix  = this.getMatrix( Math.PI, 1, -1 );
+		//变换坐标系
+		c.translate( w, 0 );
+		c.transform( matrix.M11,  matrix.M12, matrix.M21, matrix.M22, 0,0 );
+		
+		c.drawImage( img, 0, 0 );
+		var data = can.toDataURL();
+		
+		c.restore();
+		
+		ret.src = data;
+		return ret;
+	},
+	
+	getMatrix	:    function (radian, x, y) {
+        var Cos = Math.cos(radian), Sin = Math.sin(radian);
+        return {
+            M11: Cos * x, M12:-Sin * y,
+            M21: Sin * x, M22: Cos * y
+        };
+    },
+		
 	//将图像灰化
 	gray		: function( ctx, imageData ){
 		var w = imageData.width,
@@ -183,5 +234,7 @@ PS.prototype = {
 	
 };
 
-PS = new PS();
-
+//DOM树加载完之后
+$( function(){
+	PS = new PS();
+} );

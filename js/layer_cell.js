@@ -48,6 +48,7 @@ var CellLayer = Layer.extend({
 	},
 	
 	paint					: function(){
+		//console.debug( "cell layer" );
 		//画格子
 		if ( this.lines ){
 			ctx.save();
@@ -80,6 +81,7 @@ var CellLayer = Layer.extend({
 		//绘制cell
 		for( var color in  this.cells ){
 			ctx.save();
+			
 			ctx.fillStyle = color;
 			var obj = this.cells[ color ];
 			for( var key in obj ){
