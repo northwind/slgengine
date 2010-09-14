@@ -171,5 +171,11 @@ var Observable = Class.extend({
 
     resumeEvents : function(){
         this.eventsSuspended = false;
-    }
+    },
+	
+	destroy		 : function(){
+		this.suspendEvents = true;
+		this.purgeListeners();
+		this.events = {};
+	}
 });

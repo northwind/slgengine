@@ -14,7 +14,7 @@ var Cell = function( config ){
 Cell.prototype = {
 	parent 	: null,
 	
-	/*	�жϴ����CELL���Լ����ĸ�����
+	/*	方位
 	 * 			4		3		2
 	 * 			1		0		-1
 	 * 			-2		-3		-4

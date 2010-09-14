@@ -15,8 +15,7 @@ var LayerMgr = Manager.extend({
 		var obj = layerDiff || Layer, 
 			l = new obj( { level : level, 
 									ct : this.wrap,
-									wCanvas	: w,
-									hCanvas  : h									
+									ctx: PANEL.ctx								
 						} );
 		
 		this._super( l );

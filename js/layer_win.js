@@ -1,19 +1,23 @@
 /**
  * @author Norris
+ * 继承Component
  */
 
-var WinLayer = Layer.extend({
+var WinLayer = Component.extend({
 	cls	: "_winLayer",
 	
 	init	: function( config ){
 		$.extend( config, {
 			el	: $("<div>"),
-			w	: config.wCanvas,
-			h	: config.hCanvas
+			w	: MAX_W,
+			h	: MAX_H
 		} );
 		
 		this._super( config );
 		
+		this.pri( config.level );
+		
+		this.addEvents( "init" );
 		//PANEL.on("mousemove", this.activeCell, this );
 		
 		return this;
@@ -29,12 +33,6 @@ var WinLayer = Layer.extend({
 		this.menuAction.showAt( x, y ).show();
 		
 		return this;
-	},
-	
-	update					: function(){
-		var ctx = this.ctx;
-		//清屏
-		ctx.clearRect( 0, 0, this.w, this.h );
 	},
 	
 	clear			: function( color ){

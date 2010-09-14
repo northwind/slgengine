@@ -19,9 +19,11 @@ var UnitLayer = Layer.extend({
 	
 	init	: function(){
 		this._super( arguments[0] );
-		this.hide();
 		this.units = {};
-
+		
+		//加载中时执行该事件
+		this.addEvents( "loading" );
+		
 		//定时更新
 		PANEL.on("update", this.update, this );
 		//点击画布
@@ -30,6 +32,7 @@ var UnitLayer = Layer.extend({
 		PANEL.on("mousemove", this.onMousemove, this);
 		PANEL.on("keydown", this.onKeydown, this);
 		PANEL.on("keyup", this.onKeyup, this);
+		PANEL.on("paint", this.paint, this );
 				
 		return this;
 	},
@@ -38,10 +41,11 @@ var UnitLayer = Layer.extend({
 		this.data = data;
 		var count = 1, sum = data.length, _self = this;
 		var callback = function(){
-			//console.debug( "callback" );
+			
+			_self.fireEvent( "loading", sum, count );
+			
 			if ( count++ >= sum ){
-				_self.clear();
-				_self.show();
+				_self.fireEvent( "init", sum );
 				
 				if ( fn )
 					fn.call( scope || _self );
@@ -49,18 +53,13 @@ var UnitLayer = Layer.extend({
 		};
 		for (var i = 0; i < this.data.length; i++) {
 			var item = this.data[i];
-			this.units[ PANEL.getIndex( item.gx, item.gy) ] = this._initUnit(item, callback);
+			this.units[ getIndex( item.gx, item.gy) ] = this._initUnit(item, callback);
 		}			
 		return this;
 	},
 	
-	update	: function( timestamp ){
-		var ctx = this.ctx;
-		
+	paint	: function( timestamp ){
 		if (this.units) {
-			//TODO 优化为只需要重新的地方才清除
-			ctx.clearRect( 0,0, this.w, this.h );
-			
 			for( var key in this.units ){
 				var unit = this.units[ key ];
 				
@@ -68,6 +67,9 @@ var UnitLayer = Layer.extend({
 			}
 		}		
 	},
+	
+	update	: function( timestamp ){
+	},	
 	
 	onKeydown	: function( e ){
 		//按ALT时
@@ -99,7 +101,6 @@ var UnitLayer = Layer.extend({
 	onClick	: function( e ){
 			var  cell = PANEL.getCell( e );
 							
-			//����Ѿ�ѡ��ĳ����Ԫ
 			if (this.clicked) {
 				//如果可以攻击
 				if (this.clicked.canAttack(cell)) {
@@ -219,7 +220,7 @@ var UnitLayer = Layer.extend({
 		open[ cell.index ] = cell;
 		
 		function prepare( x,y,parent ){
-			var key = PANEL.getIndex( x, y ), unit = units[ key ], child =  PANEL.getCell( x, y );
+			var key = getIndex( x, y ), unit = units[ key ], child =  PANEL.getCell( x, y );
 			//判断是否可以行走/是否已经计算过/如果有单位在单元格上判断是否可以叠加
 			if ( child && !open[key] && !closed[key] && MAP[y] && MAP[y][x] ==0 && (unit ? unit.overlay : true  ) ) {
 				child.parent = parent;
@@ -261,10 +262,8 @@ var UnitLayer = Layer.extend({
 		
 		if ( unit.constructor != Unit )
 			unit = this._initUnit( unit );
-		else
-			unit.ctx =  this.ctx;
 		
-		this.units[ PANEL.getIndex( x, y ) ] = unit; 
+		this.units[ getIndex( x, y ) ] = unit; 
 		
 		return this;
 	},
@@ -282,7 +281,6 @@ var UnitLayer = Layer.extend({
 	},
 	
 	_initUnit	: function( config, callback ){
-		config.ctx = this.ctx;
 		config.layer = this;
 		
 		return new Unit(config, callback );

@@ -13,6 +13,7 @@ var CellLayer = Layer.extend({
 		this._super( arguments[0] );
 		PANEL.on("update", this.update, this );
 		PANEL.on("mousemove", this.activeCell, this );
+		PANEL.on("paint", this.paint, this );
 		
 		return this;
 	},
@@ -27,19 +28,12 @@ var CellLayer = Layer.extend({
 		return this;		
 	},
 	
-	setBgImage	: function( url ){
-		this.el.css( {
-			background : "url('" + url + "') no-repeat"
-		} );	
-		return this;
-	},
-	
 	x	: -1,
 	y	: -1,	
 	
 	//获得当前鼠标经过的CELL
 	activeCell	: function(x, y){
-		var o = PANEL.getPoints( x, y );
+		var o = getPoints( x, y );
 		
 		this.x = o.x;
 		this.y = o.y;
@@ -53,10 +47,7 @@ var CellLayer = Layer.extend({
 		return this;
 	},
 	
-	update					: function(){
-		var ctx = this.ctx;
-		//清屏
-		ctx.clearRect( 0, 0, this.w, this.h );
+	paint					: function(){
 		//画格子
 		if ( this.lines ){
 			ctx.save();
@@ -137,6 +128,11 @@ var CellLayer = Layer.extend({
 			ctx.restore();
 		}
 	},
+	
+	update				: function(){
+		
+	},
+	
 	
 	strokeCells			: function( color, cell ){
 		if ( this.borders[ color ] == undefined )
