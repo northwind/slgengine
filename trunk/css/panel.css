@@ -40,3 +40,5 @@
 ._board p{ color:#fff; font-size:12px; }
 ._board ._status{ font-size:12px; padding-left:32px; margin-top:10px; }
 ._board ._status span{ vertical-align:top; }
+
+._bboard{ display:none; position:absolute; z-index:-1; top:-999px; left:-999px; background:#fff; }

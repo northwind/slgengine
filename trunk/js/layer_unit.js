@@ -59,6 +59,7 @@ var UnitLayer = Layer.extend({
 	},
 	
 	paint	: function( timestamp ){
+		//console.debug( "unit layer" );
 		if (this.units) {
 			for( var key in this.units ){
 				var unit = this.units[ key ];

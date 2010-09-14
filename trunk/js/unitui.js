@@ -19,6 +19,9 @@ var UnitUI = Observable.extend({
 		return this;
 	},
 	
+	/*
+	 * 将整张图片切割为很多小图片 并缓存起来
+	*/
 	_getImageData	: function( callback ){
 		var _self = this, 
 				loaded = 0,
@@ -36,30 +39,29 @@ var UnitUI = Observable.extend({
 		var fn	= function(){
 			ctx.clearRect( 0,0, this.width, this.height );
 			ctx.drawImage( this, 0, 0  );
-			var img = ctx.getImageData( 0,0,  this.width, this.height);
 			
 			//生成上下左右ImageData 
 			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
 			_self.down = [
-							PS.createImageData( ctx, img, CELL_HEIGHT*6, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.createImageData( ctx, img, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.up = [ PS.createImageData( ctx, img, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
-							PS.createImageData( ctx, img, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT *3, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.left = [PS.createImageData( ctx, img, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.createImageData( ctx, img, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.right = [PS.createImageDataTurn( ctx, img, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.createImageDataTurn( ctx, img, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageDataTurn( ctx, img, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
+							PS.getCanImage( ctx, 0, CELL_HEIGHT*6, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT*0, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
 
-			_self.fall = [	PS.createImageData( ctx, img, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
-																				
+			_self.up = [ PS.getCanImage( ctx, 0, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
+							PS.getCanImage( ctx, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT *3, CELL_WIDTH, CELL_HEIGHT ) ];
+							
+			_self.left = [PS.getCanImage( ctx, 0, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
+							PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
+							
+			_self.right = [PS.getCanImageTurn( _self.left[0] ),  
+							PS.getCanImageTurn( _self.left[1] ),
+							PS.getCanImageTurn( _self.left[2] ) ];
+
+			_self.fall = [	PS.getCanImage( ctx, 0, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
+									
 			done();
 		}
 		_loadImg( unit.imgMove, fn );	
@@ -70,30 +72,29 @@ var UnitUI = Observable.extend({
 			return ;
 			ctx.clearRect( 0,0, this.width, this.height );
 			ctx.drawImage( this, 0, 0  );
-			var img = ctx.getImageData( 0,0,  this.width, this.height);
 			
 			//生成上下左右ImageData 
 			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
 			_self.adown = [
-							PS.createImageData( ctx, img, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT      , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.createImageData( ctx, img, CELL_HEIGHT * 2, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.createImageData( ctx, img, CELL_HEIGHT * 3, CELL_WIDTH, CELL_HEIGHT ) ];
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT      , CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 2, CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 3, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.aup =[PS.createImageData( ctx, img, CELL_HEIGHT * 4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT   *   5   , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.createImageData( ctx, img, CELL_HEIGHT     * 6, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.createImageData( ctx, img, CELL_HEIGHT     * 7, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.aup =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 4, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT   *   5   , CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 6, CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 7, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.aleft =[PS.createImageData( ctx, img, CELL_HEIGHT * 8, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageData( ctx, img, CELL_HEIGHT    *  9  , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.createImageData( ctx, img, CELL_HEIGHT * 10, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.createImageData( ctx, img, CELL_HEIGHT * 11, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.aleft =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 8, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT    *  9  , CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 10, CELL_WIDTH, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 11, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.aright =[PS.createImageDataTurn( ctx, img, CELL_HEIGHT * 8, CELL_WIDTH, CELL_HEIGHT ),
-							PS.createImageDataTurn( ctx, img, CELL_HEIGHT    *  9  , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.createImageDataTurn( ctx, img, CELL_HEIGHT * 10, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.createImageDataTurn( ctx, img, CELL_HEIGHT * 11, CELL_WIDTH, CELL_HEIGHT ) ];													
+			_self.aright =[PS.getCanImageTurn( _self.aleft[0] ),
+							PS.getCanImageTurn( _self.aleft[1] ) ,
+							PS.getCanImageTurn( _self.aleft[2] ) ,
+							PS.getCanImageTurn( _self.aleft[3] ) ];													
 			done();
 		}
 		//TODO 处理64宽高图像		
@@ -103,20 +104,19 @@ var UnitUI = Observable.extend({
 		var fn3	= function(){
 			ctx.clearRect( 0,0, this.width, this.height );
 			ctx.drawImage( this, 0, 0  );
-			var img = ctx.getImageData( 0,0,  this.width, this.height);
 			
 			//生成上下左右ImageData 
-			_self.ddown = [	PS.createImageData( ctx, img, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.ddown = [	PS.getCanImage( ctx, 0, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.dup = [ PS.createImageData( ctx, img, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.dup = [ PS.getCanImage( ctx, 0, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.dleft = [PS.createImageData( ctx, img, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT )];
+			_self.dleft = [PS.getCanImage( ctx, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT )];
 							
-			_self.dright = [PS.createImageDataTurn( ctx, img, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.dright = [PS.getCanImageTurn(  _self.dleft[0] ) ];
 			
-			_self.hit = [PS.createImageData( ctx, img, CELL_HEIGHT*3, CELL_WIDTH, CELL_HEIGHT )];
+			_self.hit = [PS.getCanImage( ctx, 0, CELL_HEIGHT*3, CELL_WIDTH, CELL_HEIGHT )];
 			
-			_self.burst = [PS.createImageData( ctx, img, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
+			_self.burst = [PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
 																				
 			done();
 		}
@@ -124,11 +124,8 @@ var UnitUI = Observable.extend({
 		
 		//头像	
 		var fn4	= function(){
-			ctx.clearRect( 0,0, this.width, this.height );
-			ctx.drawImage( this, 0, 0  );
-			var img = ctx.getImageData( 0,0,  this.width, this.height);
 			
-			_self.face = [	PS.createImageData( ctx, img, 0,  this.width, this.height ) ];
+			_self.face = [	this ];
 																				
 			done();
 		}
@@ -146,7 +143,8 @@ var UnitUI = Observable.extend({
 		ctx.save();
 		
 		//绘制图像
-		ctx.putImageData( img, dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
+		//ctx.putImageData( img, dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
+		ctx.drawImage( img, dx,dy );
 		
 		//绘制血条等主要信息
 		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
