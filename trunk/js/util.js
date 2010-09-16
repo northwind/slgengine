@@ -34,8 +34,24 @@ function getPoints( x, y ){
 	return o;
 }
 //载入image
-function	_loadImg( src, fn ){
+function	_loadImg( src, onload, onerror ){
 	var img = new Image();
-	img.onload = fn;
+	img.onload = onload || function(){};
+	img.onerror = onerror || function(){};
 	img.src = src;
 }
+
+//check数组中的image对象，水平翻转
+function waitTurn( wait, turn, fn ){
+	
+	var p = 0;
+	
+	//while
+	
+}
+
+
+
+
+
+

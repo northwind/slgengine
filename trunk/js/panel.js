@@ -23,15 +23,24 @@ var Panel = Component.extend({
 		
 		this.ct = $( config.ct || document.body );
 		this._super( config );
-		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update", "paint");
+		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background" );
 		
 		LayerMgr.setWrap( this.el );
 		
-		//全局
-		canvas = $("<canvas>").appendTo( this.el )[0];
+		//初始化画布 开始隐藏
+		canvas = $("<canvas>").hide().appendTo( this.el )[0];
 		canvas.width = MAX_W;
 		canvas.height = MAX_H;
 		ctx = canvas.getContext("2d");
+		
+		//mask layer
+		this.masklayer = $("<div>").addClass("_masklayer").appendTo( this.el )
+									.css( {
+										width	: this.el.width(),
+										height	: this.el.height()
+									} );
+		//初始化进度条
+		Process.init( { ct: this.el } ).start().tip( 20, "加载图片..." );
 		
 		//创建的顺序既是绘画时的先后顺序
 		this._createCellLayer();
@@ -108,7 +117,11 @@ var Panel = Component.extend({
 		} , this.sequence);
 		
 		//this.on( "keydown", this.onKeydown, this );
-		
+		this.on( "load", Process.end, Process )
+			 .on( "load", function(){
+			 	canvas.style.display = "block";
+			 } );
+			 		
 		return this;		
 	},
 
@@ -127,6 +140,11 @@ var Panel = Component.extend({
 			this.unitsLayer.remove();
 		
 		this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
+		
+		this.unitsLayer.on( "loading", function( sum, count ){
+			Process.tip( 20 + ( count / sum ) * 40, "加载角色图片..." );
+		} );
+		
 	},	
 	_createWinLayer	: function(){
 		if ( this.winLayer )
@@ -156,7 +174,15 @@ var Panel = Component.extend({
 	},
 	
 	setBgImage	: function( url ){
-		canvas.style.background = "url('" + url + "') no-repeat";
+		
+		var _self = this;
+		_loadImg( url, function(){
+			canvas.style.background = "url('" + url + "') no-repeat";
+			
+			_self.fireEvent( "background" );
+			_self.fireEvent( "load" );
+		} );
+		
 		return this;
 	},
 	
@@ -198,6 +224,16 @@ var Panel = Component.extend({
 	popMenu		: function( unit, x, y ){
 		this.winLayer.popMenu( unit, x, y );
 		return this;
+	},
+	
+	mask		: function (){
+		this.masklayer.show();
+		return this;			  
+	},
+
+	unmask 		: function (){
+		this.masklayer.hide();
+		return this;	
 	}
 	
 });

@@ -16,7 +16,7 @@ PS.prototype = {
 	/*
 	 * 复制ctx中某一区域图像，转成Image
 */
-	getCanImage	: function( ctxOri, x,y, w, h ){
+	getCanImage	: function( ctxOri, x,y, w, h, callback ){
 		var img = new Image(), can = this.canvas;
 		
 		var data = ctxOri.getImageData( x,y, w,h );
@@ -26,11 +26,14 @@ PS.prototype = {
 		this.ctx.putImageData( data, 0 ,0 );
 		data = can.toDataURL();
 		
+		//img.onload = callback;
 		img.src = data;
+		
 		return img;
 	},
 
 	getCanImageTurn	: function( img ){
+		//console.debug( "img = " + img );
 		var ret = new Image(), can = this.canvas, c = this.ctx;
 		var w = img.width, h = img.height;
 		
