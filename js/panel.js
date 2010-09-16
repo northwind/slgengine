@@ -31,7 +31,8 @@ var Panel = Component.extend({
 		canvas = $("<canvas>").hide().appendTo( this.el )[0];
 		canvas.width = MAX_W;
 		canvas.height = MAX_H;
-		ctx = canvas.getContext("2d");
+		if ( canvas.getContext )
+			ctx = canvas.getContext("2d");
 		
 		//mask layer
 		this.masklayer = $("<div>").addClass("_masklayer").appendTo( this.el )

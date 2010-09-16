@@ -6,7 +6,8 @@ var PS = function( config ){
 	$.extend( this, config );
 	
 	this.canvas = $("<canvas>").addClass("_bboard").appendTo("body")[0];
-	this.ctx = this.canvas.getContext("2d");
+	if ( this.canvas.getContext )
+		this.ctx = this.canvas.getContext("2d");
 	
 	return this;
 }
