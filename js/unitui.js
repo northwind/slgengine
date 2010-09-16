@@ -28,7 +28,8 @@ var UnitUI = Observable.extend({
 				unit = this.unit;
 		
 		//4张图片全部加载完之后
-		function done(){
+		function done( src ){
+			console.debug( _self.unit.name + " : " + src + " done");
 			if (loaded++ >= 3) {
 				_self.loaded = true;
 				callback( _self );
@@ -37,6 +38,7 @@ var UnitUI = Observable.extend({
 		
 		//移动		
 		var fn	= function(){
+			
 			ctx.clearRect( 0,0, this.width, this.height );
 			ctx.drawImage( this, 0, 0  );
 			
@@ -55,21 +57,22 @@ var UnitUI = Observable.extend({
 							PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
 							PS.getCanImage( ctx, 0, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
 							
+/*
 			_self.right = [PS.getCanImageTurn( _self.left[0] ),  
 							PS.getCanImageTurn( _self.left[1] ),
 							PS.getCanImageTurn( _self.left[2] ) ];
+*/
 
 			_self.fall = [	PS.getCanImage( ctx, 0, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
 							PS.getCanImage( ctx, 0, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
 									
-			done();
+			done( unit.imgMove );
 		}
 		_loadImg( unit.imgMove, fn );	
 		
 		//攻击
 		var fn2	= function(){
-			done();
-			return ;
+			
 			ctx.clearRect( 0,0, this.width, this.height );
 			ctx.drawImage( this, 0, 0  );
 			
@@ -91,13 +94,15 @@ var UnitUI = Observable.extend({
 							PS.getCanImage( ctx, 0, CELL_HEIGHT * 10, CELL_WIDTH, CELL_HEIGHT ) ,
 							PS.getCanImage( ctx, 0, CELL_HEIGHT * 11, CELL_WIDTH, CELL_HEIGHT ) ];
 							
+/*
 			_self.aright =[PS.getCanImageTurn( _self.aleft[0] ),
 							PS.getCanImageTurn( _self.aleft[1] ) ,
 							PS.getCanImageTurn( _self.aleft[2] ) ,
-							PS.getCanImageTurn( _self.aleft[3] ) ];													
-			done();
+							PS.getCanImageTurn( _self.aleft[3] ) ];	
+*/
+			
+			done( unit.imgAtk );
 		}
-		//TODO 处理64宽高图像		
 		_loadImg( unit.imgAtk, fn2 );	
 		
 		//防御 被击中  致命一击
@@ -112,13 +117,14 @@ var UnitUI = Observable.extend({
 							
 			_self.dleft = [PS.getCanImage( ctx, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT )];
 							
-			_self.dright = [PS.getCanImageTurn(  _self.dleft[0] ) ];
-			
 			_self.hit = [PS.getCanImage( ctx, 0, CELL_HEIGHT*3, CELL_WIDTH, CELL_HEIGHT )];
 			
 			_self.burst = [PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
-																				
-			done();
+			
+			//waitTurn( _self.dleft, _self.dright, callback );
+			_self.dright = [PS.getCanImageTurn(  _self.dleft[0] ) ];
+			
+			done( unit.imgSpc );
 		}
 		_loadImg( unit.imgSpc, fn3 );		
 		
@@ -127,7 +133,7 @@ var UnitUI = Observable.extend({
 			
 			_self.face = [	this ];
 																				
-			done();
+			done( unit.imgFace );
 		}
 		_loadImg( unit.imgFace, fn4 );				
 	},
@@ -144,7 +150,9 @@ var UnitUI = Observable.extend({
 		
 		//绘制图像
 		//ctx.putImageData( img, dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
-		ctx.drawImage( img, dx,dy );
+		try {
+			ctx.drawImage( img, dx,dy );
+		} catch (e) {}
 		
 		//绘制血条等主要信息
 		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {

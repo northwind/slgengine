@@ -8,7 +8,7 @@ $(function(){
 		ct : $("#container")
 	} );
 	
-	PANEL.setBgColor("#008000")
+	PANEL
 		.setBgImage( "images/bigmap/1-1.jpg" )
 		.setUnits( UNITS );
 	

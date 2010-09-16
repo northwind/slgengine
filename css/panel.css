@@ -42,3 +42,6 @@
 ._board ._status span{ vertical-align:top; }
 
 ._bboard{ display:none; position:absolute; z-index:-1; top:-999px; left:-999px; background:#fff; }
+
+._masklayer{ position:absolute; z-index:100000; display:none; background:#eee; opacity : 0.5;}
+._loader{ margin:auto; height:100px; width:400px; color:#ff8040; font-size:16px; display:none; position:absolute; z-index:100002; }

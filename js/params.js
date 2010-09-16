@@ -72,7 +72,7 @@ UNITS	= [{
 	imgFace	: "images/face/23-1.png"	
 },{
 	gx :  19,  gy : 5,  step: 9, type : 101, moveable : true, overlay : false, urlImg : "images/move/26-1.png", range : 2, rangeType : 2,
-	symbol	: "archer",
+	symbol	: "archer", name : "弓箭手",
 	imgMove	:"images/move/26-1.png",
 	imgAtk	: "images/atk/26-1.png",
 	imgSpc	: "images/spc/26-1.png",
