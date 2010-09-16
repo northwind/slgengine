@@ -71,7 +71,7 @@ var Unit = Observable.extend({
 	h		: CELL_HEIGHT,
 	
 	
-	init	: function( config, callback ){
+	init	: function( config ){
 		this.moves	= {};
 		this.attacks= {};
 		this.way = [];
@@ -81,23 +81,24 @@ var Unit = Observable.extend({
 		
 		this._super( config );
 		
-		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
-		this.direct = this.ortDirect = "down";
-		//增加角色事件
-		this.addEvents( "dead","attack","move","speak","defend","show","standby" );
-		
-		this.callback = callback || function(){};
-		this.setUI( callback );
-		
 		//增加事件
 		this.addEvents( "dead" );
 		
+		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
+		this.direct = this.ortDirect = "down";
+		//增加角色事件
+		this.addEvents( "dead","attack","move","speak","defend","show","standby", "load" );
+		
+		this.setUI();
+		
 		return this;
 	},
-	
 		
-	setUI	: function( callback ){
-		this.ui = UIMgr.get( this.symbol, this, callback );
+	setUI	: function(){
+		var _self = this;
+		this.ui = UIMgr.get( this.symbol, this, function(){
+			_self.fireEvent( "load", _self );
+		} );
 		
 		return this;
 	},

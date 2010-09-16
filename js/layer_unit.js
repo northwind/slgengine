@@ -22,7 +22,7 @@ var UnitLayer = Layer.extend({
 		this.units = {};
 		
 		//加载中时执行该事件
-		this.addEvents( "loading" );
+		this.addEvents( "loading", "load" );
 		
 		//定时更新
 		PANEL.on("update", this.update, this );
@@ -37,23 +37,28 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
-	setData : function( data, fn, scope ){
+	setData : function( data ){
 		this.data = data;
-		var count = 1, sum = data.length, _self = this;
-		var callback = function(){
+
+		//给每个unit绑定load事件
+		var count = 1, sum = this.data.length;
+		var callback = function( unit ){
 			
-			_self.fireEvent( "loading", sum, count );
+			this.fireEvent( "loading", unit, sum, count );
 			
 			if ( count++ >= sum ){
-				_self.fireEvent( "init", sum );
-				
-				if ( fn )
-					fn.call( scope || _self );
+				this.fireEvent( "load", sum );
 			}
 		};
+		
 		for (var i = 0; i < this.data.length; i++) {
 			var item = this.data[i];
-			this.units[ getIndex( item.gx, item.gy) ] = this._initUnit(item, callback);
+			//添加监听器
+		    item.listeners = item.listeners || {};
+			item.listeners.load = item.listeners.load || {
+				fn	: callback, scope : this
+			}			
+			this.units[ getIndex( item.gx, item.gy) ] = this._initUnit(item);
 		}			
 		return this;
 	},
@@ -281,9 +286,9 @@ var UnitLayer = Layer.extend({
 		return this;		
 	},
 	
-	_initUnit	: function( config, callback ){
+	_initUnit	: function( config ){
 		config.layer = this;
 		
-		return new Unit(config, callback );
+		return new Unit(config );
 	}
 }); 

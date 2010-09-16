@@ -14,6 +14,7 @@ var UnitUI = Observable.extend({
 		
 		this._super();
 		
+		this.addEvents( "load" );
 		this._getImageData( callback );
 		
 		return this;
@@ -33,6 +34,7 @@ var UnitUI = Observable.extend({
 			if (loaded++ >= 3) {
 				_self.loaded = true;
 				callback( _self );
+				_self.fireEvent( "load" );
 			}
 		}
 		
@@ -57,15 +59,25 @@ var UnitUI = Observable.extend({
 							PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
 							PS.getCanImage( ctx, 0, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
 							
+			_self.fall = [	PS.getCanImage( ctx, 0, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
+
+			//wait for left image
+			var timer = setInterval( function(){
+				var img = _self.left[ 0 ];
+				if ( img && img.width ){
+					clearInterval( timer );
+					_self.right = [ PS.getCanImageTurn( _self.left[0] ),  
+							PS.getCanImageTurn( _self.left[1] ),
+							PS.getCanImageTurn( _self.left[2] ) ];
+				}
+			} ,10);
 /*
 			_self.right = [PS.getCanImageTurn( _self.left[0] ),  
 							PS.getCanImageTurn( _self.left[1] ),
 							PS.getCanImageTurn( _self.left[2] ) ];
 */
-
-			_self.fall = [	PS.getCanImage( ctx, 0, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
-									
+												
 			done( unit.imgMove );
 		}
 		_loadImg( unit.imgMove, fn );	
@@ -93,7 +105,18 @@ var UnitUI = Observable.extend({
 							PS.getCanImage( ctx, 0, CELL_HEIGHT    *  9  , CELL_WIDTH, CELL_HEIGHT ) ,
 							PS.getCanImage( ctx, 0, CELL_HEIGHT * 10, CELL_WIDTH, CELL_HEIGHT ) ,
 							PS.getCanImage( ctx, 0, CELL_HEIGHT * 11, CELL_WIDTH, CELL_HEIGHT ) ];
-							
+
+			//wait for left image
+			var timer = setInterval( function(){
+				var img = _self.aleft[ 0 ];
+				if ( img && img.width ){
+					clearInterval( timer );
+					_self.aright = [ PS.getCanImageTurn( _self.aleft[0] ),
+							PS.getCanImageTurn( _self.aleft[1] ) ,
+							PS.getCanImageTurn( _self.aleft[2] ) ,
+							PS.getCanImageTurn( _self.aleft[3] ) ];
+				}
+			} ,10);							
 /*
 			_self.aright =[PS.getCanImageTurn( _self.aleft[0] ),
 							PS.getCanImageTurn( _self.aleft[1] ) ,
@@ -121,8 +144,15 @@ var UnitUI = Observable.extend({
 			
 			_self.burst = [PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
 			
-			//waitTurn( _self.dleft, _self.dright, callback );
-			_self.dright = [PS.getCanImageTurn(  _self.dleft[0] ) ];
+			//wait for dleft image
+			var timer = setInterval( function(){
+				var img = _self.dleft[ 0 ];
+				if ( img && img.width ){
+					clearInterval( timer );
+					_self.dright = [PS.getCanImageTurn(  img ) ];
+				}
+			} ,10);
+			//_self.dright = [PS.getCanImageTurn(  _self.dleft[0] ) ];
 			
 			done( unit.imgSpc );
 		}
