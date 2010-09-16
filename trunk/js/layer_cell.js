@@ -53,30 +53,22 @@ var CellLayer = Layer.extend({
 		if ( this.lines ){
 			ctx.save();
 			
-			ctx.strokeStyle  = "rgba(0,0,0,1)";
-			ctx.beginPath();
-			
+			ctx.fillStyle  = "rgba(255,255,255, 1)";
+			ctx.font = "14px";
 			//竖线
 			for (var i=1; i<CELL_XNUM; i++) {
-				ctx.moveTo( i * CELL_WIDTH  , 0 ); 
-				ctx.lineTo( i * CELL_WIDTH  , MAX_H );
-				ctx.strokeText(  i ,  i * CELL_WIDTH + 15, 15 );
+				ctx.fillText(  i ,  i * CELL_WIDTH + 15, 15 );
 			}
 			//横线
 			for (var i=1; i<CELL_YNUM; i++) {
-				ctx.moveTo( 0, i * CELL_HEIGHT ); 
-				ctx.lineTo( MAX_W, i * CELL_HEIGHT);		
-				ctx.strokeText(  i ,  15, i * CELL_HEIGHT + 15 );
+				ctx.fillText(  i ,  15, i * CELL_HEIGHT + 15 );
 			}
-			ctx.closePath();			
-			ctx.stroke();	
-/*
+
 			for (var i=0; i<CELL_XNUM; i++) {
 				for (var j=0; j<CELL_YNUM; j++) {
-					ctx.strokeText(  "(" + i + "," + j + ")" ,  i * CELL_WIDTH + 15, j * CELL_HEIGHT + 15 );
+					ctx.strokeRect( i *CELL_WIDTH , j* CELL_HEIGHT, CELL_WIDTH , CELL_HEIGHT );
 				}
-			}	
-*/				
+			}
 		}
 		//绘制cell
 		for( var color in  this.cells ){

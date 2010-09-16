@@ -82,6 +82,18 @@ var Panel = Component.extend({
 		.click( function( e ){
 			_self.fireEvent( "click", e );	
 		} )
+		.mousewheel( function( e, delta, x, y){
+			//console.debug( delta + " x = " + x + " y = " + y );
+			//向下滚动
+			if ( y  == -1 ){
+				_self.moveBy( 0, CELL_HEIGHT );
+			}else{
+				_self.moveBy( 0, -CELL_HEIGHT );
+			}
+			
+			e.preventDefault();
+			return false;
+		} )
 		.bind("contextmenu",function( e ){
 				e.preventDefault();
 				e.stopPropagation();
@@ -175,6 +187,18 @@ var Panel = Component.extend({
 			this.el[0].scrollTop = (this.scrollTop = y);
 			
 		return this;			
+	},
+	
+	moveBy		: function( x, y ){
+		x = x || 0;
+		y = y || 0;
+		
+		x = this.el.scrollLeft() + x;
+		y = this.el.scrollTop() + y;
+		
+		this.moveTo( x, y );
+		
+		return this;
 	},
 	
 	//设置背景图片
