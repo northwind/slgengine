@@ -40,7 +40,12 @@ var Panel = Component.extend({
 										height	: this.el.height()
 									} );
 		//初始化进度条
-		Process.init( { ct: this.el } ).start().tip( 20, "加载图片..." );
+		this.process = new Process(  { ct: this.el } );
+		//进度条加载完之后触发panel的load事件
+		this.process.on("end", function(){
+			$( canvas ).show();
+			this.fireEvent( "load" );
+		}, this).start();
 		
 		//创建的顺序既是绘画时的先后顺序
 		this._createCellLayer();
@@ -117,10 +122,9 @@ var Panel = Component.extend({
 		} , this.sequence);
 		
 		//this.on( "keydown", this.onKeydown, this );
-		this.on( "load", Process.end, Process )
-			 .on( "load", function(){
-			 	canvas.style.display = "block";
-			 } );
+		this.on("background", function(){
+			this.process.add( 20, "背景图片加载完毕..." );
+		}, this);
 			 		
 		return this;		
 	},
@@ -141,9 +145,9 @@ var Panel = Component.extend({
 		
 		this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
 		
-		this.unitsLayer.on( "loading", function( sum, count ){
-			Process.tip( 20 + ( count / sum ) * 40, "加载角色图片..." );
-		} );
+		this.unitsLayer.on( "loading", function( unit, sum, count ){
+			this.process.add( 80 / sum, "加载" + (unit.name || unit.symbol) + "完备..." );
+		}, this );
 		
 	},	
 	_createWinLayer	: function(){
@@ -173,14 +177,13 @@ var Panel = Component.extend({
 		return this;			
 	},
 	
+	//设置背景图片
 	setBgImage	: function( url ){
 		
 		var _self = this;
 		_loadImg( url, function(){
 			canvas.style.background = "url('" + url + "') no-repeat";
-			
 			_self.fireEvent( "background" );
-			_self.fireEvent( "load" );
 		} );
 		
 		return this;
