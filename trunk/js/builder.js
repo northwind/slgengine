@@ -4,6 +4,9 @@
 
 $(function(){
 	
+	if ( $.browser.msie )
+		return false;
+		
 	PANEL = new Panel( {
 		ct : $("#container")
 	} );
