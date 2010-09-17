@@ -92,7 +92,25 @@ PS.prototype = {
 		
 		return ret;
 	},
-	
+
+	//将图像灰化
+	grayImg		: function( img ){
+		var ret = new Image(), can = this.canvas, c = this.ctx;
+		var w = img.width, h = img.height;
+		
+		can.width = w;
+		can.height = h;
+		
+		c.drawImage( img, 0, 0 );
+		var imgdata = this.gray( c, c.getImageData( 0,0, w, h ) );
+		c.putImageData( imgdata, 0, 0 );
+		
+		var data = can.toDataURL();
+		ret.src = data;		
+		
+		return ret;
+	},
+		
 	// 生成ImageData
 	createImageData	: function( ctx, ori, from, w, h ){
 			var	ret = ctx.createImageData( w, h );

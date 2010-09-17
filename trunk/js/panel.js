@@ -194,8 +194,8 @@ var Panel = Component.extend({
 		x = x || 0;
 		y = y || 0;
 		
-		x = this.el.scrollLeft() + x;
-		y = this.el.scrollTop() + y;
+		x = this.el[0].scrollLeft + x;
+		y = this.el[0].scrollTop + y;
 		
 		this.moveTo( x, y );
 		

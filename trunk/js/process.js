@@ -54,7 +54,7 @@ var Process = Observable.extend({
 		this.next = next;
 		this.msg = msg;
 		
-		console.debug( "tip : next : " + this.next + " msg : " + msg );
+		//console.debug( "tip : next : " + this.next + " msg : " + msg );
 		
 		return this;
 	},
@@ -63,7 +63,7 @@ var Process = Observable.extend({
 		this.next += n;
 		this.msg = msg;
 		
-		console.debug( "add : next : " + this.next + " msg : " + msg );
+		//console.debug( "add : next : " + this.next + " msg : " + msg );
 		if ( this.next >= 100 )
 			this.end();
 			
@@ -74,7 +74,7 @@ var Process = Observable.extend({
 		if ( this.timer )
 			clearInterval( this.timer );
 			
-		console.debug( "process end" );
+		//console.debug( "process end" );
 		
 		this.el.html("").hide();
 		PANEL.unmask();
