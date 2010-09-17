@@ -43,8 +43,11 @@ var ActionMenu = Win.extend({
 	onProp	: function(e){
 		alert( "prop : " +  e.which );
 	},
+	
 	onStandBy	: function( e ){
-		alert( "stand : " +  e.which );
+		this.unit.finish();
+		this.hide();
+		delete this.unit;
 	},
 	
 	//覆盖父类 增加角色回退功能
@@ -57,6 +60,11 @@ var ActionMenu = Win.extend({
 			this._super(e);
 			PANEL.unitsLayer.unClick();
 		}
+	},
+	
+	bind	: function( unit ){
+		this.unit = unit;
+		return this;
 	}
 	
 });

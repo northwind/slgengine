@@ -16,8 +16,7 @@ var Win = Component.extend({
 									if ( e.which == 1 )
 										_self.onCansel( e );
 								} )
-								.appendTo( this.el )
-								;
+								.appendTo( this.el );
 		
 		this.el.mousemove( function( e ){
 			//阻止PANEL出发mousemove事件

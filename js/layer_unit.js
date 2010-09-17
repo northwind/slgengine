@@ -106,32 +106,29 @@ var UnitLayer = Layer.extend({
 	
 	onClick	: function( e ){
 			var  cell = PANEL.getCell( e );
+			var unit = this.units[cell.index];
 							
 			if (this.clicked) {
 				//如果可以攻击
-				if (this.clicked.canAttack(cell)) {
-					this.clicked.attack(cell, function(){
-						
-					}, this);
+				if ( this.clicked.preAttack && unit && this.clicked.canAttack(cell)) {
 					this._removeCells();
 					
-					delete this.clicked;
+					this.clicked.on( "attack", function(){
+						
+						delete this.clicked;
+						
+					}, this, { single : true } ).attack( unit );
 				}
 				else 
 					//如果可以移动
 					if (this.clicked.canMove(cell)) {
-						this.clicked.moveTo(cell, function(){
-							PANEL.popMenu(this.clicked, cell.dx - CELL_WIDTH * 2, cell.dy - CELL_HEIGHT);
-						}, this);
-						this._removeCells();
-					//重新设置unit的index
 					
-					//delete this.units[  ]
+						this._removeCells();
+						this.clicked.moveTo(cell );
 					}
 			}
 			else {
-				var unit = this.units[cell.index];
-				if (unit && unit != this.clicked) {
+				if (unit && unit.moveable ) {
 					//获得可移动格子
 					var obj = this.getWalkCells(cell, unit.step);
 					PANEL.cellLayer.paintCells(this.moveColor, obj);
@@ -288,7 +285,21 @@ var UnitLayer = Layer.extend({
 	
 	_initUnit	: function( config ){
 		config.layer = this;
+					
+		var unit = new Unit(config );
 		
-		return new Unit(config );
+		unit.on( "standby", function(){
+			delete this.clicked;
+		}, this )
+		.on( "move", function( unit ){
+			PANEL.popMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
+		}, this )
+		//角色移动时及时更新管理器
+		.on( "walk", function( unit, from, to ){
+			 this.units[ to.index ] = this.units[ from.index ];
+			 delete this.units[ from.index ];
+		}, this );
+		
+		return unit;
 	}
 }); 

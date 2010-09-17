@@ -26,11 +26,10 @@ var WinLayer = Component.extend({
 	popMenu			: function( unit, x, y ){
 		if ( !this.menuAction ){
 			this.menuAction = new ActionMenu({
-				ct	: this.el,
-				unit	: unit
+				ct	: this.el
 			});
 		}
-		this.menuAction.showAt( x, y ).show();
+		this.menuAction.bind( unit ).showAt( x, y ).show();
 		
 		return this;
 	},

@@ -11,10 +11,11 @@ var UnitUI = Observable.extend({
 	
 	init	: function( config, callback ){
 		this.unit = config;
+		this.grays = {};
 		
 		this._super();
 		
-		this.addEvents( "load" );
+		this.addEvents( "load", "attack", "defend", "miss" );
 		this._getImageData( callback );
 		
 		return this;
@@ -170,26 +171,40 @@ var UnitUI = Observable.extend({
 	
 	draw	:  function( unit ){
 		if ( !this.loaded )
-			return false;
+			return;
 		
 		var cell = unit.cell;
-		var img =this[ unit.direct ][ unit.p ],
+		var img = unit.pencil,
 			 dx = cell.dx, dy = cell.dy;
-		
+			
 		ctx.save();
 		
 		//绘制图像
 		//ctx.putImageData( img, dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
+		if ( img )
 		try {
 			ctx.drawImage( img, dx,dy );
 		} catch (e) {}
-		
-		//绘制血条等主要信息
+		//闪避
+		if ( unit.missing ){
+			ctx.font = "15px";
+			ctx.fillStyle = "rgba(255,255,255,0.8)";
+			ctx.fillText( "我闪", dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 3 );
+		}
+		//扣血
+		if ( unit.HPdecrease ){
+			ctx.font = "15px";
+			ctx.fillStyle = "rgb(255,0,0)";
+			ctx.fillText( "-" + unit.HPdecrease, dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 2 - unit.HPdelast );
+		}		
+			
+		//绘制血条
 		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
 		
 			var y = dy - 9;
 			y = y < 0 ? 1 : y;
 			//血条黑色背景
+			ctx.fillStyle = "rgb(0,0,0)";
 			ctx.fillRect(dx, y, CELL_WIDTH, HPHEIGHT);
 			//血条
 			var colors = HPCLR[Math.min(4, parseInt(unit.hpPercent / 20))];
@@ -201,7 +216,7 @@ var UnitUI = Observable.extend({
 			ctx.fillStyle = lingrad;
 			ctx.fillRect(dx, y + 1, CELL_WIDTH * unit.hpPercent / 100, HPHEIGHT - 2);
 		}
-		//绘制血条等主要信息
+		//绘制主要信息
 		if ( unit.major ){	
 			//主要信息
 			//边框 
@@ -230,13 +245,20 @@ var UnitUI = Observable.extend({
 		ctx.restore();
 	},
 	
-	attack	: function( cell, fn, scope ){
+	attack	: function( cell ){
 		//判断方向
 		
-		this.fn = fn;
-		this.scope = scope;
 		
 		return this;
+	},
+	
+	gray	: function( direct ){
+		//缓存灰化图像
+		if ( !this.grays[ direct ] ){
+			this.grays[ direct ] = PS.grayImg( this[ direct ][ 0 ] );
+		}
+		
+		return this.grays[ direct ];	
 	}
 	
 }); 

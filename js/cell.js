@@ -21,7 +21,29 @@ Cell.prototype = {
 	*/		
 	direct	: function( to ){
 		return (to.y - this.y) * 3 + to.x - this.x;
-	}	
+	},
+
+	directT : function( to ){
+		var n = this.direct( to );
+		
+		switch( n ) {
+			case 3: //下
+				return "down";
+			case -3://上
+				return "up";
+			case 2://左上
+			case -1://左下	
+			case -4://左
+				return "left";
+			case 4://右上
+			case -2://右下
+			case 1://右
+				return "right";
+			default:
+				return "down";	
+		}
+	}
+		
 };
 
 CellMgr	= new function(){
