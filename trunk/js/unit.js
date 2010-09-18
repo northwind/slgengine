@@ -107,7 +107,7 @@ var Unit = Observable.extend({
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		this.direct = this.ortDirect = "down";
 		//增加角色事件
-		this.addEvents( "dead","attack","move", "walk", "speak","defend","show","standby", "load" );
+		this.addEvents( "dead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load" );
 		
 		this.setUI();
 		
@@ -269,6 +269,7 @@ var Unit = Observable.extend({
 	moveTo		: function( cell, fn, scope ){
 		if (!this.moving) {
 			this.moving = true;
+			this.lock = true;
 			
 			this.oriCell = this.cell;
 			this.oriDirect = this.direct;
@@ -303,7 +304,6 @@ var Unit = Observable.extend({
 	},
 	
 	attack			: function( unit ){
-		this.lock = false;
 		var cell = unit.cell;
 
 		//绑定防御事件 被攻击的unit受到伤害后反馈
@@ -327,8 +327,9 @@ var Unit = Observable.extend({
 			this.burstlast = 4; 
 		}	
 		
+		this.fireEvent( "preAttack", this );
 		this.attacking = true;
-		//改角色攻击时，触发被攻击者的被攻击方法
+		//该角色攻击后，触发被攻击者的被攻击方法
 		this.on("attack", unit.attacked, unit , { one : true });
 				
 		return this;
@@ -364,6 +365,10 @@ var Unit = Observable.extend({
 	
 	_calcHpPercent	: function(){
 		this.hpPercent = Math.min(100, this.hp * 100 / this.hpMax);
+		if (this.hpPercent < 20) {
+			//濒临死亡
+			this.debility = true;
+		}
 	},
 	
 	//扣血
@@ -379,11 +384,6 @@ var Unit = Observable.extend({
 			if (this.hp == 0) {
 				this.onDead();
 			}
-			else 
-				if (this.hpPercent < 20) {
-					//濒临死亡
-					this.debility = true;
-				}
 		}	
 	},
 	
@@ -428,12 +428,21 @@ var Unit = Observable.extend({
 		PANEL.cellLayer.paintCells( this.layer.attaColor, obj );
 		this.attacks = obj;
 		this.preAttack = true;
-		this.lock = true;
+	},
+	
+	hideAttack	: function(){
+		this.preAttack = false;
+		delete this.attacks;
+		PANEL.unitsLayer._removeCells();
+	},
+	
+	unClick	: function(){
+		PANEL.unitsLayer.unClick();
 	},
 	
 	finish	: function(){
 		this.standby = true;
-		this.lock = false;
+		this.lock = true;
 		this.oriCell = this.cell;
 		this.attackFreq = 0; 
 		this.fireEvent( "standby", this );

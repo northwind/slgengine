@@ -19,25 +19,13 @@ var Win = Component.extend({
 										_self.onCansel( e );
 								} )
 								.appendTo( this.el );
-		
+								
 		this.el.mousemove( function( e ){
-			//阻止PANEL出发mousemove事件
 			e.stopPropagation();
-		} ).mouseenter( function(){
 			//取消正在显示的鼠标滑过的效果
 			PANEL.cellLayer.unactiveCell();
-		} ).click( function( e ){
-			e.stopPropagation();
 		} );
-		
-		//点击右键时取消菜单
-		PANEL.on("contextmenu", this.onCansel, this );
-		PANEL.on("keydown", function( e ){
-			//按ESC时
-			if ( e.which == 27 )
-				this.onCansel();
-		}, this );
-		
+										
 		return this;	
   	},
 	
@@ -50,11 +38,11 @@ var Win = Component.extend({
 	
 	//取消菜单时
 	onCansel	: function( e ){
+		this.fireEvent( "cansel", this );
+		
 		if (!this.hidden) {
 			this.hide();
 		}
-		
-		this.fireEvent( "cansel", this );
 	}
 	
 });
