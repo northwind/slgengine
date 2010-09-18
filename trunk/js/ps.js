@@ -227,6 +227,24 @@ PS.prototype = {
 		return ret;
 	},
 	
+	//将图像灰化
+	highlightImg		: function( img, n ){
+		var ret = new Image(), can = this.canvas, c = this.ctx;
+		var w = img.width, h = img.height;
+		
+		can.width = w;
+		can.height = h;
+		
+		c.drawImage( img, 0, 0 );
+		var imgdata = this.highlight( c, c.getImageData( 0,0, w, h ), n );
+		c.putImageData( imgdata, 0, 0 );
+		
+		var data = can.toDataURL();
+		ret.src = data;		
+		
+		return ret;
+	},
+		
 	//去色   紫色 247, 0, 255
 	 removeColor	: function( ctx, imageData, r, g, b ){
 		var w = imageData.width,
