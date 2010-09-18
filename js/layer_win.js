@@ -5,6 +5,8 @@
 
 var WinLayer = Component.extend({
 	cls	: "_winLayer",
+	top	: null,  //最顶层窗口
+	items : null, //弹出菜单
 	
 	init	: function( config ){
 		$.extend( config, {
@@ -15,12 +17,38 @@ var WinLayer = Component.extend({
 		
 		this._super( config );
 		
+		this.items = [];
+		
 		this.pri( config.level );
 		
 		this.addEvents( "init", "pop", "cansel" );
+		
+		//点击右键时取消菜单
+		
+		PANEL.on("keydown", function( e ){
+			if (this.items.length > 0) {
+				//按ESC时
+				if (e.which == 27) 
+					this.onContextmenu();
+				
+				if ( e.which == 32 && this.items[ 0 ].onStandBy )
+					 this.items[ 0 ].onStandBy();
+			}	
+		}, this ).on( "contextmenu", function( e ){
+			if (this.items.length > 0) {
+				this.onContextmenu();
+				
+				e.stopPropagation();
+			}
+		}, this ) ;		
+		
 		//PANEL.on("mousemove", this.activeCell, this );
 		
 		return this;
+	},
+	
+	onContextmenu		: function(){
+		this.items[ 0 ].onCansel();		
 	},
 	
 	popMenu			: function( unit, x, y ){
@@ -31,9 +59,13 @@ var WinLayer = Component.extend({
 			
 			this.menuAction.on( "cansel", function(){
 				this.fireEvent( "cansel", arguments[0] );
+				//丢弃第一个
+				this.items.pop();
 			}, this );
 		}
 		this.menuAction.bind( unit ).showAt( x, y ).show();
+		//放在第一个
+		this.items.unshift( this.menuAction );
 		
 		this.fireEvent( "pop", this.menuAction );
 		

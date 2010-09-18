@@ -4,6 +4,7 @@
 var ActionMenu = Win.extend({
 	unit	: null,
 	beshow : false, 	//鼠标右键是否该重新现实
+	lock	: false,   //锁定不可操作
 	
 	init: function( config ){
 		this._super( config );
@@ -15,7 +16,6 @@ var ActionMenu = Win.extend({
 		this.btnAttack = this.createAction( "道具", "images/system/82-1.png", this.onProp );
 		this.btnAttack = this.createAction( "待命", "images/system/98-1.png", this.onStandBy );
 		
-
 		return this;	
   	},
 	
@@ -30,11 +30,21 @@ var ActionMenu = Win.extend({
 	},
 	
 	onAttack	: function( e ){
-		this.unit.showAttack( function(){
-			this.beshow = false;
-		}, this );
+		this.unit.showAttack();
 		this.hide();
 		this.beshow = true;
+		
+		this.preAttack =  function(){
+			this.lock = true;
+			this.unit.on( "standby", function(){
+				//攻击后
+				this.lock = false;
+				this.beshow = false;
+				this.onCansel();
+			}, this, { one : true } );
+		};
+		//角色攻击前触发事件
+		this.unit.on( "preAttack", this.preAttack, this ,{ one : true });
 	},
 	
 	onMagic	: function( e ){
@@ -46,19 +56,24 @@ var ActionMenu = Win.extend({
 	
 	onStandBy	: function( e ){
 		this.unit.finish();
-		this.hide();
-		delete this.unit;
+		this.onCansel();
 	},
 	
 	//覆盖父类 增加角色回退功能
 	onCansel	: function( e ){
-		if (this.beshow) {
-			this.beshow = false;
-			this.show();
-		}
-		else {
-			PANEL.unitsLayer.unClick();
-			this._super(e);
+		if (!this.lock) {
+			if (this.beshow) {
+				this.beshow = false;
+				this.unit.hideAttack();
+				this.show();
+				//取消角色攻击前触发事件
+				this.unit.un( "preAttack", this.preAttack, this );
+			}
+			else {
+				this._super(e);
+				this.unit.unClick();
+				delete this.unit;
+			}
 		}
 	},
 	

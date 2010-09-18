@@ -135,7 +135,8 @@ var UnitLayer = Layer.extend({
 					}
 			}
 			else {
-				if (unit && unit.moveable ) {
+				//没有锁定同时具有移动性
+				if (unit && !unit.lock && unit.moveable ) {
 					//获得可移动格子
 					var obj = this.getWalkCells(cell, unit.step);
 					PANEL.cellLayer.paintCells(this.moveColor, obj);
