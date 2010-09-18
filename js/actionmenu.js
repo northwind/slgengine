@@ -57,8 +57,8 @@ var ActionMenu = Win.extend({
 			this.show();
 		}
 		else {
-			this._super(e);
 			PANEL.unitsLayer.unClick();
+			this._super(e);
 		}
 	},
 	

@@ -8,6 +8,8 @@ var Win = Component.extend({
 	init: function( config ){
 		this._super( config );
 		
+		this.addEvents( "pop", "cansel" );
+		
 		var _self = this;
 		this.content = $("<div>").appendTo( this.el );
 		//取消按钮
@@ -41,16 +43,18 @@ var Win = Component.extend({
 	
 	showAt	: function( x, y ){
 		
-		
 		this._super( x, y );
-		
-		
+				
 		return this;
 	},
 	
 	//取消菜单时
-	onCansel	: function(){
-		this.hide();
+	onCansel	: function( e ){
+		if (!this.hidden) {
+			this.hide();
+		}
+		
+		this.fireEvent( "cansel", this );
 	}
 	
 });

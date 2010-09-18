@@ -18,6 +18,8 @@ var Panel = Component.extend({
 	dps		 : 16, //帧数
 	sequence : 20, //多久更新一次
 	
+	wincount : 0,  //弹出菜单数量
+	
 	init		: function( config ){
 		PANEL = this;
 		
@@ -50,8 +52,8 @@ var Panel = Component.extend({
 		
 		//创建的顺序既是绘画时的先后顺序
 		this._createCellLayer();
-		this._createUnitLayer();
 		this._createWinLayer();
+		this._createUnitLayer();
 		
 		//绑定事件
 		var x, y, drag = false, el=this.el, _self = this;
@@ -168,6 +170,9 @@ var Panel = Component.extend({
 			this.winLayer.remove();
 		
 		this.winLayer = LayerMgr.reg( 300, MAX_W, MAX_H, WinLayer );
+		
+		this.winLayer.on( "pop", function(){ this.wincount++; }, this )
+							  .on( "cansel", function(){ this.wincount--; }, this );
 	},
 		
 	showGrid			: function(){

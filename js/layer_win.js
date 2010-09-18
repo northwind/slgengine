@@ -17,7 +17,7 @@ var WinLayer = Component.extend({
 		
 		this.pri( config.level );
 		
-		this.addEvents( "init" );
+		this.addEvents( "init", "pop", "cansel" );
 		//PANEL.on("mousemove", this.activeCell, this );
 		
 		return this;
@@ -27,9 +27,15 @@ var WinLayer = Component.extend({
 		if ( !this.menuAction ){
 			this.menuAction = new ActionMenu({
 				ct	: this.el
-			});
+			}) ;
+			
+			this.menuAction.on( "cansel", function(){
+				this.fireEvent( "cansel", arguments[0] );
+			}, this );
 		}
 		this.menuAction.bind( unit ).showAt( x, y ).show();
+		
+		this.fireEvent( "pop", this.menuAction );
 		
 		return this;
 	},

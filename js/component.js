@@ -34,11 +34,8 @@ var Component = Observable.extend({
 		return this;	
   	},
 	
-	//TODO X Y �ߵ���
 	showAt	: function( x,y ){
-		if ( x == undefined )
-			return this.el.position();
-		else if ( x.constructor == Array )
+		if ( x.constructor == Array )
 			return arguments.callee( x[0], x[1] );
 		else if ( typeof x == "object" )
 			return arguments.callee( x.left, x.top );	

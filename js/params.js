@@ -19,12 +19,12 @@ WINDOW_HEIGHT= 480,
 
 SPEED	= 340,	//调节unit切换图片的速度
 STEP	= 60 ,	//调节走路速度
-ASPEED  = 100,  //攻击速度
+ASPEED  = 120,  //攻击速度
 
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
 	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, urlImg : "images/move/110-1.png", range : 1, rangeType : 1,
-	symbol	: "caocao", name : "曹操",
+	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2,
 	imgMove	:"images/move/110-1.png",
 	imgAtk	: "images/atk/110-1.png",
 	imgSpc	: "images/spc/110-1.png",
@@ -113,12 +113,15 @@ MAP	= 	[
 		//血条的高度
 		HPHEIGHT = 7,
 		//血条颜色展示 共五档，每档用两个色值
-HPCLR	= [ ["#3f3e3e", "#272727"] ,  ["#7a2200", "#8d2b00"] ,  ["#7a7100", "#978c00"] ,
+HPCLR	= [ ["#7a2200", "#8d2b00"] ,  ["#8a3200", "#9d3b00"] ,  ["#7a7100", "#978c00"] ,
 					  ["#297a00", "#329700"] ,  ["#007a00", "#009700"]      ],
 		//主要信息颜色 边框、背景
 		MAJOR = [  "#fdc92b", "rgba(31,41,61,0.4)" ],
 		//单元格颜色信息
-		CELLCOLOR = [ "rgba(255,255,255,0.6)"  ]
+		CELLCOLOR = [ "rgba(255,255,255,0.6)"  ],
+		
+		HighLightDeep = 160    //高亮度
+		
 		;  
 
 

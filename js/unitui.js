@@ -12,6 +12,7 @@ var UnitUI = Observable.extend({
 	init	: function( config, callback ){
 		this.unit = config;
 		this.grays = {};
+		this.highlights = {};
 		
 		this._super();
 		
@@ -141,7 +142,7 @@ var UnitUI = Observable.extend({
 							
 			_self.dleft = [PS.getCanImage( ctx, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT )];
 							
-			_self.hit = [PS.getCanImage( ctx, 0, CELL_HEIGHT*3, CELL_WIDTH, CELL_HEIGHT )];
+			_self.attacked = [PS.getCanImage( ctx, 0, CELL_HEIGHT*3, CELL_WIDTH, CELL_HEIGHT )];
 			
 			_self.burst = [PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
 			
@@ -177,20 +178,35 @@ var UnitUI = Observable.extend({
 		var img = unit.pencil,
 			 dx = cell.dx, dy = cell.dy;
 			
-		ctx.save();
-		
 		//绘制图像
 		//ctx.putImageData( img, dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
 		if ( img )
 		try {
 			ctx.drawImage( img, dx,dy );
 		} catch (e) {}
+	},
+	
+	drawTip	:  function( unit ){
+		
+		var cell = unit.cell;
+		var img = unit.pencil,
+			 dx = cell.dx, dy = cell.dy;
+			
+		ctx.save();
+		
 		//闪避
 		if ( unit.missing ){
 			ctx.font = "15px";
-			ctx.fillStyle = "rgba(255,255,255,0.8)";
-			ctx.fillText( "我闪", dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 3 );
+			ctx.fillStyle = "rgba(255,255,255,1)";
+			ctx.fillText( "我闪", dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 2 - unit.misslast );
 		}
+		//无效
+		if ( unit.invinciblelast > 0 ){
+			ctx.font = "15px";
+			ctx.fillStyle = "rgba(255,255,0,1)";
+			ctx.fillText( "无效", dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 3 + unit.invinciblelast );			
+		}
+			
 		//扣血
 		if ( unit.HPdecrease ){
 			ctx.font = "15px";
@@ -207,7 +223,7 @@ var UnitUI = Observable.extend({
 			ctx.fillStyle = "rgb(0,0,0)";
 			ctx.fillRect(dx, y, CELL_WIDTH, HPHEIGHT);
 			//血条
-			var colors = HPCLR[Math.min(4, parseInt(unit.hpPercent / 20))];
+			var colors = HPCLR[Math.min(4, parseInt(unit.hpPercent / 20) )];
 			var lingrad = ctx.createLinearGradient(dx, y + 1, dx, y + HPHEIGHT - 1);
 			lingrad.addColorStop(0, colors[0]);
 			lingrad.addColorStop(0.5, colors[1]);
@@ -243,7 +259,7 @@ var UnitUI = Observable.extend({
 		}
 		
 		ctx.restore();
-	},
+	},	
 	
 	attack	: function( cell ){
 		//判断方向
@@ -259,6 +275,16 @@ var UnitUI = Observable.extend({
 		}
 		
 		return this.grays[ direct ];	
-	}
+	},
+	
+	//高亮攻击图像
+	highlight	: function( direct ){
+		//缓存高亮图像
+		if ( !this.highlights[ direct ] ){
+			this.highlights[ direct ] = PS.highlightImg( this[ "a" + direct ][ 0 ], HighLightDeep );
+		}
+		
+		return this.highlights[ direct ];	
+	}	
 	
 }); 

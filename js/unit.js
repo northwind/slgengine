@@ -5,6 +5,7 @@ var Unit = Observable.extend({
 	name	: "步兵",
 	symbol	: "footman",	//区别角色UI样式
 	moveable: true,    		//是否可以移动
+	lock	: false,		//锁定角色 不能移动
 	type	:-1,			//类型
 	tipable :false,			//是否有提示框
 	active  : true,			//是否有效
@@ -37,8 +38,9 @@ var Unit = Observable.extend({
 	agility : 0,	//敏捷
 	intelligence : 0,	//智力
 	
-	miss		: 0,  //百分数 躲闪的概率
-	burst		: 0,	//百分数 暴击的概率
+	miss		: 40,  //百分数 躲闪的概率
+	burst		: 40,	//百分数 暴击的概率
+	enlarge	: 1.5,  //暴击时系数
 	invincible	: false, //无敌
 	debility : false,	//濒临死亡
 	dead		: false,
@@ -69,6 +71,9 @@ var Unit = Observable.extend({
 	attackP		: 0, //攻击时的图像索引
 	missing		: false, //闪避中
 	misslast	: 0, //闪避持续显示帧数
+	invinciblelast	: 0, //无效持续显示帧数
+	burstlast	    : 0,  //致命一击持续帧数
+	beattacked		: 0, //被击中
 	HPdelast	: 0, //扣血持续显示帧数
 	HPdecrease  : 0, //扣血
 	
@@ -97,8 +102,7 @@ var Unit = Observable.extend({
 		
 		this._super( config );
 		
-		//增加事件
-		this.addEvents( "dead" );
+		this._calcHpPercent();
 		
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		this.direct = this.ortDirect = "down";
@@ -132,11 +136,20 @@ var Unit = Observable.extend({
 		if ( this.missing && this.misslast++ == 20 ){
 			this.missing = false;
 			this.misslast = 0;
+			//this.fireEvent( "defend", this, 0 );
+		}
+		//无敌
+		if (this.invinciblelast > 0) {
+			this.invinciblelast--;
+			//if ( this.invinciblelast == 0 )
+				//this.fireEvent( "defend", this, 0 );
 		}
 		//扣血
 		if ( this.HPdelast > 0 && this.HPdelast++ == 20 ){
 			this.HPdelast = 0;
 			this.HPdecrease = 0;
+			
+			//this.fireEvent( "defend", this, 0 );
 		}		
 		//攻击
 		if ( this.attacking && this.attackP == this.ui[ "a" + this.direct ].length  ){
@@ -144,6 +157,7 @@ var Unit = Observable.extend({
 			this.attackP = 0;
 			
 			this.fireEvent( "attack", this, this._genHitValue() );
+			this.burstlast = 0;
 		}  
 		//移动过后回调	
 		if ( this.moving && this.way == 0){
@@ -157,6 +171,10 @@ var Unit = Observable.extend({
 			
 			this.fireEvent( "move", this );
 		}		
+	},
+	//绘制提示信息
+	drawTip	: function(){
+		this.ui.drawTip( this );			
 	},
 	
 	showMajor	: function(){
@@ -178,23 +196,42 @@ var Unit = Observable.extend({
 		//攻击
 		if (this.attacking) {
 			var actions = this.ui["a" + this.direct];
-			if (timestamp - this.stampAtk > ASPEED) {
-				this.stampAtk = timestamp;
+			var diff = timestamp - this.stampAtk;
+			//致命一击时 高亮第一个攻击图像
+			if (this.burstlast > 1) {
+				if (diff > ASPEED) {
+					this.stampAtk = timestamp;
+					this.burstlast--;
+				}
+				this.attackP = 1;
 				
-				img = actions[this.attackP++];
-			}else{
-				img = actions[this.attackP];
+				img = this.ui.highlight(this.direct);
+			}
+			else {
+				if (diff > ASPEED) {
+					this.stampAtk = timestamp;
+					
+					img = actions[this.attackP++];
+				}
+				else {
+					img = actions[this.attackP];
+				}
 			}
 		}
-		else 
+		else {
+			if ( this.beattacked > 0  && diff > ASPEED ){
+				this.beattacked--;
+				
+				img = this.ui.attacked[ 0 ];
+			} else
 			if (this.standby) {
 				//待机
-				img = this.ui.gray( this.direct );
+				img = this.ui.gray(this.direct);
 			}
 			else 
 				if (this.debility) {
 					//虚弱时
-					img = this.ui.fall[this.p];
+					img = this.ui.fall[this.p - 1];
 				}
 				else 
 					if (this.way.length > 0 && diff > STEP) {
@@ -205,12 +242,13 @@ var Unit = Observable.extend({
 						var cell = this.way.pop();
 						this.direct = this.cell.directT(cell);
 						//触发walk事件
-						this.fireEvent( "walk", this, this.cell, cell );
+						this.fireEvent("walk", this, this.cell, cell);
 						
 						this.cell = cell;
 						
 						img = this.ui[this.direct][this.p];
-					} 
+					}
+		}			
 		//切换步伐
 		if( timestamp - this.stampStatus > SPEED ){
 			this.stampStatus = timestamp;
@@ -221,7 +259,7 @@ var Unit = Observable.extend({
 	},
 	
 	canMove	: function( cell ){
-		return !this.moving && this.moves && this.moves[ cell.index ];
+		return !this.moving && !this.lock && this.moves && this.moves[ cell.index ];
 	},
 	
 	canAttack	: function( cell ){
@@ -250,38 +288,49 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
+	//回到行动前的状态
 	homing		: function(){
-		this.cell = this.oriCell;
 		this.direct = this.oriDirect;
 		this.moving = false;
 		this.preAttack = false;
+		this.lock = false;
 		this.way = [];
+		//触发walk事件
+		this.fireEvent("walk", this, this.cell, this.oriCell);
+		this.cell = this.oriCell;
 		
 		return this;
 	},
 	
 	attack			: function( unit ){
+		this.lock = false;
 		var cell = unit.cell;
 
 		//绑定防御事件 被攻击的unit受到伤害后反馈
 		unit.on( "defend", function( defender ){
 			this.attackFreq++;
-			if ( this.attackFreq == this.attackFreqMax || defender.dead ){
+			if ( this.attackFreq >= this.attackFreqMax || defender.dead ){
 				//结束本回合
 				this.finish();
 			}else{
 				//继续攻击同一目标
 				this.attack( unit );
 			}
-		}, this );
-		this.on("attack", unit.attacked, unit );
+		}, this, { one : true } );
 		
 		this.preAttack = false;
-		this.attacking = true;
 		
 		//判断方向
 		this.direct = this.cell.directT( cell );
+		//判断暴击
+		if ( (1 + Math.random() * 99) <= this.burst ){
+			this.burstlast = 4; 
+		}	
 		
+		this.attacking = true;
+		//改角色攻击时，触发被攻击者的被攻击方法
+		this.on("attack", unit.attacked, unit , { one : true });
+				
 		return this;
 	},
 	
@@ -289,22 +338,32 @@ var Unit = Observable.extend({
 	attacked		: function( unit, v ){
 		//判断是否可攻击
 		if ( this.invincible ){
-			this.fireEvent( "defend", this, 0 );
+			this.invinciblelast = 20;
+			//this.fireEvent( "defend", this, 0 );
 		}else
 		//判断闪避
 		if ( (1 + Math.random() * 99) <= this.miss ){
 			this.missing = true; 
-			this.fireEvent( "defend", this, 0 );
+			//this.fireEvent( "defend", this, 0 );
 		}else
 		//判断抵抗
 		{
 			//伤害值
-			var decrease = Math.max( 0, v - this.defnum );
+			var decrease = this._genDamageValue(  v );
 			
 			this.onDecrease( decrease );
+			this.beattacked = 5;
 			
-			this.fireEvent( "defend", this, decrease );
+			//this.fireEvent( "defend", this, decrease );
 		}
+		_self = this;
+		setTimeout( function(){
+			_self.fireEvent( "defend", _self );
+		} , 1000);
+	},
+	
+	_calcHpPercent	: function(){
+		this.hpPercent = Math.min(100, this.hp * 100 / this.hpMax);
 	},
 	
 	//扣血
@@ -313,8 +372,8 @@ var Unit = Observable.extend({
 			this.HPdecrease = parseInt(d);
 			this.HPdelast = 1;
 			
-			this.hp = Math.max(0, this.hp - d);
-			this.hpPercent = Math.min(100, this.hp * 100 / this.hpMax);
+			this.hp = Math.max(0, this.hp - d );
+			this._calcHpPercent();
 			
 			//死亡
 			if (this.hp == 0) {
@@ -349,22 +408,34 @@ var Unit = Observable.extend({
 	},
 	
 	//计算攻击值 攻击上限与攻击下限间随机取值 最小为0
+	//暴击时乘以enlarge倍
 	_genHitValue	: function(){
-		return Math.max( 0, this.atknumMin + Math.random() * ( this.atknumMax - this.atknumMin ) );
+		var v = Math.max( 0, this.atknumMin + Math.random() * ( this.atknumMax - this.atknumMin ) );
+		if ( this.burstlast > 0 )
+			v = v * this.enlarge;
+		
+		return v;	
 	},
 	
+	//计算伤害值
+	_genDamageValue	: function( v ){
+		return Math.max( 0, v - this.defnum );
+	},
+		
 	showAttack	: function(){
 		//获得可攻击的格子
 		obj = this.layer.getAttackCells( this.cell, this.range, this.rangeType, this.team );
 		PANEL.cellLayer.paintCells( this.layer.attaColor, obj );
 		this.attacks = obj;
 		this.preAttack = true;
+		this.lock = true;
 	},
 	
 	finish	: function(){
 		this.standby = true;
-		this.moveable = false;
+		this.lock = false;
 		this.oriCell = this.cell;
+		this.attackFreq = 0; 
 		this.fireEvent( "standby", this );
 	}
 		

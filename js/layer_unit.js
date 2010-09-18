@@ -66,11 +66,18 @@ var UnitLayer = Layer.extend({
 	paint	: function( timestamp ){
 		//console.debug( "unit layer" );
 		if (this.units) {
+			//绘制图像
 			for( var key in this.units ){
 				var unit = this.units[ key ];
 				
 				unit.draw( timestamp );
 			}
+			//绘制提示信息
+			for( var key in this.units ){
+				var unit = this.units[ key ];
+				
+				unit.drawTip( timestamp );
+			}			
 		}		
 	},
 	
@@ -256,7 +263,11 @@ var UnitLayer = Layer.extend({
 	},
 			
 	onContextmenu	: function( e ){
+		//没有弹出菜单时右键才有效
+		if (PANEL.wincount <= 0) {
 			this._removeCells();
+			delete this.clicked;
+		}
 	},	
 	
 	showAt				: function( unit, x, y ){
