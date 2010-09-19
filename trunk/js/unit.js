@@ -34,11 +34,11 @@ var Unit = Observable.extend({
 	atknumMax	: 12,	//攻击力上限
 	atknumMin	: 10,   //攻击力下限
 	defnum	: 3,	//防御力
-	strength: 0,	//力量
-	agility : 0,	//敏捷
-	intelligence : 0,	//智力
+	strength: 3,	//力量
+	agility : 3,	//敏捷
+	intelligence : 3,	//智力
 	
-	miss		: 40,  //百分数 躲闪的概率
+	miss		: 5,  //百分数 躲闪的概率
 	burst		: 40,	//百分数 暴击的概率
 	enlarge	: 1.5,  //暴击时系数
 	invincible	: false, //无敌
@@ -58,7 +58,7 @@ var Unit = Observable.extend({
 	p			: 1,
 	cell		: null,   //当前所在的位置
 	oriCell : null,   //移动前所在的位置
-	ortDirect : "down", //移动前方向
+	oriDirect : "down", //移动前方向
 	
 	major	: false,		//是否显示简要信息
 	hpLine : false,    //是否显示血条
@@ -105,9 +105,9 @@ var Unit = Observable.extend({
 		this._calcHpPercent();
 		
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
-		this.direct = this.ortDirect = "down";
+		this.direct = this.oriDirect = "down";
 		//增加角色事件
-		this.addEvents( "dead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load" );
+		this.addEvents( "click", "unclick", "change", "dead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load" );
 		
 		this.setUI();
 		
@@ -226,10 +226,10 @@ var Unit = Observable.extend({
 			} else
 			if (this.standby) {
 				//待机
-				img = this.ui.gray(this.direct);
+				img = this.ui.gray( this.direct );
 			}
 			else 
-				if (this.debility) {
+				if ( !this.moving && this.debility ) {
 					//虚弱时
 					img = this.ui.fall[this.p - 1];
 				}
@@ -266,7 +266,7 @@ var Unit = Observable.extend({
 		return this.attacks && this.attacks[ cell.index ];
 	},
 	
-	moveTo		: function( cell, fn, scope ){
+	moveTo		: function( cell ){
 		if (!this.moving) {
 			this.moving = true;
 			this.lock = true;
@@ -280,11 +280,6 @@ var Unit = Observable.extend({
 				cell = cell.parent;
 			}
 			this.way = way;
-			this.fn = fn;
-			this.scope = scope;
-			//way.push( this.cell );
-			//way.reverse();
-		
 		}
 		return this;
 	},
@@ -374,11 +369,14 @@ var Unit = Observable.extend({
 	//扣血
 	onDecrease	: function( d ){
 		if (!isNaN(d) && d >= 0) {
-			this.HPdecrease = parseInt(d);
+			d = parseInt(d);
+			this.HPdecrease = d;
 			this.HPdelast = 1;
 			
 			this.hp = Math.max(0, this.hp - d );
 			this._calcHpPercent();
+			
+			this.fireEvent( "change", this );
 			
 			//死亡
 			if (this.hp == 0) {
@@ -392,8 +390,10 @@ var Unit = Observable.extend({
 		if (!isNaN(d) && d >= 0) {
 			this.HPincrease = parseInt(d);
 			
-			this.hp += d;
+			this.hp += this.HPincrease;
 			this.hpPercent = Math.min(100, this.hp * 100 / this.hpMax);
+			
+			this.fireEvent( "change", this );
 			
 			//解除濒临死亡
 			if (this.hpPercent >= 20) {
@@ -437,15 +437,23 @@ var Unit = Observable.extend({
 	},
 	
 	unClick	: function(){
-		PANEL.unitsLayer.unClick();
+		if ( !this.standby && this.lock )
+			this.homing();
+			
+		this.fireEvent( "unclick", this );
 	},
 	
+	//操作结束
 	finish	: function(){
 		this.standby = true;
 		this.lock = true;
 		this.oriCell = this.cell;
 		this.attackFreq = 0; 
 		this.fireEvent( "standby", this );
+	},
+	
+	click		: function( e ){
+		this.fireEvent( 'click', this );
 	}
 		
 }); 

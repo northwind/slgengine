@@ -5,6 +5,8 @@
 body {
 }
 
+.clear{ font-size:0px; line-height:0px; height:0px; clear:both; }
+
 #download{ display:none; padding-top:150px; }
 #download a{ text-decoration:none; margin:30px; }
 #download img{ border:none; }
