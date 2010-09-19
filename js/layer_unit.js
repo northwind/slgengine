@@ -135,6 +135,7 @@ var UnitLayer = Layer.extend({
 					}
 			}
 			else {
+				//TODO 移动到click事件中
 				//没有锁定同时具有移动性
 				if (unit && !unit.lock && unit.moveable ) {
 					//获得可移动格子
@@ -148,6 +149,9 @@ var UnitLayer = Layer.extend({
 					
 					this.clicked = unit;
 				}
+				
+				if ( unit )
+					unit.click( e );
 			}
 	},
 	
@@ -158,15 +162,6 @@ var UnitLayer = Layer.extend({
 		//delete this.clicked;
 	},
 	
-	//使已选角色回到移动之前并删除已选角色
-	unClick	: function(){
-		if ( this.clicked )
-			this.clicked.homing();
-			
-		delete this.clicked;
-		return this;
-	},
-
 	getAttackCells	: function( cell,	range, type,team ){
 		var all = {}, index = cell.index, x = cell.x, y = cell.y;
 		
@@ -266,8 +261,10 @@ var UnitLayer = Layer.extend({
 	onContextmenu	: function( e ){
 		//没有弹出菜单时右键才有效
 		if (PANEL.wincount <= 0) {
-			this._removeCells();
-			delete this.clicked;
+			if ( this.clicked )
+				this.clicked.unClick();
+			
+			this._removeCells();	
 		}
 	},	
 	
@@ -295,14 +292,18 @@ var UnitLayer = Layer.extend({
 		return this;		
 	},
 	
+	//取消已选中
+	deleteClicked	: function( unit ){
+		if ( unit == this.clicked )
+			delete this.clicked;
+	},
+	
 	_initUnit	: function( config ){
 		config.layer = this;
 					
 		var unit = new Unit(config );
 		
-		unit.on( "standby", function(){
-			delete this.clicked;
-		}, this )
+		unit.on( "standby", this.deleteClicked, this )
 		.on( "move", function( unit ){
 			PANEL.popMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
 		}, this )
@@ -310,7 +311,22 @@ var UnitLayer = Layer.extend({
 		.on( "walk", function( unit, from, to ){
 			 this.units[ to.index ] = this.units[ from.index ];
 			 delete this.units[ from.index ];
-		}, this );
+		}, this )
+		//点击角色时显示该角色属性
+		.on( "click", PANEL.showUnitAttr, PANEL )
+		//状态更改时重新显示该角色属性
+		.on( "change", function( unit ){
+			if ( unit == this.clicked )
+				PANEL.showUnitAttr( unit );
+		}, this )
+		//取消点击时,隐藏该角色属性
+		.on( "unclick", function( unit ){
+			if ( unit == this.clicked )
+				PANEL.hideUnitAttr();
+				
+			this.deleteClicked( unit );
+		}, this )
+		;
 		
 		return unit;
 	}

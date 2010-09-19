@@ -7,6 +7,7 @@ var Panel = Component.extend({
 	cls   : "_panel",
 	suspend	: false,  //停止更新
 	drawable: true,   //可以绘画
+	ctCls	: "_wrap",
 	
 	scrollLeft : 0,
 	scrollTop : 0,
@@ -21,10 +22,14 @@ var Panel = Component.extend({
 	wincount : 0,  //弹出菜单数量
 	
 	init		: function( config ){
+		config = config || {};
 		PANEL = this;
 		
-		this.ct = $( config.ct || document.body );
+		this.ct = $( config.ct || document.body ).addClass( this.ctCls );
 		this._super( config );
+		//添加到顶部
+		this.el.prependTo( this.ct );
+				
 		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background" );
 		
 		LayerMgr.setWrap( this.el );
@@ -101,7 +106,9 @@ var Panel = Component.extend({
 				e.preventDefault();
 				e.stopPropagation();
 				_self.fireEvent("contextmenu", e);			
-		});	
+		}).mouseleave( function(e){
+			_self.cellLayer.unactiveCell();
+		} );	
 		
 		$(document).mouseup( function( e ){
 			if (e.which == 1) {
@@ -140,6 +147,8 @@ var Panel = Component.extend({
 		this.on("background", function(){
 			this.process.add( 20, "背景图片加载完毕..." );
 		}, this);
+			
+		this.on( "load", this.onLoad, this );	
 			 		
 		return this;		
 	},
@@ -147,6 +156,15 @@ var Panel = Component.extend({
 	onKeydown	: function( e ){
 
 	},	
+	
+	//加载完之后
+	onLoad		: function(){
+		//显示控制面板
+		//this.ctrl = $( "<div>" ).addClass( "_ctrl" ).appendTo( this.ct );
+		this.display = $("._display").width( MAX_W ).show();
+		
+		this.board = $( "._board" );
+	},
 		
 	_createCellLayer	: function(){
 		if ( this.cellLayer )
@@ -217,6 +235,30 @@ var Panel = Component.extend({
 		} );
 		
 		return this;
+	},
+	
+	showUnitAttr		: function( unit ){
+		
+		$("._face").empty().append( unit.ui.face[ 0 ] );
+		$("#hp").text( unit.hp + "/" + unit.hpMax );
+		$("#mp").text( unit.mp + "/" + unit.mpMax );
+		
+		$("#rolename").text( unit.name );
+		$("#rolelevel").text( unit.level );
+		$("#roleexp").attr( "title", unit.exp );
+		
+		$("#roleatknum").text( unit.atknumMin + " - " + unit.atknumMax );
+		$("#rolestrength").text( unit.strength );
+		$("#roleagility").text( unit.agility );
+		$("#roleintelligence").text( unit.intelligence );
+		$("#roledefnum").text( unit.defnum );
+		
+		this.board.show();
+		return this;
+	},
+	
+	hideUnitAttr	: function(){
+		this.board.hide();
 	},
 	
 	setUnits		: function( data ){

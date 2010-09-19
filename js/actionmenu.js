@@ -12,7 +12,7 @@ var ActionMenu = Win.extend({
 		this.ul = $("<ul>").appendTo( this.content );
 		
 		this.btnAttack = this.createAction( "进攻", "images/system/1-1.png", this.onAttack );
-		this.btnAttack = this.createAction( "策略", "images/system/76-1.png", this.onMagic );
+		//this.btnAttack = this.createAction( "策略", "images/system/76-1.png", this.onMagic );
 		this.btnAttack = this.createAction( "道具", "images/system/82-1.png", this.onProp );
 		this.btnAttack = this.createAction( "待命", "images/system/98-1.png", this.onStandBy );
 		
