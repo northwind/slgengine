@@ -18,7 +18,7 @@ var LayerMgr = Manager.extend({
 									ctx: PANEL.ctx								
 						} );
 		
-		this._super( l );
+		this._super( level, l );
 		return l;
 	}
 	

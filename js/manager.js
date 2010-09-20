@@ -3,33 +3,40 @@
  */
 
 var Manager = Class.extend({
+	len	: 0,
 	
 	init	: function(){
-		this.items = [];
-		return this;
-	},
-	
-	indexOf	: function( o ){
-		return $.inArray( o, this.items );
-	},
-	
-	reg		: function( o ){
-		if ( this.indexOf( o ) == -1 )
-			this.items.push( o );
+		this.hash = {};
 		
 		return this;
 	},
 	
-	unreg	: function( o ){
-		var i = this.indexOf( o );
-		if ( i > -1 )
-			this.items.splice( i, 1 );
+	//key, value
+	reg		: function( key, value ){
+		if ( key != undefined && value != undefined  ) {
+			if ( !this.has( key ) )
+				this.len++;
+				
+			this.hash[key] = value;
+		}
+		return this;
+	},
+	
+	unreg	: function( key ){
+		if( this.has( key ) != undefined )
+			this.len--;
+		
+		delete this.hash[ key ];	
 		
 		return this;
+	},
+	
+	has		: function( key ){
+		return this.hash[ key ] != undefined;
 	},
 	
 	len		: function(){
-		return this.items.length;
+		return this.len;
 	},
 	
 	destroy	: function(){

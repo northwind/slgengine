@@ -50,6 +50,10 @@ function waitTurn( wait, turn, fn ){
 	
 }
 
+var __d = new Date();
+function getTime(){
+	return __d.getTime();
+}
 
 
 
