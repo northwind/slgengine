@@ -2,6 +2,7 @@
  * @author Norris
  */
 var Unit = Observable.extend({
+	//id			: 1,
 	name	: "步兵",
 	symbol	: "footman",	//区别角色UI样式
 	moveable: true,    		//是否可以移动
@@ -44,6 +45,7 @@ var Unit = Observable.extend({
 	invincible	: false, //无敌
 	debility : false,	//濒临死亡
 	dead		: false,
+	deadlast	: 0,
 		
 	regainHP	: 0,  //回血数量
 	regainMP	: 0,  //回魔数量
@@ -101,16 +103,21 @@ var Unit = Observable.extend({
 		this.debuff = {};
 		
 		this._super( config );
+		//如果没有id则自动生成一个
+		if ( this.id == undefined ){
+			this.id = getTime();
+		}
 		
 		this._calcHpPercent();
 		
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		this.direct = this.oriDirect = "down";
 		//增加角色事件
-		this.addEvents( "click", "unclick", "change", "dead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load" );
+		this.addEvents( "click", "unclick", "change", "dead", "preDead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load" );
 		
 		this.setUI();
-		
+		//死亡时锁定角色
+		this.on( "dead", function(){ this.lock = true; }, this );
 		return this;
 	},
 		
@@ -132,6 +139,9 @@ var Unit = Observable.extend({
 		this.changeStatus( timestamp );
 		this.ui.draw( this );
 		
+		if (this.dead && this.deadlast <= 0) {
+			this.fireEvent( "dead", this );
+		}
 		//闪避
 		if ( this.missing && this.misslast++ == 20 ){
 			this.missing = false;
@@ -193,69 +203,85 @@ var Unit = Observable.extend({
 		var diff = timestamp - this.stampStep;
 		var img;
 		
-		//攻击
-		if (this.attacking) {
-			var actions = this.ui["a" + this.direct];
-			var diff = timestamp - this.stampAtk;
-			//致命一击时 高亮第一个攻击图像
-			if (this.burstlast > 1) {
-				if (diff > ASPEED) {
-					this.stampAtk = timestamp;
-					this.burstlast--;
-				}
-				this.attackP = 1;
-				
-				img = this.ui.highlight(this.direct);
+		//死亡
+		if (this.dead) {
+			if (diff > SPEED ) {
+				this.deadlast--;
+				this.stampStep = timestamp;
+			}
+			if (this.deadlast % 2 == 0) {
+				img = 0;
 			}
 			else {
-				if (diff > ASPEED) {
-					this.stampAtk = timestamp;
+				img = this.ui.fall[0];
+			}
+			this.stampStatus = timestamp;
+		}
+		else 
+			//攻击
+			if (this.attacking) {
+				var actions = this.ui["a" + this.direct];
+				var diff = timestamp - this.stampAtk;
+				//致命一击时 高亮第一个攻击图像
+				if (this.burstlast > 1) {
+					if (diff > ASPEED) {
+						this.stampAtk = timestamp;
+						this.burstlast--;
+					}
+					this.attackP = 1;
 					
-					img = actions[this.attackP++];
+					img = this.ui.highlight(this.direct);
 				}
 				else {
-					img = actions[this.attackP];
+					if (diff > ASPEED) {
+						this.stampAtk = timestamp;
+						
+						img = actions[this.attackP++];
+					}
+					else {
+						img = actions[this.attackP];
+					}
 				}
 			}
-		}
-		else {
-			if ( this.beattacked > 0  && diff > ASPEED ){
-				this.beattacked--;
-				
-				img = this.ui.attacked[ 0 ];
-			} else
-			if (this.standby) {
-				//待机
-				img = this.ui.gray( this.direct );
-			}
-			else 
-				if ( !this.moving && this.debility ) {
-					//虚弱时
-					img = this.ui.fall[this.p - 1];
+			else {
+				if (this.beattacked > 0 && diff > ASPEED) {
+					this.beattacked--;
+					
+					img = this.ui.attacked[0];
 				}
 				else 
-					if (this.way.length > 0 && diff > STEP) {
-						//更改角色移动时的图片
-						this.stampStep = timestamp;
-						//this.stampStatus = timestamp; 	//角色发生转向后不再需要更新状态
-						
-						var cell = this.way.pop();
-						this.direct = this.cell.directT(cell);
-						//触发walk事件
-						this.fireEvent("walk", this, this.cell, cell);
-						
-						this.cell = cell;
-						
-						img = this.ui[this.direct][this.p];
+					if (this.standby) {
+						//待机
+						img = this.ui.gray(this.direct);
 					}
-		}			
+					else 
+						if (!this.moving && this.debility) {
+							//虚弱时
+							img = this.ui.fall[this.p - 1];
+						}
+						else 
+							if (this.way.length > 0 && diff > STEP) {
+								//更改角色移动时的图片
+								this.stampStep = timestamp;
+								//this.stampStatus = timestamp; 	//角色发生转向后不再需要更新状态
+								
+								var cell = this.way.pop();
+								this.direct = this.cell.directT(cell);
+								//触发walk事件
+								this.fireEvent("walk", this, this.cell, cell);
+								
+								this.cell = cell;
+								
+								img = this.ui[this.direct][this.p];
+							}
+			}			
 		//切换步伐
 		if( timestamp - this.stampStatus > SPEED ){
 			this.stampStatus = timestamp;
 			this.p = this.p == 2 ? 1 : 2;
 		}
 		
-		this.pencil = img || this.ui[ this.direct ][ this.p ];
+		this.pencil = img == undefined ? this.ui[ this.direct ][ this.p ] : img;
 	},
 	
 	canMove	: function( cell ){
@@ -380,6 +406,7 @@ var Unit = Observable.extend({
 			
 			//死亡
 			if (this.hp == 0) {
+				this.fireEvent( "preDead", this );
 				this.onDead();
 			}
 		}	
@@ -404,7 +431,8 @@ var Unit = Observable.extend({
 	
 	onDead		: function(){
 		this.dead = true;
-		this.fireEvent( "dead", this );
+		this.deadlast = 8;
+		//this.fireEvent( "dead", this );
 	},
 	
 	//计算攻击值 攻击上限与攻击下限间随机取值 最小为0

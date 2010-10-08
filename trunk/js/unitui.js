@@ -16,7 +16,7 @@ var UnitUI = Observable.extend({
 		
 		this._super();
 		
-		this.addEvents( "load", "attack", "defend", "miss" );
+		this.addEvents( "load", "attack", "defend", "miss", "dead" );
 		this._getImageData( callback );
 		
 		return this;

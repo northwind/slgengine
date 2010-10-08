@@ -22,7 +22,7 @@ var UnitLayer = Layer.extend({
 		this.units = {};
 		
 		//加载中时执行该事件
-		this.addEvents( "loading", "load" );
+		this.addEvents( "loading", "load", "roundStart", "roundEnd" );
 		
 		//定时更新
 		PANEL.on("update", this.update, this );
@@ -298,12 +298,38 @@ var UnitLayer = Layer.extend({
 			delete this.clicked;
 	},
 	
+	//检查回合结束
+	checkRoundEnd	: function( faction, team ){
+		var flag = true;
+		for (var key in this.units) {
+			var unit = this.units[key];
+			//当同一队伍中有任何一个可以移动时跳出循环
+			if ( unit.faction == faction && unit.team == team && !unit.lock) {
+				flag = false;
+				break;
+			}
+		}	
+		if ( flag ){
+			this.fireEvent( "roundEnd", faction, team, this );
+		}
+	},
+	//检查失败/胜利条件
+	checkVOF		: function( unit ){
+		if ( unit.dead ){
+			alert( "失败了" );
+		}
+		return false;
+	},
+	
 	_initUnit	: function( config ){
 		config.layer = this;
 					
 		var unit = new Unit(config );
 		
-		unit.on( "standby", this.deleteClicked, this )
+		unit.on( "standby", function( unit ){
+			this.deleteClicked();
+			this.checkRoundEnd( unit.faction, unit.team );
+		}, this )
 		.on( "move", function( unit ){
 			PANEL.popMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
 		}, this )
@@ -325,6 +351,10 @@ var UnitLayer = Layer.extend({
 				PANEL.hideUnitAttr();
 				
 			this.deleteClicked( unit );
+		}, this )
+		.on( "dead", function( unit ){
+			this.delUnit( unit.id );
+			this.checkVOF( unit );
 		}, this )
 		;
 		
