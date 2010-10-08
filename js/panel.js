@@ -180,8 +180,9 @@ var Panel = Component.extend({
 		
 		this.unitsLayer.on( "loading", function( unit, sum, count ){
 			this.process.add( 80 / sum, "加载" + (unit.name || unit.symbol) + "完备..." );
-		}, this );
-		
+		}, this )
+		.on( "roundStart", this.roundStart, this )
+		.on( "roundEnd", this.roundEnd, this );
 	},	
 	_createWinLayer	: function(){
 		if ( this.winLayer )
@@ -309,6 +310,16 @@ var Panel = Component.extend({
 	unmask 		: function (){
 		this.masklayer.hide();
 		return this;	
+	},
+	
+	_showRound	: function( html ){
+		alert( html );
+	},
+	
+	roundEnd	: function( f, t ){
+		this.mask();
+		this._showRound( "f = " + f + " t = " + t );
+		this.unmask();
 	}
 	
 });
