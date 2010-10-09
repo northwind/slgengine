@@ -1,20 +1,14 @@
 /**
  * @author Norris
  */
-
-//判断是否为空
- function _isEmpty( obj ){
-	for( var i in obj )
-		return false;
-	return true;	
-}
-
 var UnitLayer = Layer.extend({
 	clicked : null,	//已点击
 	overed	 : null,  //滑过的
 	moveColor	: "rgba(39,167,216,0.6)", 
 	attaColor		: "rgba(255,0,0,0.5)", 
-
+	
+	teamIndex	: 0,	//当前哪只队伍在行动
+	round		: 1,    //第几回合
 	hpLineForce : false,	//是否强制显示血条
 	
 	init	: function(){
@@ -22,7 +16,7 @@ var UnitLayer = Layer.extend({
 		this.units = {};
 		
 		//加载中时执行该事件
-		this.addEvents( "loading", "load", "roundStart", "roundEnd" );
+		this.addEvents( "loading", "load", "roundStart", "roundEnd", "teamStart", "teamEnd" );
 		
 		//定时更新
 		PANEL.on("update", this.update, this );
@@ -37,7 +31,49 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
-	setData : function( data ){
+	setTeams : function( data ){
+		this.teams = data;
+
+		this.on( "teamStart", this.onTeamStart, this );
+		this.on( "teamEnd", this.onTeamEnd, this );		
+			
+		return this;
+	},
+	
+	start		: function(){
+		this.startTeam( this.teams[ this.teamIndex ] );
+	},
+	
+	startTeam	: function( team ){
+		for( var key in this.units ){
+			var unit = this.units[ key ];
+			
+			if ( unit.faction == team.faction && unit.team == team.team ){
+				unit.unLock();
+			}
+		}		
+		this.fireEvent("teamStart", team, this.teamIndex );
+	},
+	
+	//回合刚开始	
+	onTeamStart	: function( team, index ){
+		if( index == 0 ){
+			this.fireEvent("roundStart", this.round++ );
+		}
+	},
+		
+	onTeamEnd	: function( f, t ){
+		if ( this.teamIndex++ >= this.teams.length - 1 ) {
+			//回合结束
+			this.fireEvent("roundEnd", this.round );
+			//从头开始遍历
+			this.teamIndex = 0;
+		}
+		var team = this.teams[ this.teamIndex ];	
+		this.startTeam( team );
+	},
+		
+	setUnits : function( data ){
 		this.data = data;
 
 		//给每个unit绑定load事件
@@ -299,7 +335,7 @@ var UnitLayer = Layer.extend({
 	},
 	
 	//检查回合结束
-	checkRoundEnd	: function( faction, team ){
+	checkTeamEnd	: function( faction, team ){
 		var flag = true;
 		for (var key in this.units) {
 			var unit = this.units[key];
@@ -310,7 +346,7 @@ var UnitLayer = Layer.extend({
 			}
 		}	
 		if ( flag ){
-			this.fireEvent( "roundEnd", faction, team, this );
+			this.fireEvent( "teamEnd", faction, team, this );
 		}
 	},
 	//检查失败/胜利条件
@@ -323,12 +359,21 @@ var UnitLayer = Layer.extend({
 	
 	_initUnit	: function( config ){
 		config.layer = this;
+		if( UNDERCOVER ){
+			$.extend( config, {
+				imgMove	: "images/move/0.png",
+				imgAtk	: "images/atk/0.png",
+				imgSpc	: "images/spc/0.png",
+				imgFace	: "images/face/0.png"
+			} )
+		}
+			
 					
 		var unit = new Unit(config );
 		
 		unit.on( "standby", function( unit ){
 			this.deleteClicked();
-			this.checkRoundEnd( unit.faction, unit.team );
+			this.checkTeamEnd( unit.faction, unit.team );
 		}, this )
 		.on( "move", function( unit ){
 			PANEL.popMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );

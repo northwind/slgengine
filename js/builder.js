@@ -11,6 +11,8 @@ $(function(){
 	
 	PANEL
 		.setBgImage( "images/bigmap/1-1.jpg" )
+		.setSmallMap(  "images/smallmap/1-1.png" )
+		.setTeams( TEAMS )
 		.setUnits( UNITS );
 	
 		

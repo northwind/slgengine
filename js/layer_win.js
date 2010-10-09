@@ -28,11 +28,15 @@ var WinLayer = Component.extend({
 		PANEL.on("keydown", function( e ){
 			if (this.items.length > 0) {
 				//按ESC时
-				if (e.which == 27) 
+				if (e.which == 27) {
+					e.preventDefault();
 					this.onContextmenu();
-				
-				if ( e.which == 32 && this.items[ 0 ].onStandBy )
-					 this.items[ 0 ].onStandBy();
+				}
+				//空格时
+				if (e.which == 32 && this.items[0].onStandBy) {
+					e.preventDefault();
+					this.items[0].onStandBy();
+				}
 			}	
 		}, this ).on( "contextmenu", function( e ){
 			if (this.items.length > 0) {

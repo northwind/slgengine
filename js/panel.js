@@ -53,6 +53,8 @@ var Panel = Component.extend({
 		this.process.on("end", function(){
 			$( canvas ).show();
 			this.fireEvent( "load" );
+			//开始
+			this.start();
 		}, this).start();
 		
 		//创建的顺序既是绘画时的先后顺序
@@ -181,8 +183,8 @@ var Panel = Component.extend({
 		this.unitsLayer.on( "loading", function( unit, sum, count ){
 			this.process.add( 80 / sum, "加载" + (unit.name || unit.symbol) + "完备..." );
 		}, this )
-		.on( "roundStart", this.roundStart, this )
-		.on( "roundEnd", this.roundEnd, this );
+		.on( "roundStart", this.onRoundStart, this )
+		.on( "roundEnd", this.onRoundEnd, this );
 	},	
 	_createWinLayer	: function(){
 		if ( this.winLayer )
@@ -193,7 +195,19 @@ var Panel = Component.extend({
 		this.winLayer.on( "pop", function(){ this.wincount++; }, this )
 							  .on( "cansel", function(){ this.wincount--; }, this );
 	},
-		
+	
+	start				: function(){
+		this.unitsLayer.start();
+	},
+	
+	onRoundStart		: function( round ){
+		log( "第" + round + "回合开始" );
+	},
+
+	onRoundEnd		: function( round ){
+		log( "第" + round + "回合结束" );
+	},
+			
 	showGrid			: function(){
 		this.cellLayer.showGrid();
 		return this;
@@ -228,12 +242,20 @@ var Panel = Component.extend({
 	
 	//设置背景图片
 	setBgImage	: function( url ){
-		
 		var _self = this;
 		_loadImg( url, function(){
-			canvas.style.background = "url('" + url + "') no-repeat";
+			if ( !UNDERCOVER )
+				canvas.style.background = "url('" + url + "') no-repeat";
+				
 			_self.fireEvent( "background" );
 		} );
+		
+		return this;
+	},
+	
+	setSmallMap	: function( src ){
+		if ( src && !UNDERCOVER )
+			$("#smallmap").attr( "src", src);
 		
 		return this;
 	},
@@ -263,9 +285,14 @@ var Panel = Component.extend({
 	},
 	
 	setUnits		: function( data ){
-		this.unitsLayer.setData( data );
+		this.unitsLayer.setUnits( data );
 		return this;
 	},	
+	
+	setTeams		: function( data ){
+		this.unitsLayer.setTeams( data );
+		return this;		
+	},
 	
 	getCell	: function( x, y ){
 		if ( typeof x == "number" )
@@ -310,16 +337,6 @@ var Panel = Component.extend({
 	unmask 		: function (){
 		this.masklayer.hide();
 		return this;	
-	},
-	
-	_showRound	: function( html ){
-		alert( html );
-	},
-	
-	roundEnd	: function( f, t ){
-		this.mask();
-		this._showRound( "f = " + f + " t = " + t );
-		this.unmask();
 	}
 	
 });

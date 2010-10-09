@@ -11,7 +11,8 @@ CELL_YNUM	= 20,
 
 MAX_H = CELL_HEIGHT * CELL_YNUM,
 MAX_W = CELL_WIDTH * CELL_XNUM,
-			
+
+UNDERCOVER = false, 
 PANEL = null,
 //窗口的宽高
 WINDOW_WIDTH = 960,
@@ -21,6 +22,14 @@ SPEED	= 340,	//调节unit切换图片的速度
 STEP	= 60 ,	//调节走路速度
 ASPEED  = 120,  //攻击速度
 
+//队伍集合
+TEAMS	= [{
+	faction : 1, team : 100, name : "我军"
+},{
+	faction : 1, team : 200, name : "友军"
+},{
+	faction : 0, team : 1, name : "敌军"
+}],
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
 	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, urlImg : "images/move/110-1.png", range : 1, rangeType : 1,
@@ -36,49 +45,49 @@ UNITS	= [{
 	}
 },{
 	gx :  10,  gy : 7,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman", 
+	symbol	: "footman",  faction : 1, team : 200,  name : "刘备",
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
 	imgFace	: "images/face/23-1.png"	
 },{
 	gx :  10,  gy : 0,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman", 
+	symbol	: "footman",  faction : 1, team : 200,  name : "关羽",
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
 	imgFace	: "images/face/23-1.png"	
 },{
 	gx :  11,  gy : 4,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman", 
+	symbol	: "footman",  faction : 1, team : 200,  name : "张飞",
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
 	imgFace	: "images/face/23-1.png"	
 },{
 	gx :  11,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman", 
+	symbol	: "footman", faction : 0, team : 1,
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
 	imgFace	: "images/face/23-1.png"	
 },{
 	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman",  
+	symbol	: "footman",  faction : 0, team : 1,
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
 	imgFace	: "images/face/23-1.png"	
 },{
 	gx :  0,  gy : 19,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman", 
+	symbol	: "footman", faction : 0, team : 1,
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
 	imgFace	: "images/face/23-1.png"	
 },{
 	gx :  19,  gy : 5,  step: 9, type : 101, moveable : true, overlay : false, urlImg : "images/move/26-1.png", range : 2, rangeType : 2,
-	symbol	: "archer", name : "弓箭手",
+	symbol	: "archer", name : "弓箭手", faction : 0, team : 1,
 	imgMove	:"images/move/26-1.png",
 	imgAtk	: "images/atk/26-1.png",
 	imgSpc	: "images/spc/26-1.png",
@@ -121,7 +130,8 @@ MAP	= 	[
 HPCLR	= [ ["#7a2200", "#8d2b00"] ,  ["#8a3200", "#9d3b00"] ,  ["#7a7100", "#978c00"] ,
 					  ["#297a00", "#329700"] ,  ["#007a00", "#009700"]      ],
 		//主要信息颜色 边框、背景
-		MAJOR = [  "#fdc92b", "rgba(31,41,61,0.4)" ],
+		MAJORBORDER = [  "#fdc92b", "#15D317", "#FF654E" ],
+		MAJORBG ="rgba(31,41,61,0.4)",
 		//单元格颜色信息
 		CELLCOLOR = [ "rgba(255,255,255,0.6)"  ],
 		

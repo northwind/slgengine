@@ -6,7 +6,7 @@ var Unit = Observable.extend({
 	name	: "步兵",
 	symbol	: "footman",	//区别角色UI样式
 	moveable: true,    		//是否可以移动
-	lock	: false,		//锁定角色 不能移动
+	lock	: true,		//锁定角色 不能移动
 	type	:-1,			//类型
 	tipable :false,			//是否有提示框
 	active  : true,			//是否有效
@@ -480,8 +480,27 @@ var Unit = Observable.extend({
 		this.fireEvent( "standby", this );
 	},
 	
+	unLock	: function(){
+		this.lock = false;
+	},
+	
 	click		: function( e ){
 		this.fireEvent( 'click', this );
-	}
-		
+	},
+	//同一阵营 不同队伍
+	isFriend	: function( faction, team ){
+		return faction == this.faction && team != this.team;
+	},
+	//同一阵营 同一队伍	
+	isSibling	: function( faction, team ){
+		return faction == this.faction && team == this.team;
+	},
+	//不同阵营
+	isEnemy	: function( faction, team ){
+		return faction != this.faction;
+	},
+	//同一阵营
+	isBrother	: function( faction, team ){
+		return faction == this.faction;
+	}			
 }); 
