@@ -3,12 +3,20 @@ if ( window.console == undefined )
 	console = {};
 if ( console.debug == undefined )
 	console.debug = function( str ){};
-	
+function log( str ){
+	console.debug( str );
+}	
 /*
  * 获得index值
 */
 function getIndex( x, y ){
 	return x * CELL_YNUM + y;
+}
+//判断是否为空
+ function _isEmpty( obj ){
+	for( var i in obj )
+		return false;
+	return true;	
 }
 /*
  * 输入event或者具体数值返回相对坐标值

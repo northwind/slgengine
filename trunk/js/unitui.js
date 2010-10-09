@@ -213,6 +213,13 @@ var UnitUI = Observable.extend({
 			ctx.fillStyle = "rgb(255,0,0)";
 			ctx.fillText( "-" + unit.HPdecrease, dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 2 - unit.HPdelast );
 		}		
+		
+		//当角色位于两边时调证坐标系
+		if ( dx == 0 ){
+			ctx.translate( 10, 0 )
+		}else if ( cell.x == CELL_XNUM-1 ){
+			ctx.translate( -10, 0 )
+		}
 			
 		//绘制血条
 		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
@@ -236,16 +243,22 @@ var UnitUI = Observable.extend({
 		if ( unit.major ){	
 			//主要信息
 			//边框 
-			//TODO 根据队伍区分边框颜色
 			var off = 5, h = 30;
 			if ( dy - 9 < 0 )
 				y += h + CELL_HEIGHT + 5;			
 			ctx.lineJoin = "round";
 			ctx.miterLimit = 15;
 			ctx.lineWidth = 2;
-			ctx.strokeStyle = MAJOR[ 0 ];
+			//不同队伍显示不同颜色的边框
+			var bcolor = 0;
+			if ( unit.isFriend( FACTION, TEAM ) )
+				bcolor = 1;
+			else if ( unit.isEnemy( FACTION, TEAM ) )
+				bcolor = 2;	
+			ctx.strokeStyle = MAJORBORDER[ bcolor ];
+			
 			ctx.strokeRect(  dx - off,  y - 30 - 3, CELL_WIDTH + off * 2 ,  h  );
-			ctx.fillStyle = MAJOR[1];
+			ctx.fillStyle = MAJORBG;
 			ctx.fillRect(  dx - off,  y - 30 - off + 2, CELL_WIDTH + off * 2 ,  h - 2  );
 			
 			//名称
