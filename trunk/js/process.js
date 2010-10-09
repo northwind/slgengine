@@ -11,7 +11,7 @@ var Process = Observable.extend({
 	init	: function( config ){
 		this._super( config );
 		
-		this.el = $("<div>").addClass("_loader").appendTo( this.ct );
+		this.el = $("#loader");
 		//加载完毕后执行init事件
 		this.addEvents( "start", "end" );
 		

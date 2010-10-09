@@ -1,12 +1,12 @@
 /**
  * @author Norris
  */
-
 var Win = Component.extend({
 	cls		: "_win",
 	
 	init: function( config ){
 		this._super( config );
+		this.el.appendTo( this.ct );
 		
 		this.addEvents( "pop", "cansel" );
 		

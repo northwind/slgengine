@@ -1,4 +1,4 @@
-._wrap{}
+._wrap{ margin:0 auto; }
 ._panel{
 	margin:auto;
 	position:relative;
@@ -16,7 +16,7 @@
 	background-repeat:no-repeat;		
 }
 
-._display{ background:#111111; display:none; height:160px; margin:0 auto; }
+._display{ background:#111111; visibility:hidden; height:160px; margin:0 auto; }
 ._display ._left{ float:left; width:240px; }
 ._display ._mid{ float:left;  }
 ._smap{ margin-right:40px; text-align:center; vertical-align:middle; height:140px; border: groove  #36371a 5px; }
@@ -43,7 +43,8 @@
 ._board ._right{ float:left; width:240px; }
 ._board ._num{ color:#00ff00; margin:5px 0px; text-align:center; }
 ._board h2{ text-align:center; font-size:16px; line-height: 20px; }
-._board ._level{ background:#008000; text-align:center; }
+._board ._level{ z-index:100; position:relative; border: #918B2D 1px solid;-moz-border-radius: 3px;-khtml-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px; text-align:center; }
+._board ._expline{ margin:0 1px; height:18px; position:absolute; z-index:-1; background:#84047F; text-align:center; }
 ._board ._desc{ color:#f3dc07; }
 ._board p{ color:#fff; font-size:12px; }
 ._board ._status{ font-size:12px; padding-left:32px; }
@@ -52,4 +53,6 @@
 ._bboard{ display:none; position:absolute; z-index:-1; top:-999px; left:-999px; background:#fff; }
 
 ._masklayer{ position:absolute; z-index:100000; display:none; background:#eee; opacity : 0.5;}
-._loader{ margin:auto; height:100px; width:400px; color:#ff8040; font-size:16px; display:none; position:absolute; z-index:100002; }
+._masklayerUp{ position:absolute; z-index:100001; background:#262626; height: 200px; line-height:200px; font-size:100px; color:#fff; text-align:center; display:none; opacity : 0.9; }
+
+._loader{ margin:auto; line-height:100px; margin:0 auto; height:100px; width:400px; color:#ff8040; font-size:16px; display:none; position:absolute; z-index:100002; }

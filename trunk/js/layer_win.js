@@ -10,7 +10,7 @@ var WinLayer = Component.extend({
 	
 	init	: function( config ){
 		$.extend( config, {
-			el	: $("<div>"),
+			el	: $("#winLayer"),
 			w	: MAX_W,
 			h	: MAX_H
 		} );
@@ -18,8 +18,6 @@ var WinLayer = Component.extend({
 		this._super( config );
 		
 		this.items = [];
-		
-		this.pri( config.level );
 		
 		this.addEvents( "init", "pop", "cansel" );
 		

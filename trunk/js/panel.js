@@ -20,32 +20,33 @@ var Panel = Component.extend({
 	sequence : 20, //多久更新一次
 	
 	wincount : 0,  //弹出菜单数量
-	
+	lineTimer: 0,
+		
 	init		: function( config ){
 		config = config || {};
 		PANEL = this;
 		
-		this.ct = $( config.ct || document.body ).addClass( this.ctCls );
+		this.el = $( "#panel" );
+		this.ct = $("#wrap").addClass( this.ctCls ).width( MAX_W );
+		
 		this._super( config );
-		//添加到顶部
-		this.el.prependTo( this.ct );
-				
+		
 		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background" );
 		
 		LayerMgr.setWrap( this.el );
 		
 		//初始化画布 开始隐藏
-		canvas = $("<canvas>").hide().appendTo( this.el )[0];
+		canvas = $("#canvas").hide()[0];
 		canvas.width = MAX_W;
 		canvas.height = MAX_H;
 		if ( canvas.getContext )
 			ctx = canvas.getContext("2d");
 		
 		//mask layer
-		this.masklayer = $("<div>").addClass("_masklayer").appendTo( this.el )
+		this.masklayer = $("#_masklayer").addClass("_masklayer")
 									.css( {
-										width	: this.el.width(),
-										height	: this.el.height()
+										width	: $(document).width(),
+										height	: $(document).height()
 									} );
 		//初始化进度条
 		this.process = new Process(  { ct: this.el } );
@@ -162,8 +163,7 @@ var Panel = Component.extend({
 	//加载完之后
 	onLoad		: function(){
 		//显示控制面板
-		//this.ctrl = $( "<div>" ).addClass( "_ctrl" ).appendTo( this.ct );
-		this.display = $("._display").width( MAX_W ).show();
+		this.display = $("._display").width( MAX_W ).css( "visibility", "visible" );
 		
 		this.board = $( "._board" );
 	},
@@ -184,6 +184,7 @@ var Panel = Component.extend({
 			this.process.add( 80 / sum, "加载" + (unit.name || unit.symbol) + "完备..." );
 		}, this )
 		.on( "roundStart", this.onRoundStart, this )
+		//.on( "teamStart", this.onTeamStart, this )
 		.on( "roundEnd", this.onRoundEnd, this );
 	},	
 	_createWinLayer	: function(){
@@ -200,14 +201,39 @@ var Panel = Component.extend({
 		this.unitsLayer.start();
 	},
 	
+	onTeamStart			: function( team, index ){
+		if ( index !=0 ){
+			this._showTopLine( team.name + " 阶段" );
+		}
+	},
+	
 	onRoundStart		: function( round ){
 		log( "第" + round + "回合开始" );
+		this._showTopLine( "第 " + round + " 回合" );
 	},
 
 	onRoundEnd		: function( round ){
 		log( "第" + round + "回合结束" );
 	},
-			
+	
+	_showTopLine		: function( str, fn, scope ){
+		if ( this.lineTimer )
+			clearInterval( this.lineTimer );
+		
+		var _self = this;
+		this.lineTimer =setInterval( function(){
+			_self._hideTopLine( fn, scope );
+			_self.lineTimer=0;
+		}, 1500 );	
+		this.mask();
+		$("#maskUp").html( str ).width( MAX_W ).css( "top", (WINDOW_HEIGHT -200)/2 ).show();
+	},
+
+	_hideTopLine		: function( fn, scope ){
+		$("#maskUp").fadeOut( 800, bind( fn, scope ) );
+		this.unmask();
+	},
+				
 	showGrid			: function(){
 		this.cellLayer.showGrid();
 		return this;
@@ -268,7 +294,8 @@ var Panel = Component.extend({
 		
 		$("#rolename").text( unit.name );
 		$("#rolelevel").text( unit.level );
-		$("#roleexp").attr( "title", unit.exp );
+		$("#roleexp").attr( "title", unit.exp + "/" + unit.nextExp() );
+		$("#roleexpline").width( 236 * unit.exp / unit.nextExp() );
 		
 		$("#roleatknum").text( unit.atknumMin + " - " + unit.atknumMax );
 		$("#rolestrength").text( unit.strength );

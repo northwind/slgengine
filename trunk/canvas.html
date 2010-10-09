@@ -38,6 +38,15 @@
 		
 	</head>
 	<body>
+		<div id="wrap">
+		
+		<div id="loader" class="_loader" style="display: none;"></div>
+		
+	    <div id="panel" class="_panel">
+	        <canvas id="canvas"></canvas>
+			<div id="winLayer" style="z-index: 300;" class="_winLayer">
+			</div>
+	    </div>
 		
 		<div class="_display">
 			<div class="_ctrl">
@@ -58,7 +67,12 @@
 						</div>
 						<div class="_right">
 							<h2 id="rolename"></h2>
-							<div id="roleexp" title="" class="_level">等级<span id="rolelevel">1</span></div>
+                            <div id="roleexp" title="" class="_level">
+                            	<div id="roleexpline" class="_expline" >
+                            		
+                            	</div>
+								等级<span id="rolelevel">1</span>
+                            </div>
 							<div>
 								<table width="90%" cellpadding="0" cellspacing="0" >
 									<tbody>
@@ -113,6 +127,12 @@
 			</div>
 		</div>
 		<div class="clear"></div>
+		
+		<div class="_masklayer" style="display: none;"></div>
+		<div id="maskUp" class="_masklayerUp"></div>
+		
+		</div>
+		
 		<div id="control" style=" display:none; padding:0 20px; background:#ffffff; " >
 			<center>
 				<button id="grid">显示/隐藏单元格</button>

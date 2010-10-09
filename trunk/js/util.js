@@ -58,11 +58,19 @@ function waitTurn( wait, turn, fn ){
 	
 }
 
+//获取时间戳
 var __d = new Date();
 function getTime(){
 	return __d.getTime();
 }
 
+//绑定作用域
+function bind( fn,scope ){
+	return function(){
+		if ( fn )
+			fn.apply( scope || this, arguments );
+	}
+}
 
 
 

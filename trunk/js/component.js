@@ -13,7 +13,6 @@ var Component = Observable.extend({
 			this.el = $("<div/>");
 		else
 			this.el = $( this.el );	
-		//Ĭ�϶��Ǿ�Զ�λ
 /*
 		if ( this.absolute )
 			this.el.css("position","absolute");
@@ -28,9 +27,6 @@ var Component = Observable.extend({
 		if ( this.cls )
 			this.el.addClass( this.cls );	
 
-		if ( this.ct )
-			this.el.appendTo( this.ct );
-								
 		return this;	
   	},
 	
@@ -54,7 +50,6 @@ var Component = Observable.extend({
 	
 	setBgImage : function( img ){
 		this.el.css("background-image", "url(" + img + ")")
-			//��������קͼƬ
 			.addClass("unselect");
 		return this;
 	},
@@ -68,7 +63,6 @@ var Component = Observable.extend({
 		return this.el.height( h );
 	},	
 	
-	 //���ȼ�
 	pri		: function( level ){
 		if (typeof level == "number") {
 			this.el.css("zIndex", this._pri = level);

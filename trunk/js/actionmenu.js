@@ -40,7 +40,9 @@ var ActionMenu = Win.extend({
 				//攻击后
 				this.lock = false;
 				this.beshow = false;
-				this.onCansel();
+				this.hide();
+				delete this.unit;
+				
 			}, this, { one : true } );
 		};
 		//角色攻击前触发事件

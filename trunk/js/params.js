@@ -17,6 +17,7 @@ PANEL = null,
 //窗口的宽高
 WINDOW_WIDTH = 960,
 WINDOW_HEIGHT= 480,
+DISPLAY_HEIGHT = 160,
 
 SPEED	= 340,	//调节unit切换图片的速度
 STEP	= 60 ,	//调节走路速度
@@ -33,7 +34,7 @@ TEAMS	= [{
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
 	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, urlImg : "images/move/110-1.png", range : 1, rangeType : 1,
-	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100,
+	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 37,
 	imgMove	:"images/move/110-1.png",
 	imgAtk	: "images/atk/110-1.png",
 	imgSpc	: "images/spc/110-1.png",
@@ -45,7 +46,7 @@ UNITS	= [{
 	}
 },{
 	gx :  10,  gy : 7,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 1, team : 200,  name : "刘备",
+	symbol	: "footman",  faction : 1, team : 200,  name : "刘备", exp : 86,
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
@@ -57,7 +58,8 @@ UNITS	= [{
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
 	imgFace	: "images/face/23-1.png"	
-},{
+}
+,{
 	gx :  11,  gy : 4,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
 	symbol	: "footman",  faction : 1, team : 200,  name : "张飞",
 	imgMove	:"images/move/1-1.png",
@@ -93,7 +95,6 @@ UNITS	= [{
 	imgSpc	: "images/spc/26-1.png",
 	imgFace	: "images/face/16-1.png"	
 }],
-
 /*
 	0  草地
 	1  树木

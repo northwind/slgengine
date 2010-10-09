@@ -113,7 +113,7 @@ var Unit = Observable.extend({
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		this.direct = this.oriDirect = "down";
 		//增加角色事件
-		this.addEvents( "click", "unclick", "change", "dead", "preDead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load" );
+		this.addEvents( "click", "unclick", "change", "dead", "preDead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load", "upgrade" );
 		
 		this.setUI();
 		//死亡时锁定角色
@@ -318,9 +318,10 @@ var Unit = Observable.extend({
 		this.lock = false;
 		this.way = [];
 		//触发walk事件
-		this.fireEvent("walk", this, this.cell, this.oriCell);
-		this.cell = this.oriCell;
-		
+		if (this.cell != this.oriCell) {
+			this.fireEvent("walk", this, this.cell, this.oriCell);
+			this.cell = this.oriCell;
+		}
 		return this;
 	},
 	
@@ -331,6 +332,11 @@ var Unit = Observable.extend({
 		unit.on( "defend", function( defender ){
 			this.attackFreq++;
 			if ( this.attackFreq >= this.attackFreqMax || defender.dead ){
+				//获得经验值
+				if( defender.dead ){
+					this.addExp( 50 );
+				}
+				
 				//结束本回合
 				this.finish();
 			}else{
@@ -378,10 +384,11 @@ var Unit = Observable.extend({
 			
 			//this.fireEvent( "defend", this, decrease );
 		}
+		//TODO 优化逻辑
 		_self = this;
 		setTimeout( function(){
 			_self.fireEvent( "defend", _self );
-		} , 1000);
+		} , 1500);
 	},
 	
 	_calcHpPercent	: function(){
@@ -465,9 +472,9 @@ var Unit = Observable.extend({
 	},
 	
 	unClick	: function(){
-		if ( !this.standby && this.lock )
+		if (!this.standby && this.lock) {
 			this.homing();
-			
+		}
 		this.fireEvent( "unclick", this );
 	},
 	
@@ -480,8 +487,10 @@ var Unit = Observable.extend({
 		this.fireEvent( "standby", this );
 	},
 	
+	//取消锁定与待机状态
 	unLock	: function(){
 		this.lock = false;
+		this.standby = false;
 	},
 	
 	click		: function( e ){
@@ -502,5 +511,27 @@ var Unit = Observable.extend({
 	//同一阵营
 	isBrother	: function( faction, team ){
 		return faction == this.faction;
+	},
+	
+	nextExp		: function(){
+		return Unit.calcExp( this.level );
+	},
+	
+	addExp		: function( n ){
+		this.exp += n;
+		if ( this.exp >= this.nextExp() ){
+			this.exp = this.exp - this.nextExp();
+			this.level++;
+			
+			this.fireEvent( "upgrade", this );
+		}
+		this.fireEvent( "change", this );
 	}			
 }); 
+//计算升级所需经验
+//每升一级需额外50点 起始值100
+Unit.calcExp = function( level ){
+	return (level -1) * 50 + 100;
+}
+
+
