@@ -51,8 +51,16 @@ var UnitLayer = Layer.extend({
 			if ( unit.faction == team.faction && unit.team == team.team ){
 				unit.unLock();
 			}
-		}		
-		this.fireEvent("teamStart", team, this.teamIndex );
+		}
+		
+		if (this.teamIndex > 0) 
+			//提示信息消失后再触发
+			PANEL._showTopLine(team.name + " 阶段", function(){
+				this.fireEvent("teamStart", team, this.teamIndex);
+			}, this);
+		else {
+			this.fireEvent("teamStart", team, this.teamIndex);
+		}			
 	},
 	
 	//回合刚开始	
@@ -63,6 +71,15 @@ var UnitLayer = Layer.extend({
 	},
 		
 	onTeamEnd	: function( f, t ){
+		//该队伍所有角色取消石像状态
+		for( var key in this.units ){
+			var unit = this.units[ key ];
+			
+			if ( unit.faction == f && unit.team == t ){
+				unit.unLock();
+			}
+		}		
+		
 		if ( this.teamIndex++ >= this.teams.length - 1 ) {
 			//回合结束
 			this.fireEvent("roundEnd", this.round );
@@ -158,7 +175,7 @@ var UnitLayer = Layer.extend({
 					
 					this.clicked.on( "attack", function(){
 						
-						delete this.clicked;
+						//delete this.clicked;
 						
 					}, this, { single : true } ).attack( unit );
 				}
@@ -351,8 +368,8 @@ var UnitLayer = Layer.extend({
 	},
 	//检查失败/胜利条件
 	checkVOF		: function( unit ){
-		if ( unit.dead ){
-			alert( "失败了" );
+		if ( unit.symbol == "caocao" ){
+			log( "失败了" );
 		}
 		return false;
 	},
@@ -387,11 +404,13 @@ var UnitLayer = Layer.extend({
 		.on( "click", PANEL.showUnitAttr, PANEL )
 		//状态更改时重新显示该角色属性
 		.on( "change", function( unit ){
+			log( "onchange : if " + (unit == this.clicked ) );
 			if ( unit == this.clicked )
 				PANEL.showUnitAttr( unit );
 		}, this )
 		//取消点击时,隐藏该角色属性
 		.on( "unclick", function( unit ){
+			log( unit.name +  " unclick" );
 			if ( unit == this.clicked )
 				PANEL.hideUnitAttr();
 				
