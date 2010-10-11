@@ -3,190 +3,103 @@
  */
 var UnitUI = Observable.extend({
 	unit	: null, 	//unit主体
-	imgMove	: "",		//移动
-	imgAtk	: "",		//攻击
-	imgSpc	: "",		//特殊
-	imgFace	: "",		//头像
-	loaded : false,		//是否加载完所需图像
+	loaded	: false,
+	p			: 1,
+	stamp	: 0, //时间戳
+	img		: null,
 	
-	init	: function( config, callback ){
-		this.unit = config;
-		this.grays = {};
-		this.highlights = {};
+	init	: function( config ){
+		this._super( config );
 		
-		this._super();
+		this.imgStack = [];
+		this.tipStack = [];
 		
-		this.addEvents( "load", "attack", "defend", "miss", "dead" );
-		this._getImageData( callback );
+		this.addEvents( "load" );
+		
+		//获取相同角色的img集合
+		var unit = this.unit;
+		this.imgs = ImgMgr.get( unit.symbol, {
+			unit	: unit,
+			listeners : {
+				load	: {
+					fn	: function(){
+						this.loaded = true;
+						this.fireEvent( "load", unit );
+					},
+					scope : this
+				}
+			}
+		});
 		
 		return this;
 	},
 	
-	/*
-	 * 将整张图片切割为很多小图片 并缓存起来
-	*/
-	_getImageData	: function( callback ){
-		var _self = this, 
-				loaded = 0,
-				unit = this.unit;
-		
-		//4张图片全部加载完之后
-		function done( src ){
-			console.debug( _self.unit.name + " : " + src + " done");
-			if (loaded++ >= 3) {
-				_self.loaded = true;
-				callback( _self );
-				_self.fireEvent( "load" );
+	draw	:  function( timestamp ){
+		var diff = timestamp - this.stamp;
+		var unit = this.unit, cell = unit.cell;
+		//var dx = cell.dx, dy = cell.dy, img;
+		 
+		//有待执行的动画
+		if( this.imgStack.length > 0 ){
+			var a = this.imgStack[0];
+			
+			if (diff > a.inter) {
+				this.stamp = timestamp;
+				
+				//如果已经没有图像可画
+				if (a.items.length == 0) {
+					if (a.fn) 
+						a.fn.apply(a.scope || this, a.params || [] );
+					
+					//从队列中抛弃当前动画
+					this.imgStack.pop();
+				}
+				else {
+					var item = a.items.pop();
+					
+					//修正坐标信息
+					if (typeof item == "object") {
+						this.dx = item.dx;
+						this.dy = item.dy;
+						this.img = item.img;
+					}
+					else {
+						//只传了图像
+						this.dx = cell.dx;
+						this.dy = cell.dy;
+						this.img = item;
+					}
+				}
 			}
+		}else{
+			this.dx = cell.dx;
+			this.dy = cell.dy;
+			
+			//长时间执行的状态
+			//切换步伐
+			if( diff > SPEED ){
+				this.stamp = timestamp;
+				this.p = this.p == 2 ? 1 : 2;
+			}
+						
+			if (!unit.moving && unit.debility) {
+				//虚弱时
+				this.img = this.imgs.fall[ this.p - 1 ];
+			} else{
+				this.img = this.imgs[ unit.direct ][ this.p ];
+			} 
+			//this.img = this.img || this.imgs[ unit.direct ][ this.p ];
 		}
-		
-		//移动		
-		var fn	= function(){
-			
-			ctx.clearRect( 0,0, this.width, this.height );
-			ctx.drawImage( this, 0, 0  );
-			
-			//生成上下左右ImageData 
-			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
-			_self.down = [
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*6, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*0, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
-
-			_self.up = [ PS.getCanImage( ctx, 0, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT *3, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.left = [PS.getCanImage( ctx, 0, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.fall = [	PS.getCanImage( ctx, 0, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
-
-			//wait for left image
-			var timer = setInterval( function(){
-				var img = _self.left[ 0 ];
-				if ( img && img.width ){
-					clearInterval( timer );
-					_self.right = [ PS.getCanImageTurn( _self.left[0] ),  
-							PS.getCanImageTurn( _self.left[1] ),
-							PS.getCanImageTurn( _self.left[2] ) ];
-				}
-			} ,10);
-/*
-			_self.right = [PS.getCanImageTurn( _self.left[0] ),  
-							PS.getCanImageTurn( _self.left[1] ),
-							PS.getCanImageTurn( _self.left[2] ) ];
-*/
-												
-			done( unit.imgMove );
-		}
-		_loadImg( unit.imgMove, fn );	
-		
-		//攻击
-		var fn2	= function(){
-			
-			ctx.clearRect( 0,0, this.width, this.height );
-			ctx.drawImage( this, 0, 0  );
-			
-			//生成上下左右ImageData 
-			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
-			_self.adown = [
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT      , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 2, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 3, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.aup =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT   *   5   , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 6, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 7, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.aleft =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 8, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT    *  9  , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 10, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 11, CELL_WIDTH, CELL_HEIGHT ) ];
-
-			//wait for left image
-			var timer = setInterval( function(){
-				var img = _self.aleft[ 0 ];
-				if ( img && img.width ){
-					clearInterval( timer );
-					_self.aright = [ PS.getCanImageTurn( _self.aleft[0] ),
-							PS.getCanImageTurn( _self.aleft[1] ) ,
-							PS.getCanImageTurn( _self.aleft[2] ) ,
-							PS.getCanImageTurn( _self.aleft[3] ) ];
-				}
-			} ,10);							
-/*
-			_self.aright =[PS.getCanImageTurn( _self.aleft[0] ),
-							PS.getCanImageTurn( _self.aleft[1] ) ,
-							PS.getCanImageTurn( _self.aleft[2] ) ,
-							PS.getCanImageTurn( _self.aleft[3] ) ];	
-*/
-			
-			done( unit.imgAtk );
-		}
-		_loadImg( unit.imgAtk, fn2 );	
-		
-		//防御 被击中  致命一击
-		var fn3	= function(){
-			ctx.clearRect( 0,0, this.width, this.height );
-			ctx.drawImage( this, 0, 0  );
-			
-			//生成上下左右ImageData 
-			_self.ddown = [	PS.getCanImage( ctx, 0, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.dup = [ PS.getCanImage( ctx, 0, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
-							
-			_self.dleft = [PS.getCanImage( ctx, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT )];
-							
-			_self.attacked = [PS.getCanImage( ctx, 0, CELL_HEIGHT*3, CELL_WIDTH, CELL_HEIGHT )];
-			
-			_self.burst = [PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
-			
-			//wait for dleft image
-			var timer = setInterval( function(){
-				var img = _self.dleft[ 0 ];
-				if ( img && img.width ){
-					clearInterval( timer );
-					_self.dright = [PS.getCanImageTurn(  img ) ];
-				}
-			} ,10);
-			//_self.dright = [PS.getCanImageTurn(  _self.dleft[0] ) ];
-			
-			done( unit.imgSpc );
-		}
-		_loadImg( unit.imgSpc, fn3 );		
-		
-		//头像	
-		var fn4	= function(){
-			
-			_self.face = [	this ];
-																				
-			done( unit.imgFace );
-		}
-		_loadImg( unit.imgFace, fn4 );				
-	},
-	
-	draw	:  function( unit ){
-		if ( !this.loaded )
-			return;
-		
-		var cell = unit.cell;
-		var img = unit.pencil,
-			 dx = cell.dx, dy = cell.dy;
 			
 		//绘制图像
-		//ctx.putImageData( img, dx,dy, 0, 0, CELL_WIDTH, CELL_HEIGHT );
-		if ( img )
-		try {
-			ctx.drawImage( img, dx,dy );
-		} catch (e) {}
+		if ( this.img )
+			try {
+				ctx.drawImage( this.img, this.dx, this.dy );
+			} catch (e) {}
 	},
 	
 	drawTip	:  function( unit ){
+		return ;
 		
 		var cell = unit.cell;
 		var img = unit.pencil,
@@ -274,30 +187,109 @@ var UnitUI = Observable.extend({
 		ctx.restore();
 	},	
 	
-	attack	: function( cell ){
-		//判断方向
+	moveTo	: function( way ){
+		if (way.length == 0) {
+			//原地
+			this.unit.fireEvent( "move", this.unit );
+		}
+		else {
+			var i = 0, from = this.unit.cell, steps = [];
+			var p = 1;
+			//循环添加
+			while( i < way.length ){
+				var to = way[ i++ ];
+				var direct = from.directT( to );
+				
+				var actions = this.imgs[ direct];
+				var dx = from.dx, dy = from.dy;
+				
+				//动态生成移动位置
+				switch( direct ) {
+					case "down": //下
+						dx1 = dx; dy1 = dy + CELL_HEIGHT/2;
+						dx2 = dx; dy2 = dy + CELL_HEIGHT;
+						break;
+					case "up"://上
+						dx1 = dx; dy1 = dy - CELL_HEIGHT/2;
+						dx2 = dx; dy2 = dy - CELL_HEIGHT;
+						break;
+					case "left"://左
+						dx1 = dx - CELL_WIDTH /2 ; dy1 = dy;
+						dx2 = dx - CELL_WIDTH    ; dy2 = dy;
+						break;
+					case "right"://右
+						dx1 = dx - CELL_WIDTH /2 ; dy1 = dy;
+						dx2 = dx - CELL_WIDTH    ; dy2 = dy;
+						break;
+				}				
+				
+				var obj = {
+					inter	: SPEED * 5,
+					items	: [ {
+						img	: actions[ 1 ],
+						dx  : dx1, dy : dy1 
+					},{
+						img	: actions[ 2 ],
+						dx  : dx2, dy : dy2
+					}],
+					fn 		: function( cell ){
+						this.fireEvent( "walk", this, this.cell, cell );
+						this.cell = cell;
+						log( "this.cell = " + this.cell.x + " cell.x = " + cell.x );
+					}, 
+					params	: [ to ],
+					scope	: this.unit
+				};
+				
+				steps.push( obj );
+				from = to;
+			}
+			
+			this.imgStack = this.imgStack.concat( steps );
+		}
+	},
+	
+	attack	: function( direct, fn , scope ){
+		
+		var actions = this.imgs["a" + direct];
+		var obj = {
+			inter	: SPEED,
+			//延长攻击第一帧显示时间
+			items	: [ actions[0], actions[0], actions[0] ].contact( actions ),
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.imgStack.push( obj );
+		
+/*
+				var diff = timestamp - this.stampAtk;
+				//致命一击时 高亮第一个攻击图像
+				if (this.burstlast > 1) {
+					if (diff > ASPEED) {
+						this.stampAtk = timestamp;
+						this.burstlast--;
+					}
+					this.attackP = 1;
+					
+					img = this.ui.highlight(this.direct);
+				}
+				else {
+					if (diff > ASPEED) {
+						this.stampAtk = timestamp;
+						
+						img = actions[this.attackP++];
+					}
+					else {
+						img = actions[this.attackP];
+					}
+				}
+*/
+		
+		
 		
 		
 		return this;
-	},
-	
-	gray	: function( direct ){
-		//缓存灰化图像
-		if ( !this.grays[ direct ] ){
-			this.grays[ direct ] = PS.grayImg( this[ direct ][ 0 ] );
-		}
-		
-		return this.grays[ direct ];	
-	},
-	
-	//高亮攻击图像
-	highlight	: function( direct ){
-		//缓存高亮图像
-		if ( !this.highlights[ direct ] ){
-			this.highlights[ direct ] = PS.highlightImg( this[ "a" + direct ][ 0 ], HighLightDeep );
-		}
-		
-		return this.highlights[ direct ];	
 	}	
 	
 }); 

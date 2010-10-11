@@ -12,7 +12,7 @@ CELL_YNUM	= 20,
 MAX_H = CELL_HEIGHT * CELL_YNUM,
 MAX_W = CELL_WIDTH * CELL_XNUM,
 
-UNDERCOVER = false, 
+UNDERCOVER = true, 
 PANEL = null,
 //窗口的宽高
 WINDOW_WIDTH = 960,
@@ -95,6 +95,7 @@ UNITS	= [{
 	imgSpc	: "images/spc/26-1.png",
 	imgFace	: "images/face/16-1.png"	
 }],
+
 /*
 	0  草地
 	1  树木
