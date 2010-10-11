@@ -288,7 +288,7 @@ var Panel = Component.extend({
 	
 	showUnitAttr		: function( unit ){
 		
-		$("._face").empty().append( unit.ui.face[ 0 ] );
+		$("._face").empty().append( unit.ui.imgs.face[ 0 ] );
 		$("#hp").text( unit.hp + "/" + unit.hpMax );
 		$("#mp").text( unit.mp + "/" + unit.mpMax );
 		

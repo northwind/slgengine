@@ -2,25 +2,37 @@
  * @author Norris
  */
 
-var UIMgr = function( config ){
+var ImgMgr = function( config ){
 	$.extend( this, config );
 	return this;	
 }
 
-UIMgr.prototype = {
+ImgMgr.prototype = {
 	items	: {},
 	
-	get		: function( key, config, callback ){
-		var item = this.items[key];
+	get		: function( key, config ){
+		var item = this.items[key], fn = function(){}, scope;
+		try {
+			var load = config.listeners.load;
+			fn = load.fn;
+			scope = load.scope;
+		} catch (e) {}
+		
 		if ( item ) {
-			if ( callback )
-				callback( item );
+			if ( item.loaded ){
+				//自动触发load事件
+				fn.call( scope, item );
+			}
+			else{
+				item.on( "load", fn, scope );
+			}
+			
 			return item;
 		}
 		else {
-			var ui = this.create(config, callback);
-			this.items[key] = ui;
-			return ui;
+			var imgObj = this.create(config);
+			this.items[key] = imgObj;
+			return imgObj;
 		}
 	},
 	
@@ -29,11 +41,11 @@ UIMgr.prototype = {
 		return this;
 	},
 	
-	create	: function( config, callback ){
-		return new UnitUI( config, callback );
+	create	: function( config ){
+		return new UnitImg( config );
 	} 
 	
 };
 
 
-UIMgr = new UIMgr();
+ImgMgr = new ImgMgr();

@@ -17,9 +17,6 @@ var Unit = Observable.extend({
 	range	: 1, 			//攻击长度
 	rangeType : 1,      //攻击类型
 	
-	stampAtk	: 0,
-	stampStatus	: 0,
-	stampStep		: 0,
 	moving : false,
 	
 	face		: null, //头像
@@ -57,7 +54,6 @@ var Unit = Observable.extend({
 	qAccessory	: null,	//左侧饰品	
 	qAccessory2	: null, //右侧饰品
 	
-	p			: 1,
 	cell		: null,   //当前所在的位置
 	oriCell : null,   //移动前所在的位置
 	oriDirect : "down", //移动前方向
@@ -74,7 +70,6 @@ var Unit = Observable.extend({
 	missing		: false, //闪避中
 	misslast	: 0, //闪避持续显示帧数
 	invinciblelast	: 0, //无效持续显示帧数
-	burstlast	    : 0,  //致命一击持续帧数
 	beattacked		: 0, //被击中
 	HPdelast	: 0, //扣血持续显示帧数
 	HPdecrease  : 0, //扣血
@@ -88,11 +83,7 @@ var Unit = Observable.extend({
 	 //debuff: {},   //损益buff
 	
 	ui		: null,
-	
-	w		: CELL_WIDTH,
-	h		: CELL_HEIGHT,
-	
-	pencil	: null, //当前要画的图片
+	loaded	: false,
 	
 	init	: function( config ){
 		this.moves	= {};
@@ -118,13 +109,23 @@ var Unit = Observable.extend({
 		this.setUI();
 		//死亡时锁定角色
 		this.on( "dead", function(){ this.lock = true; }, this );
+		
 		return this;
 	},
 		
 	setUI	: function(){
-		var _self = this;
-		this.ui = UIMgr.get( this.symbol, this, function(){
-			_self.fireEvent( "load", _self );
+		//UI加载完成后触发load事件
+		this.ui = new UnitUI( { 
+			unit : this,
+			listeners	: {
+				load	: {
+					fn	: function(){
+						this.loaded = true;
+						this.fireEvent( "load", this );
+					},
+					scope : this 
+				}
+			} 
 		} );
 		
 		return this;
@@ -133,9 +134,11 @@ var Unit = Observable.extend({
 	//绘制图像
 	//继承者需要覆盖次方法
 	draw	: function( timestamp ){
-		if ( !this.ui.loaded )
+		if ( !this.loaded )
 			return;
-			
+		
+		this.ui.draw( timestamp );	
+/*
 		this.changeStatus( timestamp );
 		this.ui.draw( this );
 		
@@ -161,14 +164,6 @@ var Unit = Observable.extend({
 			
 			//this.fireEvent( "defend", this, 0 );
 		}		
-		//攻击
-		if ( this.attacking && this.attackP == this.ui[ "a" + this.direct ].length  ){
-			this.attacking = false;
-			this.attackP = 0;
-			
-			this.fireEvent( "attack", this, this._genHitValue() );
-			this.burstlast = 0;
-		}  
 		//移动过后回调	
 		if ( this.moving && this.way == 0){
 			this.moving = false;
@@ -180,11 +175,12 @@ var Unit = Observable.extend({
 			}
 			
 			this.fireEvent( "move", this );
-		}		
+		}
+*/		
 	},
 	//绘制提示信息
-	drawTip	: function(){
-		this.ui.drawTip( this );			
+	drawTip	: function( timestamp ){
+		this.ui.drawTip( timestamp );			
 	},
 	
 	showMajor	: function(){
@@ -220,28 +216,7 @@ var Unit = Observable.extend({
 		else 
 			//攻击
 			if (this.attacking) {
-				var actions = this.ui["a" + this.direct];
-				var diff = timestamp - this.stampAtk;
-				//致命一击时 高亮第一个攻击图像
-				if (this.burstlast > 1) {
-					if (diff > ASPEED) {
-						this.stampAtk = timestamp;
-						this.burstlast--;
-					}
-					this.attackP = 1;
-					
-					img = this.ui.highlight(this.direct);
-				}
-				else {
-					if (diff > ASPEED) {
-						this.stampAtk = timestamp;
-						
-						img = actions[this.attackP++];
-					}
-					else {
-						img = actions[this.attackP];
-					}
-				}
+
 			}
 			else {
 				if (this.beattacked > 0 && diff > ASPEED) {
@@ -254,11 +229,6 @@ var Unit = Observable.extend({
 						//待机
 						img = this.ui.gray(this.direct);
 					}
-					else 
-						if (!this.moving && this.debility) {
-							//虚弱时
-							img = this.ui.fall[this.p - 1];
-						}
 						else 
 							if (this.way.length > 0 && diff > STEP) {
 								//更改角色移动时的图片
@@ -275,11 +245,6 @@ var Unit = Observable.extend({
 								img = this.ui[this.direct][this.p];
 							}
 			}			
-		//切换步伐
-		if( timestamp - this.stampStatus > SPEED ){
-			this.stampStatus = timestamp;
-			this.p = this.p == 2 ? 1 : 2;
-		}
 		
 		this.pencil = img == undefined ? this.ui[ this.direct ][ this.p ] : img;
 	},
@@ -306,6 +271,8 @@ var Unit = Observable.extend({
 				cell = cell.parent;
 			}
 			this.way = way;
+			
+			this.ui.moveTo( this.way );
 		}
 		return this;
 	},
@@ -326,39 +293,47 @@ var Unit = Observable.extend({
 	},
 	
 	attack			: function( unit ){
-		var cell = unit.cell;
-
-		//绑定防御事件 被攻击的unit受到伤害后反馈
-		unit.on( "defend", function( defender ){
-			this.attackFreq++;
-			if ( this.attackFreq >= this.attackFreqMax || defender.dead ){
-				//获得经验值
-				if( defender.dead ){
-					this.addExp( 50 );
-				}
-				
-				//结束本回合
-				this.finish();
-			}else{
-				//继续攻击同一目标
-				this.attack( unit );
-			}
-		}, this, { one : true } );
-		
+		//取消显示攻击范围	
 		this.preAttack = false;
 		
-		//判断方向
-		this.direct = this.cell.directT( cell );
-		//判断暴击
-		if ( (1 + Math.random() * 99) <= this.burst ){
-			this.burstlast = 4; 
-		}	
-		
-		this.fireEvent( "preAttack", this );
-		this.attacking = true;
-		//该角色攻击后，触发被攻击者的被攻击方法
-		this.on("attack", unit.attacked, unit , { one : true });
+		//预备攻击返回false则取消执行
+		if (this.fireEvent("preAttack", this) !== false) {
+			this.attacking = true;
+			//判断方向
+			var direct = this.cell.directT( unit.cell );			
+			//判断暴击
+			var bursting = false;
+			if ( (1 + Math.random() * 99) <= this.burst ){
+				bursting = true;
+			}	
+			var hit = this._genHitValue( bursting );
+					
+			this.ui.attack( this, direct, bursting, hit, function(){
+				this.fireEvent("attack", this);
+				this.attacking = false;
 				
+				//通知被攻击者
+				unit.attacked( this, hit, function( defender ){
+					
+					//绑定防御事件 被攻击的unit受到伤害后反馈
+					this.attackFreq++;
+					if ( this.attackFreq >= this.attackFreqMax || defender.dead ){
+						//获得经验值
+						if( defender.dead ){
+							this.addExp( 50 );
+						}
+						
+						//结束本回合
+						this.finish();
+					}else{
+						//继续攻击同一目标
+						this.attack( unit );
+					}
+				}, this );
+				
+			}, this);
+		}
+		
 		return this;
 	},
 	
@@ -444,9 +419,9 @@ var Unit = Observable.extend({
 	
 	//计算攻击值 攻击上限与攻击下限间随机取值 最小为0
 	//暴击时乘以enlarge倍
-	_genHitValue	: function(){
+	_genHitValue	: function( bursting ){
 		var v = Math.max( 0, this.atknumMin + Math.random() * ( this.atknumMax - this.atknumMin ) );
-		if ( this.burstlast > 0 )
+		if ( bursting )
 			v = v * this.enlarge;
 		
 		return v;	
