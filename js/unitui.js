@@ -10,6 +10,7 @@ var UnitUI = Observable.extend({
 	loaded	: false,
 	foot	: 1,
 	stamp	: 0, //时间戳
+	tipstamp : 0,
 	img		: null,
 	direct  : "down",
 	oriDirect : "down",
@@ -72,8 +73,11 @@ var UnitUI = Observable.extend({
 				else {
 					var item = a.items.shift();
 					
-					//修正坐标信息
-					if ( item.constructor == Object ) {
+					if ( !item ){
+						//空图像
+						this.img = null;
+					}else  if ( item.constructor == Object ) {
+						//修正坐标信息
 						this.dx = item.dx;
 						this.dy = item.dy;
 						this.img = item.img;
@@ -113,37 +117,44 @@ var UnitUI = Observable.extend({
 			} catch (e) {}
 	},
 	
-	drawTip	:  function( unit ){
-		
-		var cell = unit.cell;
-		var img = unit.pencil,
-			 dx = cell.dx, dy = cell.dy;
+	drawTip	:  function( timestamp ){
+		//有待执行的动画
+		if( this.tipStack.length > 0 ){
+			var diff = timestamp - this.tipstamp,
+				  unit =this.unit, cell = unit.cell,
+				  a = this.tipStack[0];
 			
-		ctx.save();
-		
-		//this
+			if (diff > a.inter) {
+				this.tipstamp = timestamp;
+				
+				//绘完所有帧
+				if ( a.frame == 0 ) {
+					if (a.fn) 
+						a.fn.apply(a.scope || this, a.params || [] );
+					
+					//从队列中抛弃当前动画
+					this.tipStack.shift();
+				}
+				else {
+					a.frame--;
+					//更改位置
+					a.from[ 0 ] += a.increment[ 0 ];
+					a.from[ 1 ] += a.increment[ 1 ];
+				}
+			}
+			
+			ctx.save();
+			if ( a.font )
+				ctx.font =  a.font;
+			if ( a.color )	
+				ctx.fillStyle = a.color;
+			if ( a.text )
+				ctx.fillText( a.text, a.from[ 0 ], a.from[ 1 ] );
+	
+			ctx.restore();			
+		}
 		
 		/*
-		//闪避
-		if ( unit.missing ){
-			ctx.font = "15px";
-			ctx.fillStyle = "rgba(255,255,255,1)";
-			ctx.fillText( "我闪", dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 2 - unit.misslast );
-		}
-		//无效
-		if ( unit.invinciblelast > 0 ){
-			ctx.font = "15px";
-			ctx.fillStyle = "rgba(255,255,0,1)";
-			ctx.fillText( "无效", dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 3 + unit.invinciblelast );			
-		}
-			
-		//扣血
-		if ( unit.HPdecrease ){
-			ctx.font = "15px";
-			ctx.fillStyle = "rgb(255,0,0)";
-			ctx.fillText( "-" + unit.HPdecrease, dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 2 - unit.HPdelast );
-		}		
-		
 		//当角色位于两边时调证坐标系
 		if ( dx == 0 ){
 			ctx.translate( 10, 0 )
@@ -201,7 +212,6 @@ var UnitUI = Observable.extend({
 			ctx.strokeText( "级别　" + unit.level,  dx,  y - 8 );   			
 		}
 		*/
-		ctx.restore();
 	},	
 	
 	moveTo	: function( way ){
@@ -297,23 +307,51 @@ var UnitUI = Observable.extend({
 		};
 		
 		this.imgStack.push( obj );
-		
-		return this;
 	},
-	
-	invincible	: function( fn , scope ){
+
+	dead	: function( fn , scope ){
+		var fall = this.imgs.fall[0];
+					
 		var obj = {
-			inter	: ASPEED,
-			color	: "rgba(255,255,0,1)",
-			font	: "15px",
-			text	: "无效",
+			inter	: SPEED,
+			//延长攻击第一帧显示时间
+			items	: [ fall, null, fall, null, fall, null ],
 			fn 		: fn, 
 			scope	: scope
 		};
 		
-		this.tipStack.push( obj );
+		this.imgStack.push( obj );
+	},
+			
+	invincible	: function( fn , scope ){
 		
-		return this;
-	}			
+		this.tipStack.push( this._defaultTip( fn, scope, "无效" ) );
+	},
 	
+	_defaultTip	: function( fn, scope, text, color, font ){
+		var cell = this.unit.cell, dx = cell.dx, dy = cell.dy;
+		var obj = {
+			inter	: TIPSPEED,
+			color	: color || "rgba(255,255,0,1)",
+			font	: font || "15px",
+			text	: text,
+			from: [ dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 2 ],
+			increment    : [ 0, -1 ],
+			frame	: 15,
+			fn 		: fn, 
+			params: [ this.unit ],
+			scope	: scope
+		};
+		return obj;		
+	},			
+	
+	miss	: function( fn , scope ){
+		
+		this.tipStack.push( this._defaultTip( fn , scope, "我闪", "rgba(255,255,255,1)" ) );
+	},	
+	
+	attacked	: function( v, fn , scope ){
+		
+		this.tipStack.push( this._defaultTip( fn , scope, "-"+v,  "rgb(255,0,0)" ) );
+	}		
 }); 

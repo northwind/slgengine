@@ -17,8 +17,6 @@ var Unit = Observable.extend({
 	range	: 1, 			//攻击长度
 	rangeType : 1,      //攻击类型
 	
-	moving : false,
-	
 	face		: null, //头像
 	level		: 1,	//级别
 	exp			: 0,    //经验
@@ -37,12 +35,12 @@ var Unit = Observable.extend({
 	intelligence : 3,	//智力
 	
 	miss		: 5,  //百分数 躲闪的概率
-	burst		: 100,	//百分数 暴击的概率
+	burst		: 40,	//百分数 暴击的概率
 	enlarge	: 1.5,  //暴击时系数
 	invincible	: false, //无敌
 	debility : false,	//濒临死亡
 	dead		: false,
-	deadlast	: 0,
+	moving : false,
 		
 	regainHP	: 0,  //回血数量
 	regainMP	: 0,  //回魔数量
@@ -65,13 +63,7 @@ var Unit = Observable.extend({
 	attackFreq		: 0,		//本回合攻击几次了
 	preAttack	: false,	//是否准备攻击
 	attacking		: false, //是否正在攻击
-	attackP		: 0, //攻击时的图像索引
 	missing		: false, //闪避中
-	misslast	: 0, //闪避持续显示帧数
-	invinciblelast	: 0, //无效持续显示帧数
-	beattacked		: 0, //被击中
-	HPdelast	: 0, //扣血持续显示帧数
-	HPdecrease  : 0, //扣血
 	
 	faction		: 0, //阵营  不同阵营既是敌人，可攻击  -1即是中立 任何人都不能攻击
 	team	: 1,		//所处队伍 同一阵营下同一队伍为我军，不同队伍为友军
@@ -137,45 +129,6 @@ var Unit = Observable.extend({
 			return;
 		
 		this.ui.draw( timestamp );	
-/*
-		this.changeStatus( timestamp );
-		this.ui.draw( this );
-		
-		if (this.dead && this.deadlast <= 0) {
-			this.fireEvent( "dead", this );
-		}
-		//闪避
-		if ( this.missing && this.misslast++ == 20 ){
-			this.missing = false;
-			this.misslast = 0;
-			//this.fireEvent( "defend", this, 0 );
-		}
-		//无敌
-		if (this.invinciblelast > 0) {
-			this.invinciblelast--;
-			//if ( this.invinciblelast == 0 )
-				//this.fireEvent( "defend", this, 0 );
-		}
-		//扣血
-		if ( this.HPdelast > 0 && this.HPdelast++ == 20 ){
-			this.HPdelast = 0;
-			this.HPdecrease = 0;
-			
-			//this.fireEvent( "defend", this, 0 );
-		}		
-		//移动过后回调	
-		if ( this.moving && this.way == 0){
-			this.moving = false;
-			
-			if (this.fn) {
-				this.fn.call( this.scope || this, this );
-				delete this.fn;
-				delete this.scope;
-			}
-			
-			this.fireEvent( "move", this );
-		}
-*/		
 	},
 	//绘制提示信息
 	drawTip	: function( timestamp ){
@@ -200,17 +153,7 @@ var Unit = Observable.extend({
 		
 		//死亡
 		if (this.dead) {
-			if (diff > SPEED ) {
-				this.deadlast--;
-				this.stampStep = timestamp;
-			}
-			if (this.deadlast % 2 == 0) {
-				img = 0;
-			}
-			else {
-				img = this.ui.fall[0];
-			}
-			this.stampStatus = timestamp;
+
 		}
 		else 
 			//攻击
@@ -218,31 +161,10 @@ var Unit = Observable.extend({
 
 			}
 			else {
-				if (this.beattacked > 0 && diff > ASPEED) {
-					this.beattacked--;
-					
-					img = this.ui.attacked[0];
-				}
-				else 
 					if (this.standby) {
 						//待机
 						img = this.ui.gray(this.direct);
 					}
-						else 
-							if (this.way.length > 0 && diff > STEP) {
-								//更改角色移动时的图片
-								this.stampStep = timestamp;
-								//this.stampStatus = timestamp; 	//角色发生转向后不再需要更新状态
-								
-								var cell = this.way.pop();
-								this.direct = this.cell.directT(cell);
-								//触发walk事件
-								this.fireEvent("walk", this, this.cell, cell);
-								
-								this.cell = cell;
-								
-								img = this.ui[this.direct][this.p];
-							}
 			}			
 		
 		this.pencil = img == undefined ? this.ui[ this.direct ][ this.p ] : img;
@@ -339,30 +261,29 @@ var Unit = Observable.extend({
 	attacked		: function( unit, v, fn, scope ){
 		//判断是否可攻击
 		if ( this.invincible ){
-			this.ui.invincible( fn, scope );
+			this.ui.invincible( function(){
+				if( fn )
+					fn.call( scope || this, this, false );
+					
+			}, this );
 		}else
 		//判断闪避
 		if ( (1 + Math.random() * 99) <= this.miss ){
-			this.missing = true; 
-			//this.fireEvent( "defend", this, 0 );
+			this.ui.miss( function(){
+				if( fn )
+					fn.call( scope || this, this, false );
+					
+			}, this );
 		}else
 		//判断抵抗
 		{
 			//伤害值
 			var decrease = this._genDamageValue(  v );
-			
-			this.onDecrease( decrease );
-			this.beattacked = 5;
-			
-			//this.fireEvent( "defend", this, decrease );
+			decrease = 100;
+			this.ui.attacked( decrease, function(){
+				this.onDecrease( decrease, unit, fn, scope );
+			}, this );
 		}
-		//TODO 优化逻辑
-/*
-		_self = this;
-		setTimeout( function(){
-			_self.fireEvent( "defend", _self );
-		} , 1500);
-*/
 	},
 	
 	_calcHpPercent	: function(){
@@ -374,21 +295,32 @@ var Unit = Observable.extend({
 	},
 	
 	//扣血
-	onDecrease	: function( d ){
-		if (!isNaN(d) && d >= 0) {
-			d = parseInt(d);
-			this.HPdecrease = d;
-			this.HPdelast = 1;
+	onDecrease	: function( d, unit, fn, scope ){
+		if ( !isNaN(d) ) {
 			
 			this.hp = Math.max(0, this.hp - d );
 			this._calcHpPercent();
 			
 			this.fireEvent( "change", this );
 			
-			//死亡
+			//如果死亡，则播放动画后再执行回调函数
 			if (this.hp == 0) {
-				this.fireEvent( "preDead", this );
-				this.onDead();
+				if (this.fireEvent("preDead", this) === false) {
+					//如果不让死
+				}else{
+					log( this.name + " dead" );
+					this.ui.dead( function(){
+						//先反馈攻击者，再触发dead事件
+						if ( fn )
+							fn.call( scope || this, this, true, d, unit );
+							
+						this.onDead( unit );
+					}, this );
+				}
+			}else{
+				//回调扣血数值
+				if( fn )
+					fn.call( scope || this, this, true, d, unit );
 			}
 		}	
 	},
@@ -410,10 +342,9 @@ var Unit = Observable.extend({
 		}
 	},	
 	
-	onDead		: function(){
+	onDead		: function( unit ){
 		this.dead = true;
-		this.deadlast = 8;
-		//this.fireEvent( "dead", this );
+		this.fireEvent( "dead", this, unit );
 	},
 	
 	//计算攻击值 攻击上限与攻击下限间随机取值 最小为0
@@ -428,7 +359,7 @@ var Unit = Observable.extend({
 	
 	//计算伤害值
 	_genDamageValue	: function( v ){
-		return Math.max( 0, v - this.defnum );
+		return Math.max( 0, Math.round(v) - this.defnum );
 	},
 		
 	showAttack	: function(){
