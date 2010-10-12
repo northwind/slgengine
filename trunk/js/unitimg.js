@@ -178,13 +178,13 @@ var UnitImg = Observable.extend({
 	},
 	
 	//高亮攻击图像
-	highlight	: function( direct ){
+	highlight	: function( key, img, deep ){
 		//缓存高亮图像
-		if ( !this.highlights[ direct ] ){
-			this.highlights[ direct ] = PS.highlightImg( this[ "a" + direct ][ 0 ], HighLightDeep );
+		if ( !this.highlights[ key ] ){
+			this.highlights[ key ] = PS.highlightImg( img, deep );
 		}
 		
-		return this.highlights[ direct ];	
+		return this.highlights[ key ];	
 	}	
 	
 }); 

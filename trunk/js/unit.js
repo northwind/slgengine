@@ -37,7 +37,7 @@ var Unit = Observable.extend({
 	intelligence : 3,	//智力
 	
 	miss		: 5,  //百分数 躲闪的概率
-	burst		: 40,	//百分数 暴击的概率
+	burst		: 100,	//百分数 暴击的概率
 	enlarge	: 1.5,  //暴击时系数
 	invincible	: false, //无敌
 	debility : false,	//濒临死亡
@@ -56,7 +56,6 @@ var Unit = Observable.extend({
 	
 	cell		: null,   //当前所在的位置
 	oriCell : null,   //移动前所在的位置
-	oriDirect : "down", //移动前方向
 	
 	major	: false,		//是否显示简要信息
 	hpLine : false,    //是否显示血条
@@ -102,7 +101,7 @@ var Unit = Observable.extend({
 		this._calcHpPercent();
 		
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
-		this.direct = this.oriDirect = "down";
+		
 		//增加角色事件
 		this.addEvents( "click", "unclick", "change", "dead", "preDead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load", "upgrade" );
 		
@@ -263,7 +262,6 @@ var Unit = Observable.extend({
 			this.lock = true;
 			
 			this.oriCell = this.cell;
-			this.oriDirect = this.direct;
 			//寻路
 			var way = [];
 			while (cell.parent && cell != this.cell) {
@@ -279,7 +277,6 @@ var Unit = Observable.extend({
 	
 	//回到行动前的状态
 	homing		: function(){
-		this.direct = this.oriDirect;
 		this.moving = false;
 		this.preAttack = false;
 		this.lock = false;
@@ -289,6 +286,8 @@ var Unit = Observable.extend({
 			this.fireEvent("walk", this, this.cell, this.oriCell);
 			this.cell = this.oriCell;
 		}
+		this.ui.homing();
+		
 		return this;
 	},
 	
@@ -299,8 +298,6 @@ var Unit = Observable.extend({
 		//预备攻击返回false则取消执行
 		if (this.fireEvent("preAttack", this) !== false) {
 			this.attacking = true;
-			//判断方向
-			var direct = this.cell.directT( unit.cell );			
 			//判断暴击
 			var bursting = false;
 			if ( (1 + Math.random() * 99) <= this.burst ){
@@ -308,7 +305,8 @@ var Unit = Observable.extend({
 			}	
 			var hit = this._genHitValue( bursting );
 					
-			this.ui.attack( this, direct, bursting, hit, function(){
+			this.ui.attack( unit.cell, bursting, hit, function(){
+				log( this.name + "attack over" );
 				this.fireEvent("attack", this);
 				this.attacking = false;
 				
@@ -338,11 +336,10 @@ var Unit = Observable.extend({
 	},
 	
 	//被攻击
-	attacked		: function( unit, v ){
+	attacked		: function( unit, v, fn, scope ){
 		//判断是否可攻击
 		if ( this.invincible ){
-			this.invinciblelast = 20;
-			//this.fireEvent( "defend", this, 0 );
+			this.ui.invincible( fn, scope );
 		}else
 		//判断闪避
 		if ( (1 + Math.random() * 99) <= this.miss ){
@@ -360,10 +357,12 @@ var Unit = Observable.extend({
 			//this.fireEvent( "defend", this, decrease );
 		}
 		//TODO 优化逻辑
+/*
 		_self = this;
 		setTimeout( function(){
 			_self.fireEvent( "defend", _self );
 		} , 1500);
+*/
 	},
 	
 	_calcHpPercent	: function(){
@@ -418,13 +417,13 @@ var Unit = Observable.extend({
 	},
 	
 	//计算攻击值 攻击上限与攻击下限间随机取值 最小为0
-	//暴击时乘以enlarge倍
+	//暴击时乘以enlarge倍 返回整数值
 	_genHitValue	: function( bursting ){
 		var v = Math.max( 0, this.atknumMin + Math.random() * ( this.atknumMax - this.atknumMin ) );
 		if ( bursting )
 			v = v * this.enlarge;
 		
-		return v;	
+		return Math.round( v );	
 	},
 	
 	//计算伤害值
