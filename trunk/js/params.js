@@ -12,7 +12,7 @@ CELL_YNUM	= 20,
 MAX_H = CELL_HEIGHT * CELL_YNUM,
 MAX_W = CELL_WIDTH * CELL_XNUM,
 
-UNDERCOVER = true, 
+UNDERCOVER = false, 
 PANEL = null,
 //窗口的宽高
 WINDOW_WIDTH = 960,
@@ -22,6 +22,7 @@ DISPLAY_HEIGHT = 160,
 SPEED	= 340,	//调节unit切换图片的速度
 STEP	= 60 ,	//调节走路速度
 ASPEED  = 120,  //攻击速度
+TIPSPEED  = 0,  //提示信息显示速度
 
 //队伍集合
 TEAMS	= [{
@@ -137,7 +138,7 @@ HPCLR	= [ ["#7a2200", "#8d2b00"] ,  ["#8a3200", "#9d3b00"] ,  ["#7a7100", "#978c
 		//单元格颜色信息
 		CELLCOLOR = [ "rgba(255,255,255,0.6)"  ],
 		
-		HighLightDeep = 160    //高亮度
+		HighLightDeep = 190    //高亮度
 		
 		;  
 

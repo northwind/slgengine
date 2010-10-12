@@ -209,7 +209,7 @@ var Panel = Component.extend({
 	
 	onRoundStart		: function( round ){
 		log( "第" + round + "回合开始" );
-		this._showTopLine( "第 " + round + " 回合" );
+		//this._showTopLine( "第 " + round + " 回合" );
 	},
 
 	onRoundEnd		: function( round ){
