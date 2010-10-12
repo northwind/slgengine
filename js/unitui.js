@@ -1,12 +1,18 @@
 /**
  * @author Norris
+ * 动画配置
+ * direct : 执行动画后角色面对方向
+ * params : 回调函数中接受的参数
+ * inter  : 每帧相隔时间
  */
 var UnitUI = Observable.extend({
 	unit	: null, 	//unit主体
 	loaded	: false,
-	p			: 1,
+	foot	: 1,
 	stamp	: 0, //时间戳
 	img		: null,
+	direct  : "down",
+	oriDirect : "down",
 	
 	init	: function( config ){
 		this._super( config );
@@ -34,6 +40,11 @@ var UnitUI = Observable.extend({
 		return this;
 	},
 	
+	_changeFoot	: function(){
+		this.foot = this.foot == 2 ? 1 : 2;
+		return this.foot;
+	},
+	
 	draw	:  function( timestamp ){
 		var diff = timestamp - this.stamp;
 		var unit = this.unit, cell = unit.cell;
@@ -48,17 +59,21 @@ var UnitUI = Observable.extend({
 				
 				//如果已经没有图像可画
 				if (a.items.length == 0) {
+					//更改角色所处方向
+					if ( a.direct )
+						this.direct = a.direct;
+						
 					if (a.fn) 
 						a.fn.apply(a.scope || this, a.params || [] );
 					
 					//从队列中抛弃当前动画
-					this.imgStack.pop();
+					this.imgStack.shift();
 				}
 				else {
-					var item = a.items.pop();
+					var item = a.items.shift();
 					
 					//修正坐标信息
-					if (typeof item == "object") {
+					if ( item.constructor == Object ) {
 						this.dx = item.dx;
 						this.dy = item.dy;
 						this.img = item.img;
@@ -79,16 +94,16 @@ var UnitUI = Observable.extend({
 			//切换步伐
 			if( diff > SPEED ){
 				this.stamp = timestamp;
-				this.p = this.p == 2 ? 1 : 2;
+				this._changeFoot();
 			}
 						
 			if (!unit.moving && unit.debility) {
 				//虚弱时
-				this.img = this.imgs.fall[ this.p - 1 ];
+				this.img = this.imgs.fall[ this.foot - 1 ];
 			} else{
-				this.img = this.imgs[ unit.direct ][ this.p ];
+				this.img = this.imgs[ this.direct ][ this.foot ];
 			} 
-			//this.img = this.img || this.imgs[ unit.direct ][ this.p ];
+			//this.img = this.img || this.imgs[ unit.direct ][ this.foot ];
 		}
 			
 		//绘制图像
@@ -99,7 +114,6 @@ var UnitUI = Observable.extend({
 	},
 	
 	drawTip	:  function( unit ){
-		return ;
 		
 		var cell = unit.cell;
 		var img = unit.pencil,
@@ -107,6 +121,9 @@ var UnitUI = Observable.extend({
 			
 		ctx.save();
 		
+		//this
+		
+		/*
 		//闪避
 		if ( unit.missing ){
 			ctx.font = "15px";
@@ -183,7 +200,7 @@ var UnitUI = Observable.extend({
 			//级别
 			ctx.strokeText( "级别　" + unit.level,  dx,  y - 8 );   			
 		}
-		
+		*/
 		ctx.restore();
 	},	
 	
@@ -193,51 +210,28 @@ var UnitUI = Observable.extend({
 			this.unit.fireEvent( "move", this.unit );
 		}
 		else {
+			this.oriDirect = this.direct;
+			
 			var i = 0, from = this.unit.cell, steps = [];
-			var p = 1;
+			way.reverse();
 			//循环添加
 			while( i < way.length ){
 				var to = way[ i++ ];
 				var direct = from.directT( to );
 				
-				var actions = this.imgs[ direct];
-				var dx = from.dx, dy = from.dy;
-				
-				//动态生成移动位置
-				switch( direct ) {
-					case "down": //下
-						dx1 = dx; dy1 = dy + CELL_HEIGHT/2;
-						dx2 = dx; dy2 = dy + CELL_HEIGHT;
-						break;
-					case "up"://上
-						dx1 = dx; dy1 = dy - CELL_HEIGHT/2;
-						dx2 = dx; dy2 = dy - CELL_HEIGHT;
-						break;
-					case "left"://左
-						dx1 = dx - CELL_WIDTH /2 ; dy1 = dy;
-						dx2 = dx - CELL_WIDTH    ; dy2 = dy;
-						break;
-					case "right"://右
-						dx1 = dx - CELL_WIDTH /2 ; dy1 = dy;
-						dx2 = dx - CELL_WIDTH    ; dy2 = dy;
-						break;
-				}				
+				var arr = this._fillMoveSteps( from, direct, 3 );	
 				
 				var obj = {
-					inter	: SPEED * 5,
-					items	: [ {
-						img	: actions[ 1 ],
-						dx  : dx1, dy : dy1 
-					},{
-						img	: actions[ 2 ],
-						dx  : dx2, dy : dy2
-					}],
+					inter	: SPEED / 6,
+					//inter	: SPEED * 2,
+					items	: arr,
 					fn 		: function( cell ){
 						this.fireEvent( "walk", this, this.cell, cell );
 						this.cell = cell;
 						log( "this.cell = " + this.cell.x + " cell.x = " + cell.x );
 					}, 
 					params	: [ to ],
+					direct  : direct,
 					scope	: this.unit
 				};
 				
@@ -249,47 +243,77 @@ var UnitUI = Observable.extend({
 		}
 	},
 	
-	attack	: function( direct, fn , scope ){
+	//从一个单元格移动到另一个单元格时 需要移动的步数
+	_fillMoveSteps	: function( from, direct, count ){
+		var actions = this.imgs[ direct];
+		var dx = from.dx, dy = from.dy, ret = [];
 		
-		var actions = this.imgs["a" + direct];
+		for (var i=1; i<= count; i++) {
+			//动态生成移动位置
+			switch( direct ) {
+				case "down": //下
+					dx1 = dx; dy1 = dy + i * CELL_HEIGHT/count;
+					break;
+				case "up"://上
+					dx1 = dx; dy1 = dy - i * CELL_HEIGHT/count;
+					break;
+				case "left"://左
+					dx1 = dx - i * CELL_WIDTH /count ; dy1 = dy;
+					break;
+				case "right"://右
+					dx1 = dx + i * CELL_WIDTH /count ; dy1 = dy;
+					break;
+			}
+					
+			ret.push( {
+				img	: actions[ this._changeFoot() ],
+				dx  : dx1, dy : dy1 
+			} );
+		}
+		
+		return ret;			
+	},
+	
+	homing	: function(){
+		this.direct = this.oriDirect;
+	},
+	
+	attack	: function( cell, bursting, hit, fn , scope ){
+		//判断方向
+		var direct = this.unit.cell.directT( cell );	
+		var actions = this.imgs["a" + direct], first  = actions[ 0 ];
+		//如果致命一击 则高亮第一个动作
+		if ( bursting ){
+			first = this.imgs.highlight( "a" + direct, actions[ 0 ], HighLightDeep );
+		}
+		
 		var obj = {
-			inter	: SPEED,
+			inter	: ASPEED,
 			//延长攻击第一帧显示时间
-			items	: [ actions[0], actions[0], actions[0] ].contact( actions ),
+			items	: [ first, first, first, first, actions[1], actions[2], actions[3] ],
 			fn 		: fn, 
-			scope	: scope
+			scope	: scope,
+			direct	: direct
 		};
 		
 		this.imgStack.push( obj );
 		
-/*
-				var diff = timestamp - this.stampAtk;
-				//致命一击时 高亮第一个攻击图像
-				if (this.burstlast > 1) {
-					if (diff > ASPEED) {
-						this.stampAtk = timestamp;
-						this.burstlast--;
-					}
-					this.attackP = 1;
-					
-					img = this.ui.highlight(this.direct);
-				}
-				else {
-					if (diff > ASPEED) {
-						this.stampAtk = timestamp;
-						
-						img = actions[this.attackP++];
-					}
-					else {
-						img = actions[this.attackP];
-					}
-				}
-*/
+		return this;
+	},
+	
+	invincible	: function( fn , scope ){
+		var obj = {
+			inter	: ASPEED,
+			color	: "rgba(255,255,0,1)",
+			font	: "15px",
+			text	: "无效",
+			fn 		: fn, 
+			scope	: scope
+		};
 		
-		
-		
+		this.tipStack.push( obj );
 		
 		return this;
-	}	
+	}			
 	
 }); 

@@ -379,7 +379,7 @@ var UnitLayer = Layer.extend({
 		if( UNDERCOVER ){
 			$.extend( config, {
 				imgMove	: "images/move/0.png",
-				imgAtk	: "images/atk/0.png",
+				//imgAtk	: "images/atk/0.png",
 				imgSpc	: "images/spc/0.png",
 				imgFace	: "images/face/0.png"
 			} )
