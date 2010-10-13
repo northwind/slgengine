@@ -3,7 +3,7 @@
  */
 
 var Pocket = Manager.extend({
-	expendable : false, //是否可消耗
+	consumable : false, //是否可消耗
 	effect	: 1, //对谁起作用 1 我军 2友军 4敌军 可以任意组合相加 
 	
 	

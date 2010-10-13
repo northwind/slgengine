@@ -7,7 +7,7 @@ var Stuff = Observable.extend({
 	img		: "", //图片
 	desc	: "", //描述
 	active  : false, //是否生效
-	expendable : false, //是否可消耗
+	consumable : false, //是否可消耗
 	effect	: 1, //对谁起作用 1 我军 2友军 4敌军 可以任意组合相加 
 	count	: 1, //数量
 	

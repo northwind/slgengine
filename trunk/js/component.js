@@ -9,14 +9,12 @@ var Component = Observable.extend({
 	init: function( config ){
 		this._super( config );
 		
+		this.addEvents( "hide", "show" );
+		
     	if ( !this.el )
 			this.el = $("<div/>");
 		else
 			this.el = $( this.el );	
-/*
-		if ( this.absolute )
-			this.el.css("position","absolute");
-*/
 		
 		if ( this.w )
 			this.width( this.w );
@@ -77,6 +75,7 @@ var Component = Observable.extend({
 			this.hidden = false;
 		
 			this.el.show.apply( this.el, arguments );
+			this.fireEvent( "show", this );
 		}
 		return this;
 	},	
@@ -86,6 +85,7 @@ var Component = Observable.extend({
 			this.hidden = true;
 		
 			this.el.hide.apply( this.el, arguments );
+			this.fireEvent( "hide", this );
 		}
 		return this;
 	},		

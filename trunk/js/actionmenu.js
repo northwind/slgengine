@@ -12,7 +12,7 @@ var ActionMenu = Win.extend({
 		this.ul = $("<ul>").appendTo( this.content );
 		
 		this.btnAttack = this.createAction( "进攻", "images/system/1-1.png", this.onAttack );
-		//this.btnAttack = this.createAction( "策略", "images/system/76-1.png", this.onMagic );
+		this.btnAttack = this.createAction( "策略", "images/system/76-1.png", this.onMagic );
 		this.btnAttack = this.createAction( "道具", "images/system/82-1.png", this.onProp );
 		this.btnAttack = this.createAction( "待命", "images/system/98-1.png", this.onStandBy );
 		
@@ -53,7 +53,19 @@ var ActionMenu = Win.extend({
 		alert( "magic : " +  e.which );
 	},
 	onProp	: function(e){
-		alert( "prop : " +  e.which );
+		if (!this.pocket) {
+			this.pocket = new Pocket({
+				ct	: this.ct
+			});
+			this.pocket.on( "hide", function(){
+				this.show();
+			}, this );
+		}
+		var x = this.el.position().left;
+		var y = this.el.position().top;
+		this.hide();
+		
+		this.pocket.showAt( x, y ).show();
 	},
 	
 	onStandBy	: function( e ){
