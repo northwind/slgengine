@@ -144,7 +144,34 @@ MAP	= 	[
 		
 		STRENGTHHP	= 10, //一点力量增加的血量
 		AGILITYDEF  = 0.5, //一点敏捷增加的防御值
-		INTELLIGENCEMP = 10  //一点智力增加的魔法值
+		INTELLIGENCEMP = 10,  //一点智力增加的魔法值
+		
+		GOODS = [ {
+			id			: 1,
+			desc	: "恢复HP",
+			count	: 2,
+			name	: "恢复用豆",
+			consumable : true,
+			effect	: 3,
+			img		: "images/item/82-1.png"
+		},{
+			id			: 2,
+			desc	: "下雨",
+			count	: 1,
+			name	: "水灵珠",
+			consumable : false,
+			effect	: 7,
+			img		: "images/item/87-1.png"
+		},{
+			id			: 3,
+			desc	: "小李飞刀",
+			count	: 10,
+			name	: "飞镖",
+			consumable : true,
+			effect	: 4,
+			img		: "images/item/1-1.png"
+		} ]		
+		
 		;  
 
 

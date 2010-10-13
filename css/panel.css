@@ -23,19 +23,18 @@
 ._speech{ display:none; }
 
 ._winLayer{ position:absolute;  }
-._win{
-	position:absolute;
-	z-index:310;
-	padding:5px;
-	background:#ffffff;
-}
+._win{ 	position:absolute; 	z-index:310; 	padding:5px; 	background:#ffffff; }
 ._win ul, ._win li{ list-style:none; }
-._win li button{ padding-left:24px; background-repeat:no-repeat;  background-position:-5px -5px; 
-  outline:none;
-  -moz-user-focus:none;
-  -moz-user-select:none;
- }
- ._cansel{ width:100%; margin-top:8px; }
+._win li button{ padding-left:24px; background-repeat:no-repeat;  background-position:-5px -5px;  outline:none;   -moz-user-focus:none;   -moz-user-select:none;  }
+ ._cansel{ width:60px; margin-top:8px; float:right; }
+
+._prop ._tablect{ border:2px #000000 inset; background:#dbdbdb; height:150px; overflow:auto;  }
+._prop thead td{ background:#00ff80; }
+._prop table td{ border-right:1px #400080 ridge; line-height:16px; font-size:12px; }
+._prop table tr td:last-child{ border-right:none; }
+._prop table tr:last-child td{ border-bottom:1px #400080 ridge; }
+._prop td img{ float:left; height:16px; width:16px; margin-right:4px; }
+._prop .active{ background:#0080c0; color:#ffffff; }
 
 ._board{ color:#ffffff; width:320px; padding-top:3px; cursor:default; display:none; }
 ._board ._face{ height:90px; text-align:center; padding-top:10px; margin-top:10px; }
