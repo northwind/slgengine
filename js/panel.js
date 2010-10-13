@@ -182,10 +182,7 @@ var Panel = Component.extend({
 		
 		this.unitsLayer.on( "loading", function( unit, sum, count ){
 			this.process.add( 80 / sum, "加载" + (unit.name || unit.symbol) + "完备..." );
-		}, this )
-		.on( "roundStart", this.onRoundStart, this )
-		//.on( "teamStart", this.onTeamStart, this )
-		.on( "roundEnd", this.onRoundEnd, this );
+		}, this );
 	},	
 	_createWinLayer	: function(){
 		if ( this.winLayer )
@@ -198,40 +195,34 @@ var Panel = Component.extend({
 	},
 	
 	start				: function(){
-		this.unitsLayer.start();
+		//报幕
+		this._showTopLine( CHAPTER, function(){
+			this.unitsLayer.start();
+		}, this );
 	},
 	
-	onTeamStart			: function( team, index ){
-		if ( index !=0 ){
-			this._showTopLine( team.name + " 阶段" );
-		}
-	},
-	
-	onRoundStart		: function( round ){
-		log( "第" + round + "回合开始" );
-		//this._showTopLine( "第 " + round + " 回合" );
-	},
-
-	onRoundEnd		: function( round ){
-		log( "第" + round + "回合结束" );
-	},
-	
+	//战场中间显示提示信息
 	_showTopLine		: function( str, fn, scope ){
 		if ( this.lineTimer )
-			clearInterval( this.lineTimer );
+			clearTimeout( this.lineTimer );
 		
-		var _self = this;
-		this.lineTimer =setInterval( function(){
-			_self._hideTopLine( fn, scope );
-			_self.lineTimer=0;
-		}, 1500 );	
 		this.mask();
 		$("#maskUp").html( str ).width( MAX_W ).css( "top", (WINDOW_HEIGHT -200)/2 ).show();
+		
+		var _self = this;
+		this.lineTimer =setTimeout( function(){
+			_self._hideTopLine( fn , scope );
+			_self.lineTimer=0;
+		}, 1500 );			
 	},
 
 	_hideTopLine		: function( fn, scope ){
-		$("#maskUp").fadeOut( 800, bind( fn, scope ) );
-		this.unmask();
+		var _self = this;
+		$("#maskUp").fadeOut( 800, function(){
+			_self.unmask();
+			if ( fn )
+				fn.call( scope || _self )			
+		} );
 	},
 				
 	showGrid			: function(){

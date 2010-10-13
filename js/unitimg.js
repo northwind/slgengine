@@ -168,13 +168,13 @@ var UnitImg = Observable.extend({
 		_loadImg( unit.imgFace, fn4 );				
 	},
 	
-	gray	: function( direct ){
+	gray	: function( key, img ){
 		//缓存灰化图像
-		if ( !this.grays[ direct ] ){
-			this.grays[ direct ] = PS.grayImg( this[ direct ][ 0 ] );
+		if ( !this.grays[ key ] ){
+			this.grays[ key ] = PS.grayImg( img );
 		}
 		
-		return this.grays[ direct ];	
+		return this.grays[ key ];	
 	},
 	
 	//高亮攻击图像
