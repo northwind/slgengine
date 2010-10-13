@@ -8,7 +8,7 @@ var UnitLayer = Layer.extend({
 	attaColor		: "rgba(255,0,0,0.5)", 
 	
 	teamIndex	: 0,	//当前哪只队伍在行动
-	round		: 1,    //第几回合
+	round		: 0,    //第几回合
 	hpLineForce : false,	//是否强制显示血条
 	
 	init	: function(){
@@ -16,7 +16,7 @@ var UnitLayer = Layer.extend({
 		this.units = {};
 		
 		//加载中时执行该事件
-		this.addEvents( "loading", "load", "roundStart", "roundEnd", "teamStart", "teamEnd" );
+		this.addEvents( "loading", "load", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
 		
 		//定时更新
 		PANEL.on("update", this.update, this );
@@ -34,60 +34,92 @@ var UnitLayer = Layer.extend({
 	setTeams : function( data ){
 		this.teams = data;
 
-		this.on( "teamStart", this.onTeamStart, this );
-		this.on( "teamEnd", this.onTeamEnd, this );		
-			
 		return this;
 	},
 	
 	start		: function(){
-		this.startTeam( this.teams[ this.teamIndex ] );
+		this.on( "teamStart", this.onTeamStart, this );
+		this.on( "roundStart", this.onRoundStart, this );
+		
+		this.startRound();
+	},
+	
+	startRound	: function(){
+		//先播放动画再触发事件			
+		this.round++;
+		//第一回合不显示动画
+		if (this.round == 1) {
+			this.fireEvent("roundStart", this.round);
+		}
+		else {
+			PANEL._showTopLine("第 " + this.round + " 回合", function(){
+				this.fireEvent("roundStart", this.round);
+			}, this);
+		}
+	},
+	
+	onRoundStart	:  function(){
+		this.teamIndex = 0;
+		var team = this.teams[this.teamIndex];
+		this.startTeam(team);
 	},
 	
 	startTeam	: function( team ){
-		for( var key in this.units ){
-			var unit = this.units[ key ];
-			
-			if ( unit.faction == team.faction && unit.team == team.team ){
-				unit.unLock();
-			}
-		}
-		
-		if (this.teamIndex > 0) 
+		if ( team.faction != FACTION || team.team != TEAM ) 
 			//提示信息消失后再触发
 			PANEL._showTopLine(team.name + " 阶段", function(){
 				this.fireEvent("teamStart", team, this.teamIndex);
 			}, this);
 		else {
 			this.fireEvent("teamStart", team, this.teamIndex);
-		}			
+		}	
 	},
 	
-	//回合刚开始	
-	onTeamStart	: function( team, index ){
-		if( index == 0 ){
-			this.fireEvent("roundStart", this.round++ );
-		}
+	onTeamStart	: function( team ){
+		for( var key in this.units ){
+			var unit = this.units[ key ];
+			
+			if ( unit.faction == team.faction && unit.team == team.team ){
+				unit.unLock();
+			}
+		}		
 	},
-		
-	onTeamEnd	: function( f, t ){
+	
+	endTeam	: function( f, t ){
 		//该队伍所有角色取消石像状态
 		for( var key in this.units ){
 			var unit = this.units[ key ];
 			
 			if ( unit.faction == f && unit.team == t ){
-				unit.unLock();
+				unit.restore();
 			}
-		}		
+		}	
+		
+		this.fireEvent( "teamEnd", f, t, this );	
 		
 		if ( this.teamIndex++ >= this.teams.length - 1 ) {
 			//回合结束
 			this.fireEvent("roundEnd", this.round );
-			//从头开始遍历
-			this.teamIndex = 0;
+			
+			this.startRound();
+		}else{
+			//继续下一个队伍
+			var team = this.teams[ this.teamIndex ];
+			this.startTeam( team );
 		}
-		var team = this.teams[ this.teamIndex ];	
-		this.startTeam( team );
+	},
+	
+	overTeam	: function( f, t ){
+		for (var i=0; i<this.teams.length; i++) {
+			var team = this.teams[i];
+			if ( team.faction == f && team.team == t ){
+				this.teams.splice( i, 1 );
+				this.teamIndex--;
+				log( team.name + " over" );
+				break;
+			}
+		}
+		this.fireEvent( "teamOver", f, t, this );
 	},
 		
 	setUnits : function( data ){
@@ -188,7 +220,6 @@ var UnitLayer = Layer.extend({
 					}
 			}
 			else {
-				//TODO 移动到click事件中
 				//没有锁定同时具有移动性
 				if (unit && !unit.lock && unit.moveable ) {
 					//获得可移动格子
@@ -363,9 +394,23 @@ var UnitLayer = Layer.extend({
 			}
 		}	
 		if ( flag ){
-			this.fireEvent( "teamEnd", faction, team, this );
+			this.endTeam( faction, team );
 		}
 	},
+	//检查某队伍是否全军覆没
+	checkTeamOver	: function( faction, team ){
+		var flag = true;
+		for (var key in this.units) {
+			var unit = this.units[key];
+			if ( unit.faction == faction && unit.team == team && !unit.dead ) {
+				flag = false;
+				break;
+			}
+		}	
+		if ( flag ){
+			this.overTeam( faction, team );
+		}
+	},	
 	//检查失败/胜利条件
 	checkVOF		: function( unit ){
 		if ( unit.symbol == "caocao" ){
@@ -379,17 +424,16 @@ var UnitLayer = Layer.extend({
 		if( UNDERCOVER ){
 			$.extend( config, {
 				imgMove	: "images/move/0.png",
-				//imgAtk	: "images/atk/0.png",
+				imgAtk	: "images/atk/0.png",
 				imgSpc	: "images/spc/0.png",
 				imgFace	: "images/face/0.png"
 			} )
 		}
-			
 					
 		var unit = new Unit(config );
 		
 		unit.on( "standby", function( unit ){
-			this.deleteClicked();
+			this.deleteClicked( unit );
 			this.checkTeamEnd( unit.faction, unit.team );
 		}, this )
 		.on( "move", function( unit ){
@@ -404,7 +448,6 @@ var UnitLayer = Layer.extend({
 		.on( "click", PANEL.showUnitAttr, PANEL )
 		//状态更改时重新显示该角色属性
 		.on( "change", function( unit ){
-			log( "onchange : if " + (unit == this.clicked ) );
 			if ( unit == this.clicked )
 				PANEL.showUnitAttr( unit );
 		}, this )
@@ -418,7 +461,7 @@ var UnitLayer = Layer.extend({
 		}, this )
 		.on( "dead", function( unit ){
 			this.delUnit( unit.id );
-			this.checkVOF( unit );
+			this.checkTeamOver( unit.faction, unit.team );
 		}, this )
 		;
 		

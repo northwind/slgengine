@@ -104,6 +104,9 @@ var UnitUI = Observable.extend({
 			if (!unit.moving && unit.debility) {
 				//虚弱时
 				this.img = this.imgs.fall[ this.foot - 1 ];
+			} else if( unit.standby ){
+				//待机
+				this.img = this.imgs.gray( this.direct, this.imgs[ this.direct ][0] );
 			} else{
 				this.img = this.imgs[ this.direct ][ this.foot ];
 			} 
@@ -118,53 +121,20 @@ var UnitUI = Observable.extend({
 	},
 	
 	drawTip	:  function( timestamp ){
-		//有待执行的动画
-		if( this.tipStack.length > 0 ){
-			var diff = timestamp - this.tipstamp,
-				  unit =this.unit, cell = unit.cell,
-				  a = this.tipStack[0];
+		var unit =this.unit, cell = unit.cell,
+			dx = cell.dx, dy = cell.dy;
 			
-			if (diff > a.inter) {
-				this.tipstamp = timestamp;
-				
-				//绘完所有帧
-				if ( a.frame == 0 ) {
-					if (a.fn) 
-						a.fn.apply(a.scope || this, a.params || [] );
-					
-					//从队列中抛弃当前动画
-					this.tipStack.shift();
-				}
-				else {
-					a.frame--;
-					//更改位置
-					a.from[ 0 ] += a.increment[ 0 ];
-					a.from[ 1 ] += a.increment[ 1 ];
-				}
-			}
-			
-			ctx.save();
-			if ( a.font )
-				ctx.font =  a.font;
-			if ( a.color )	
-				ctx.fillStyle = a.color;
-			if ( a.text )
-				ctx.fillText( a.text, a.from[ 0 ], a.from[ 1 ] );
-	
-			ctx.restore();			
-		}
-		
-		/*
 		//当角色位于两边时调证坐标系
+		ctx.save();
 		if ( dx == 0 ){
 			ctx.translate( 10, 0 )
 		}else if ( cell.x == CELL_XNUM-1 ){
 			ctx.translate( -10, 0 )
 		}
-			
+		
 		//绘制血条
 		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
-		
+			
 			var y = dy - 9;
 			y = y < 0 ? 1 : y;
 			//血条黑色背景
@@ -211,7 +181,42 @@ var UnitUI = Observable.extend({
 			//级别
 			ctx.strokeText( "级别　" + unit.level,  dx,  y - 8 );   			
 		}
-		*/
+		ctx.restore();		
+				
+		//有待执行的动画
+		if( this.tipStack.length > 0 ){
+			var diff = timestamp - this.tipstamp,
+				  a = this.tipStack[0];
+			
+			if (diff > a.inter) {
+				this.tipstamp = timestamp;
+				
+				//绘完所有帧
+				if ( a.frame == 0 ) {
+					if (a.fn) 
+						a.fn.apply(a.scope || this, a.params || [] );
+					
+					//从队列中抛弃当前动画
+					this.tipStack.shift();
+				}
+				else {
+					a.frame--;
+					//更改位置
+					a.from[ 0 ] += a.increment[ 0 ];
+					a.from[ 1 ] += a.increment[ 1 ];
+				}
+			}
+			
+			ctx.save();
+			if ( a.font )
+				ctx.font =  a.font;
+			if ( a.color )	
+				ctx.fillStyle = a.color;
+			if ( a.text )
+				ctx.fillText( a.text, a.from[ 0 ], a.from[ 1 ] );
+	
+			ctx.restore();			
+		}
 	},	
 	
 	moveTo	: function( way ){
@@ -239,6 +244,9 @@ var UnitUI = Observable.extend({
 						this.fireEvent( "walk", this, this.cell, cell );
 						this.cell = cell;
 						log( "this.cell = " + this.cell.x + " cell.x = " + cell.x );
+						//移动到最后一个位置时触发move事件
+						if ( cell == way[ way.length-1 ] )
+							this.fireEvent( "move", this );
 					}, 
 					params	: [ to ],
 					direct  : direct,
@@ -322,6 +330,17 @@ var UnitUI = Observable.extend({
 		
 		this.imgStack.push( obj );
 	},
+	
+	standby	: function( fn , scope ){
+		var obj = {
+			inter	: SPEED * 2,
+			items	: [ this.imgs.gray( this.direct, this.imgs[ this.direct ][0] ) ],
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.imgStack.push( obj );		
+	},
 			
 	invincible	: function( fn , scope ){
 		
@@ -353,5 +372,10 @@ var UnitUI = Observable.extend({
 	attacked	: function( v, fn , scope ){
 		
 		this.tipStack.push( this._defaultTip( fn , scope, "-"+v,  "rgb(255,0,0)" ) );
-	}		
+	},
+	
+	upgrade		: function( fn , scope ){
+		
+		this.tipStack.push( this._defaultTip( fn , scope, "升级啦",  "rgb(255,255,255)" ) );
+	}
 }); 

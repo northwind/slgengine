@@ -98,8 +98,8 @@ var Unit = Observable.extend({
 		this.addEvents( "click", "unclick", "change", "dead", "preDead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load", "upgrade" );
 		
 		this.setUI();
-		//死亡时锁定角色
-		this.on( "dead", function(){ this.lock = true; }, this );
+		
+		this.on( "move", function(){ this.moving = false; }, this );
 		
 		return this;
 	},
@@ -146,29 +146,6 @@ var Unit = Observable.extend({
 		this.hpLine = false;
 		return this;
 	},	
-	
-	changeStatus	: function( timestamp ){
-		var diff = timestamp - this.stampStep;
-		var img;
-		
-		//死亡
-		if (this.dead) {
-
-		}
-		else 
-			//攻击
-			if (this.attacking) {
-
-			}
-			else {
-					if (this.standby) {
-						//待机
-						img = this.ui.gray(this.direct);
-					}
-			}			
-		
-		this.pencil = img == undefined ? this.ui[ this.direct ][ this.p ] : img;
-	},
 	
 	canMove	: function( cell ){
 		return !this.moving && !this.lock && this.moves && this.moves[ cell.index ];
@@ -238,13 +215,15 @@ var Unit = Observable.extend({
 					//绑定防御事件 被攻击的unit受到伤害后反馈
 					this.attackFreq++;
 					if ( this.attackFreq >= this.attackFreqMax || defender.dead ){
+						var n = hit;
 						//获得经验值
 						if( defender.dead ){
-							this.addExp( 50 );
+							n = 50;
 						}
-						
-						//结束本回合
-						this.finish();
+						this.addExp( 50, function(){
+							//结束本回合
+							this.finish();
+						}, this );
 					}else{
 						//继续攻击同一目标
 						this.attack( unit );
@@ -310,6 +289,8 @@ var Unit = Observable.extend({
 				}else{
 					log( this.name + " dead" );
 					this.ui.dead( function(){
+						this.dead = true;
+						
 						//先反馈攻击者，再触发dead事件
 						if ( fn )
 							fn.call( scope || this, this, true, d, unit );
@@ -343,7 +324,8 @@ var Unit = Observable.extend({
 	},	
 	
 	onDead		: function( unit ){
-		this.dead = true;
+		//死亡时锁定角色
+		this.lock = true;
 		this.fireEvent( "dead", this, unit );
 	},
 	
@@ -389,12 +371,18 @@ var Unit = Observable.extend({
 		this.lock = true;
 		this.oriCell = this.cell;
 		this.attackFreq = 0; 
-		this.fireEvent( "standby", this );
+		
+		this.ui.standby( function(){
+			this.fireEvent( "standby", this );
+		}, this );
 	},
 	
 	//取消锁定与待机状态
 	unLock	: function(){
 		this.lock = false;
+	},
+	//取消待机状态
+	restore		: function(){
 		this.standby = false;
 	},
 	
@@ -422,16 +410,61 @@ var Unit = Observable.extend({
 		return Unit.calcExp( this.level );
 	},
 	
-	addExp		: function( n ){
+	addExp		: function( n, fn, scope ){
 		this.exp += n;
 		if ( this.exp >= this.nextExp() ){
-			this.exp = this.exp - this.nextExp();
-			this.level++;
+			this.onUpgrade( fn, scope );
+		}else{
+			this.fireEvent( "change", this );
+			if ( fn )
+				fn.call( scope ||  this, this );			
+		}
+	},
+	
+	onUpgrade	: function( fn, scope ){
+		this.exp = this.exp - this.nextExp();
+		this.level++;
+		var getpoint = 5;
+		
+		this.addStrength( 2 );
+		this.addAgility( 2 );
+		this.addIntelligence( 1 );
+		
+		//升级后再调用change事件
+		this.ui.upgrade( function(){
 			
 			this.fireEvent( "upgrade", this );
-		}
-		this.fireEvent( "change", this );
-	}			
+			
+			if ( this.exp >= this.nextExp() )
+				this.onUpgrade( fn, scope );
+			else{
+				if ( fn )
+					fn.call( scope ||  this, this );
+			} 	
+		}, this );		
+	},
+	
+	//力量
+	addStrength	: function( n ){
+		this.strength += n;
+		this.hpMax += n * STRENGTHHP;
+		this._calcHpPercent();
+		this.fireEvent( "change", this );	
+	},
+	
+	//敏捷
+	addAgility	: function( n ){
+		this.agility += n;
+		this.defnum += n * AGILITYDEF;
+		this.fireEvent( "change", this );	
+	},
+	
+	//智力	
+	addIntelligence	: function( n ){
+		this.intelligence  += n;
+		this.mpMax += n * INTELLIGENCEMP;
+		this.fireEvent( "change", this );	
+	}				
 }); 
 //计算升级所需经验
 //每升一级需额外50点 起始值100

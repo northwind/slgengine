@@ -61,7 +61,7 @@ function waitTurn( wait, turn, fn ){
 //获取时间戳
 var __d = new Date();
 function getTime(){
-	return __d.getTime();
+	return __d.getTime() + "" + Math.round( (Math.random() * 1000) );
 }
 
 //绑定作用域
