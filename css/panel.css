@@ -1,20 +1,7 @@
 ._wrap{ margin:0 auto; }
-._panel{
-	margin:auto;
-	position:relative;
-	z-index:1;
-	overflow:hidden;
-	-moz-user-select:none;
-}
-._panel canvas{
-	position : absolute;
-}
-._panel img, .unselect{
-	-moz-user-select:none;
-	border:none;
-	outline:none;
-	background-repeat:no-repeat;		
-}
+._panel{	margin:auto;	position:relative;	z-index:1;	overflow:hidden;	-moz-user-select:none;}
+._panel canvas{ 	position : absolute;}
+._panel img, .unselect{	-moz-user-select:none;	border:none;	outline:none;background-repeat:no-repeat;}
 
 ._display{ background:#111111; visibility:hidden; height:160px; margin:0 auto; }
 ._display ._left{ float:left; width:240px; }
@@ -22,14 +9,14 @@
 ._smap{ margin-right:40px; text-align:center; vertical-align:middle; height:140px; border: groove  #36371a 5px; }
 ._speech{ display:none; }
 
-._winLayer{ position:absolute;  }
+._winLayer{ position:absolute; }
 ._win{ 	position:absolute; 	z-index:310; 	padding:5px; 	background:#ffffff; }
 ._win ul, ._win li{ list-style:none; }
 ._win li button{ padding-left:24px; background-repeat:no-repeat;  background-position:-5px -5px;  outline:none;   -moz-user-focus:none;   -moz-user-select:none;  }
  ._cansel{ width:60px; margin-top:8px; float:right; }
 
 ._prop ._tablect{ border:2px #000000 inset; background:#dbdbdb; height:150px; overflow:auto;  }
-._prop thead td{ background:#00ff80; }
+._prop thead td{ background:#00ff80; cursor:default; }
 ._prop table td{ border-right:1px #400080 ridge; line-height:16px; font-size:12px; }
 ._prop table tr td:last-child{ border-right:none; }
 ._prop table tr:last-child td{ border-bottom:1px #400080 ridge; }

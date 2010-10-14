@@ -3,8 +3,6 @@
 */
 var ActionMenu = Win.extend({
 	unit	: null,
-	beshow : false, 	//鼠标右键是否该重新现实
-	lock	: false,   //锁定不可操作
 	
 	init: function( config ){
 		this._super( config );
@@ -15,7 +13,7 @@ var ActionMenu = Win.extend({
 		this.btnAttack = this.createAction( "策略", "images/system/76-1.png", this.onMagic );
 		this.btnAttack = this.createAction( "道具", "images/system/82-1.png", this.onProp );
 		this.btnAttack = this.createAction( "待命", "images/system/98-1.png", this.onStandBy );
-		
+
 		return this;	
   	},
 	
@@ -29,21 +27,22 @@ var ActionMenu = Win.extend({
 		return btn;
 	},
 	
+	onKeydown	: function( e ){
+		//空格时
+		if (e.which == 32 ) {
+			e.preventDefault();
+			this.onStandBy();
+		}		
+	},
+	
 	onAttack	: function( e ){
-		this.unit.showAttack();
+		this.layer.concealWin();
 		this.hide();
-		this.beshow = true;
+		this.unit.showAttack();
 		
 		this.preAttack =  function(){
-			this.lock = true;
-			this.unit.on( "standby", function(){
-				//攻击后
-				this.lock = false;
-				this.beshow = false;
-				this.hide();
-				delete this.unit;
-				
-			}, this, { one : true } );
+			this.layer.lock();
+			this.unit.on( "standby", this.onStandBy, this, { one : true } );
 		};
 		//角色攻击前触发事件
 		this.unit.on( "preAttack", this.preAttack, this ,{ one : true });
@@ -52,43 +51,39 @@ var ActionMenu = Win.extend({
 	onMagic	: function( e ){
 		alert( "magic : " +  e.which );
 	},
+	
 	onProp	: function(e){
 		if (!this.pocket) {
 			this.pocket = new Pocket({
 				ct	: this.ct
 			});
-			this.pocket.on( "hide", function(){
-				this.show();
-			}, this );
 		}
 		var x = this.el.position().left;
 		var y = this.el.position().top;
-		this.hide();
 		
-		this.pocket.showAt( x, y ).show();
+		this.pocket.bind( this.unit ).showAt( x - 240 , y ).show();
+		this.layer.reg( this.pocket );
 	},
 	
-	onStandBy	: function( e ){
+	onStandBy	: function(){
+		//取消角色攻击前触发事件
+		this.unit.un( "preAttack", this.preAttack, this );
+		
 		this.unit.finish();
-		this.onCansel();
+		this.hide();
+		delete this.unit;
+		this.layer.unreg( this );
+		this.layer.unlock();
 	},
 	
 	//覆盖父类 增加角色回退功能
 	onCansel	: function( e ){
-		if (!this.lock) {
-			if (this.beshow) {
-				this.beshow = false;
-				this.unit.hideAttack();
-				this.show();
-				//取消角色攻击前触发事件
-				this.unit.un( "preAttack", this.preAttack, this );
-			}
-			else {
-				this._super(e);
-				this.unit.unClick();
-				delete this.unit;
-			}
-		}
+		//取消角色攻击前触发事件
+		this.unit.un( "preAttack", this.preAttack, this );
+		this._super(e);
+		this.unit.unClick();
+		this.layer.unreg( this );
+		delete this.unit;
 	},
 	
 	bind	: function( unit ){

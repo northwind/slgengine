@@ -16,8 +16,9 @@ var UnitLayer = Layer.extend({
 		this.units = {};
 		
 		//加载中时执行该事件
-		this.addEvents( "loading", "load", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
+		this.addEvents( "loading", "click", "load", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
 		
+		var _self = this;
 		//定时更新
 		PANEL.on("update", this.update, this );
 		//点击画布
@@ -114,7 +115,9 @@ var UnitLayer = Layer.extend({
 			var team = this.teams[i];
 			if ( team.faction == f && team.team == t ){
 				this.teams.splice( i, 1 );
-				this.teamIndex--;
+				if ( this.teamIndex >= i )
+					this.teamIndex--;
+					
 				log( team.name + " over" );
 				break;
 			}
@@ -148,6 +151,10 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
+	getUnit	: function( key ){
+		return this.units[ key ];
+	},
+	
 	paint	: function( timestamp ){
 		//console.debug( "unit layer" );
 		if (this.units) {
@@ -171,14 +178,19 @@ var UnitLayer = Layer.extend({
 	
 	onKeydown	: function( e ){
 		//按ALT时
-		//alert( e.which )
 		if ( e.which == 18 )
 			this.hpLineForce = true;		
+		//没有弹出菜单时右键才有效
+		if ( e.which == 27 && PANEL.winLayer.passby() ){
+			if ( this.clicked )
+				this.clicked.unClick();
+			
+			this._removeCells();	
+		}			
 	},	
 	
 	onKeyup	: function( e ){
 		//按ALT时
-		//alert( e.which )
 		if ( e.which == 18 )
 			this.hpLineForce = false;		
 	},		
@@ -197,31 +209,39 @@ var UnitLayer = Layer.extend({
 	},
 	
 	onClick	: function( e ){
-			var  cell = PANEL.getCell( e );
+		//有弹出菜单时不触发click
+		if ( PANEL.winLayer.passby()) {
+			var cell = PANEL.getCell(e);
 			var unit = this.units[cell.index];
-							
+			
+			//注册的事件返回false时不继续执行
+			if (this.fireEvent("click", cell, unit, this) === false) 
+				return;
+			
 			if (this.clicked) {
 				//如果可以攻击
-				if ( this.clicked.preAttack && unit && this.clicked.canAttack(cell)) {
+				if (this.clicked.preAttack && unit && this.clicked.canAttack(cell)) {
 					this._removeCells();
 					
-					this.clicked.on( "attack", function(){
-						
-						//delete this.clicked;
-						
-					}, this, { single : true } ).attack( unit );
+					this.clicked.on("attack", function(){
+					
+					//delete this.clicked;
+					
+					}, this, {
+						single: true
+					}).attack(unit);
 				}
 				else 
 					//如果可以移动
 					if (this.clicked.canMove(cell)) {
 					
 						this._removeCells();
-						this.clicked.moveTo(cell );
+						this.clicked.moveTo(cell);
 					}
 			}
 			else {
 				//没有锁定同时具有移动性
-				if (unit && !unit.lock && unit.moveable ) {
+				if (unit && !unit.lock && unit.moveable) {
 					//获得可移动格子
 					var obj = this.getWalkCells(cell, unit.step);
 					PANEL.cellLayer.paintCells(this.moveColor, obj);
@@ -234,9 +254,10 @@ var UnitLayer = Layer.extend({
 					this.clicked = unit;
 				}
 				
-				if ( unit )
-					unit.click( e );
+				if (unit) 
+					unit.click(e);
 			}
+		}
 	},
 	
 	_removeCells			: function(){
@@ -246,7 +267,11 @@ var UnitLayer = Layer.extend({
 		//delete this.clicked;
 	},
 	
-	getAttackCells	: function( cell,	range, type,team ){
+	showAttackCells		: function( obj ){
+		PANEL.cellLayer.paintCells( this.attaColor, obj );
+	},
+	
+	getAttackCells	: function( cell,	range, type ){
 		var all = {}, index = cell.index, x = cell.x, y = cell.y;
 		
 		switch( type ) {
@@ -286,17 +311,7 @@ var UnitLayer = Layer.extend({
 		
 		//把自身刨出去
 		delete all[ index ];
-		//不能攻击队友, 友军, 无敌, 障碍物等
-		//TODO 真正攻击时才去判断
-/*
-		for( var key in all ){
-			var unit = this.units[ index ];
-			if ( MAP[y][x] == 0 && unit && ( !unit || (unit.canAttack && unit.team != team) )  ){
-				
-			}else
-				delete all[ key ];
-		}
-*/
+
 		return all;		
 	},
 	
@@ -344,7 +359,7 @@ var UnitLayer = Layer.extend({
 			
 	onContextmenu	: function( e ){
 		//没有弹出菜单时右键才有效
-		if (PANEL.wincount <= 0) {
+		if ( !PANEL.winLayer.hasWindow() ) {
 			if ( this.clicked )
 				this.clicked.unClick();
 			
@@ -437,7 +452,7 @@ var UnitLayer = Layer.extend({
 			this.checkTeamEnd( unit.faction, unit.team );
 		}, this )
 		.on( "move", function( unit ){
-			PANEL.popMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
+			PANEL.popActionMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
 		}, this )
 		//角色移动时及时更新管理器
 		.on( "walk", function( unit, from, to ){
