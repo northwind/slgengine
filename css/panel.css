@@ -3,11 +3,16 @@
 ._panel canvas{ 	position : absolute;}
 ._panel img, .unselect{	-moz-user-select:none;	border:none;	outline:none;background-repeat:no-repeat;}
 
-._display{ background:#111111; visibility:hidden; height:160px; margin:0 auto; }
+._display{ background:#111111; visibility:hidden; height:160px; margin:0 auto;  }
 ._display ._left{ float:left; width:240px; }
 ._display ._mid{ float:left;  }
+._ctrl{ float:left; }
 ._smap{ margin-right:40px; text-align:center; vertical-align:middle; height:140px; border: groove  #36371a 5px; }
-._speech{ display:none; }
+._speech{ display:none; padding:10px; }
+._display ._face{ width:100px; }
+._speak{ height:130px; width:400px; overflow:auto; }
+._speak h2{ color:#fcce32; font-size:16px; margin-bottom:10px; }
+._speak p{ color:#ffffff; }
 
 ._winLayer{ position:absolute; }
 ._win{ 	position:absolute; 	z-index:310; 	padding:5px; 	background:#ffffff; }

@@ -35,7 +35,7 @@ TEAMS	= [{
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
 	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, urlImg : "images/move/110-1.png", range : 1, rangeType : 1,
-	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98,
+	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98, id : "caocao",
 	imgMove	:"images/move/110-1.png",
 	imgAtk	: "images/atk/110-1.png",
 	imgSpc	: "images/spc/110-1.png",
@@ -59,8 +59,7 @@ UNITS	= [{
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
 	imgFace	: "images/face/23-1.png"	
-}],
-/*
+}
 ,{
 	gx :  11,  gy : 4,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
 	symbol	: "footman",  faction : 1, team : 200,  name : "张飞",
@@ -97,7 +96,7 @@ UNITS	= [{
 	imgSpc	: "images/spc/26-1.png",
 	imgFace	: "images/face/16-1.png"	
 }],
-*/
+
 CHAPTER = "第一章 破晓",
 /*
 	0  草地
@@ -159,8 +158,9 @@ MAP	= 	[
 				text	: "+50"		
 			},
 			listeners : {
-				apply	: function( unit ){
+				apply	: function( unit, fireman ){
 					unit.onIncrease( 50 );
+					fireman.finish();
 				}
 			}
 		},{

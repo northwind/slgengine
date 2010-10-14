@@ -15,5 +15,9 @@ $(function(){
 		.setTeams( TEAMS )
 		.setUnits( UNITS );
 	
+	PANEL.on( "start", function( panel ){
+		var unit = panel.getUnit( "caocao" );
+		unit.speak( "去死吧!" );
+	} );
 		
  });

@@ -138,7 +138,7 @@ var Unit = Observable.extend({
 	addTip	: function( config, fn, scope ){
 		config.fn = fn;
 		config.scope = scope;
-		this.ui.addTip( config )
+		this.ui.addTip( config );
 	},
 	
 	showMajor	: function(){
@@ -480,7 +480,11 @@ var Unit = Observable.extend({
 		this.intelligence  += n;
 		this.mpMax += n * INTELLIGENCEMP;
 		this.fireEvent( "change", this );	
-	}				
+	}	,
+	
+	speak	: function( text ){
+		PANEL.speak( this, text );
+	}			
 }); 
 //计算升级所需经验
 //每升一级需额外50点 起始值100
