@@ -151,10 +151,6 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
-	getUnit	: function( key ){
-		return this.units[ key ];
-	},
-	
 	paint	: function( timestamp ){
 		//console.debug( "unit layer" );
 		if (this.units) {
@@ -378,7 +374,16 @@ var UnitLayer = Layer.extend({
 		
 		return this;
 	},
-	
+	getUnit	: function( key ){
+		return this.units[ key ];
+	},	
+	getUnitById : function( id ){
+		for( var key in this.units ){
+			if (this.units[key].id == id) {
+				return this.units[key];
+			}
+		}
+	},		
 	delUnit		: function( id ){
 		if ( this.units ){
 			for( var key in this.units ){

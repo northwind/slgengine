@@ -57,6 +57,7 @@ var ActionMenu = Win.extend({
 			this.pocket = new Pocket({
 				ct	: this.ct
 			});
+			this.pocket.on( "over", this.disappear, this );
 		}
 		var x = this.el.position().left;
 		var y = this.el.position().top;
@@ -66,14 +67,18 @@ var ActionMenu = Win.extend({
 	},
 	
 	onStandBy	: function(){
+		this.disappear();
+				
+		this.unit.finish();
+	},
+	
+	disappear	: function(){
 		//取消角色攻击前触发事件
 		this.unit.un( "preAttack", this.preAttack, this );
-		
-		this.unit.finish();
 		this.hide();
 		delete this.unit;
 		this.layer.unreg( this );
-		this.layer.unlock();
+		this.layer.unlock();		
 	},
 	
 	//覆盖父类 增加角色回退功能

@@ -31,7 +31,7 @@ var Panel = Component.extend({
 		
 		this._super( config );
 		
-		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background" );
+		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background", "start" );
 		
 		LayerMgr.setWrap( this.el );
 		
@@ -199,6 +199,8 @@ var Panel = Component.extend({
 		//报幕
 		this._showTopLine( CHAPTER, function(){
 			this.unitsLayer.start();
+			log("start" );
+			this.fireEvent( "start", this );
 		}, this );
 	},
 	
@@ -303,6 +305,14 @@ var Panel = Component.extend({
 	hideUnitAttr	: function(){
 		this.board.hide();
 	},
+		
+	speak			: function( unit, html ){
+		$("#face").attr( "src", unit.imgFace );
+		$("._speak h2").text( unit.name );
+		$("._speak p").html( html );
+		
+		$("._speech").show();
+	},
 	
 	setUnits		: function( data ){
 		this.unitsLayer.setUnits( data );
@@ -344,6 +354,10 @@ var Panel = Component.extend({
 		return this;		
 	},
 	
+	getUnit			: function( id ){
+		return this.unitsLayer.getUnitById( id );
+	},
+	
 	popActionMenu		: function( unit, x, y ){
 		this.winLayer.popActionMenu( unit, x, y );
 		return this;
@@ -358,6 +372,5 @@ var Panel = Component.extend({
 		this.masklayer.hide();
 		return this;	
 	}
-	
 });
 
