@@ -153,24 +153,50 @@ MAP	= 	[
 			name	: "恢复用豆",
 			consumable : true,
 			effect	: 3,
-			img		: "images/item/82-1.png"
+			img		: "images/item/82-1.png",
+			animation : {
+				color	: "#00ff80",
+				text	: "+50"		
+			},
+			listeners : {
+				apply	: function( unit ){
+					unit.onIncrease( 50 );
+				}
+			}
 		},{
 			id			: 2,
 			desc	: "下雨",
 			count	: 1,
 			name	: "水灵珠",
 			consumable : false,
+			nounit	: true,
 			effect	: 7,
-			img		: "images/item/87-1.png"
+			img		: "images/item/87-1.png",
+			listeners : {
+				apply	: function( unit ){
+					unit.finish();
+				}
+			}
 		},{
 			id			: 3,
 			desc	: "小李飞刀",
 			count	: 10,
 			name	: "飞镖",
+			rangeType : 2,
+			range	: 2, 
 			consumable : true,
-			effect	: 4,
-			img		: "images/item/1-1.png"
-		} ]		
+			effect	: 7,
+			img		: "images/item/1-1.png",
+			animation : {
+				color	: "#ff0000",
+				text	: "-20"		
+			},
+			listeners : {
+				apply	: function( unit, fireman ){
+					fireman.hurt( unit, 20 );
+				}
+			}			
+		}]		
 		
 		;  
 

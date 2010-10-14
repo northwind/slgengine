@@ -3,9 +3,11 @@
  */
 var Win = Component.extend({
 	cls		: "_win",
+	hidden  : true,
 	
 	init: function( config ){
 		this._super( config );
+		this.layer = PANEL.winLayer;
 		this.el.appendTo( this.ct );
 		
 		this.addEvents( "pop", "cansel" );
@@ -25,24 +27,21 @@ var Win = Component.extend({
 			//取消正在显示的鼠标滑过的效果
 			PANEL.cellLayer.unactiveCell();
 		} );
-										
+		this.on( "show", this.onShow, this );
+		
 		return this;	
   	},
 	
-	showAt	: function( x, y ){
-		
-		this._super( x, y );
-				
-		return this;
+	onShow	: function(){
+		//清除正在显示的攻击单元格
+		PANEL.unitsLayer._removeCells();		
 	},
 	
 	//取消菜单时
 	onCansel	: function( e ){
 		this.fireEvent( "cansel", this );
 		
-		if (!this.hidden) {
-			this.hide();
-		}
+		this.hide();
 	}
 	
 });

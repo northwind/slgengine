@@ -362,20 +362,22 @@ var UnitUI = Observable.extend({
 			scope	: scope
 		};
 		return obj;		
-	},			
+	},		
+	
+	addTip 	: function( config ){
+		config = $.extend( this._defaultTip(), config );
+		this.tipStack.push( config );
+	},	
 	
 	miss	: function( fn , scope ){
-		
 		this.tipStack.push( this._defaultTip( fn , scope, "我闪", "rgba(255,255,255,1)" ) );
 	},	
 	
 	attacked	: function( v, fn , scope ){
-		
 		this.tipStack.push( this._defaultTip( fn , scope, "-"+v,  "rgb(255,0,0)" ) );
 	},
 	
 	upgrade		: function( fn , scope ){
-		
 		this.tipStack.push( this._defaultTip( fn , scope, "升级啦",  "rgb(255,255,255)" ) );
 	}
 }); 

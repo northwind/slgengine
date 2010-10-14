@@ -135,6 +135,12 @@ var Unit = Observable.extend({
 		this.ui.drawTip( timestamp );			
 	},
 	
+	addTip	: function( config, fn, scope ){
+		config.fn = fn;
+		config.scope = scope;
+		this.ui.addTip( config )
+	},
+	
 	showMajor	: function(){
 		this.major = true;
 		this.hpLine = true;
@@ -179,6 +185,7 @@ var Unit = Observable.extend({
 		this.moving = false;
 		this.preAttack = false;
 		this.lock = false;
+		delete this.attacks;
 		this.way = [];
 		//触发walk事件
 		if (this.cell != this.oriCell) {
@@ -210,20 +217,18 @@ var Unit = Observable.extend({
 				this.attacking = false;
 				
 				//通知被攻击者
-				unit.attacked( this, hit, function( defender ){
+				unit.attacked( this, hit, function( defender, miss, v ){
 					
 					//绑定防御事件 被攻击的unit受到伤害后反馈
 					this.attackFreq++;
 					if ( this.attackFreq >= this.attackFreqMax || defender.dead ){
+						//TODO 逻辑有问题
 						var n = hit;
-						//获得经验值
-						if( defender.dead ){
-							n = 50;
-						}
-						this.addExp( 50, function(){
+						this.addExp( n, function(){
 							//结束本回合
 							this.finish();
 						}, this );
+						
 					}else{
 						//继续攻击同一目标
 						this.attack( unit );
@@ -236,6 +241,17 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
+	//产生伤害
+	hurt			: function( unit, v ){
+		unit.onDecrease( v, this, function( defender, hit, num ){
+			var n = hit == true ? num : 0;
+			this.addExp( n, function(){
+				//结束本回合
+				this.finish();
+			}, this );			
+		}, this );
+	},
+ 	
 	//被攻击
 	attacked		: function( unit, v, fn, scope ){
 		//判断是否可攻击

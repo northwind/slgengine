@@ -65,6 +65,7 @@ var Panel = Component.extend({
 		
 		//绑定事件
 		var x, y, drag = false, el=this.el, _self = this;
+		//this.el.mousedown( function( e ){
 		this.el.mousedown( function( e ){
 			if (e.which == 1) {
 				x = e.pageX;
@@ -213,7 +214,8 @@ var Panel = Component.extend({
 		this.lineTimer =setTimeout( function(){
 			_self._hideTopLine( fn , scope );
 			_self.lineTimer=0;
-		}, 1500 );			
+		//}, 1500 );			
+		}, 1 );
 	},
 
 	_hideTopLine		: function( fn, scope ){
@@ -342,8 +344,8 @@ var Panel = Component.extend({
 		return this;		
 	},
 	
-	popMenu		: function( unit, x, y ){
-		this.winLayer.popMenu( unit, x, y );
+	popActionMenu		: function( unit, x, y ){
+		this.winLayer.popActionMenu( unit, x, y );
 		return this;
 	},
 	
