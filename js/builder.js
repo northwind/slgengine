@@ -17,7 +17,11 @@ $(function(){
 	
 	PANEL.on( "start", function( panel ){
 		var unit = panel.getUnit( "caocao" );
-		unit.speak( "去死吧!" );
+		unit.speak( "这是第几天 这一座城市每天在下雪", function(){
+			
+			unit.attackCell( PANEL.getCell( 0,0 )  );
+			
+		} );
 	} );
 		
  });

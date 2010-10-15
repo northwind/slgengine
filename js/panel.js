@@ -123,7 +123,6 @@ var Panel = Component.extend({
 			}
 		} ).keydown( function( e ){
 			_self.fireEvent( "keydown", e );	
-			_self.onKeydown( e );
 		} ).keyup( function( e ){
 			_self.fireEvent( "keyup", e );	
 		} );
@@ -147,19 +146,29 @@ var Panel = Component.extend({
 			}
 		} , this.sequence);
 		
-		//this.on( "keydown", this.onKeydown, this );
 		this.on("background", function(){
 			this.process.add( 20, "背景图片加载完毕..." );
 		}, this);
-			
+		
+		this.on( "keydown", this.onKeydown, this );			
 		this.on( "load", this.onLoad, this );	
+		this.on( "click", this.onClick, this );
 			 		
 		return this;		
 	},
 
 	onKeydown	: function( e ){
-
+		log( "keydown : " + e.which );
+		if ( this.speaking && ( e.which == 32 || e.which == 27 || e.which == 13 ) ){
+			this.stopSpeak();
+		}
 	},	
+	
+	onClick		: function( e ){
+		if ( this.speaking ){
+			this.stopSpeak();
+		}
+	},
 	
 	//加载完之后
 	onLoad		: function(){
@@ -305,13 +314,55 @@ var Panel = Component.extend({
 	hideUnitAttr	: function(){
 		this.board.hide();
 	},
-		
-	speak			: function( unit, html ){
+	
+	speaking		: false,	
+	speakTimer		: 0,	
+	speakText		: "",
+	speakUnit		: null,
+	speak			: function( unit, text, fn, scope ){
+		if (this.speaking)
+			this.clearSpeak();
+			
+		this.speaking = true;
+		this.speakUnit = unit;
+			
 		$("#face").attr( "src", unit.imgFace );
 		$("._speak h2").text( unit.name );
-		$("._speak p").html( html );
-		
 		$("._speech").show();
+		
+		//动画显示
+		var i = 0 , board = $("._speak p"), _self = this;
+		this.speakText = text;
+		this.speakTimer = setInterval( function(){
+			if ( i++ >= text.length ){
+				_self.stopSpeakAnimate();
+			}else{
+				board.html( text.slice( 0, i ) );	
+			}
+		}, 100 );
+	},
+	stopSpeak		: function(){
+		if ( this.speakTimer ){
+			this.stopSpeakAnimate();
+		} else {
+			this.clearSpeak();
+		}
+	},
+	stopSpeakAnimate : function(){
+		clearInterval(this.speakTimer);
+		this.speakTimer = 0;
+		$("._speak p").html( this.speakText );
+	},
+	//取消显示并回调函数
+	clearSpeak		: function(){
+		this.stopSpeakAnimate();
+		
+		if (this.speakUnit) {
+			this.speakUnit.fireEvent("speak", this.speakUnit);
+			delete this.speakUnit;
+		}
+		$("._speech").hide();
+		this.speaking = false;
 	},
 	
 	setUnits		: function( data ){
