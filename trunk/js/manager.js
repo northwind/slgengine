@@ -2,7 +2,7 @@
  * @author Norris
  */
 
-var Manager = Class.extend({
+var Manager = Observable.extend({
 	len	: 0,
 	
 	init	: function(){

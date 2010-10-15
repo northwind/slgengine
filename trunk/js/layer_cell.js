@@ -13,7 +13,7 @@ var CellLayer = Layer.extend({
 		this._super( arguments[0] );
 		PANEL.on("update", this.update, this );
 		PANEL.on("mousemove", this.activeCell, this );
-		PANEL.on("paint", this.paint, this );
+		PANEL.on("paint", this.onPaint, this );
 		
 		return this;
 	},
@@ -47,7 +47,7 @@ var CellLayer = Layer.extend({
 		return this;
 	},
 	
-	paint					: function(){
+	onPaint					: function(){
 		//console.debug( "cell layer" );
 		//画格子
 		if ( this.lines ){
