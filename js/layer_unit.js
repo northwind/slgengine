@@ -27,7 +27,7 @@ var UnitLayer = Layer.extend({
 		PANEL.on("mousemove", this.onMousemove, this);
 		PANEL.on("keydown", this.onKeydown, this);
 		PANEL.on("keyup", this.onKeyup, this);
-		PANEL.on("paint", this.paint, this );
+		PANEL.on("paint", this.onPaint, this );
 				
 		return this;
 	},
@@ -151,7 +151,7 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
-	paint	: function( timestamp ){
+	onPaint	: function( timestamp ){
 		//console.debug( "unit layer" );
 		if (this.units) {
 			//绘制图像
