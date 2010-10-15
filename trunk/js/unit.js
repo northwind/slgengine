@@ -241,6 +241,15 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
+	attackCell		: function( cell, fn, scope ){
+		this.attacking = true;
+		this.ui.attack( cell, false, 0, function(){
+			log( this.name + "attack over" );
+			this.fireEvent("attack", this);
+			this.attacking = false;
+		}, this);		
+	},
+	
 	//产生伤害
 	hurt			: function( unit, v ){
 		unit.onDecrease( v, this, function( defender, hit, num ){
@@ -482,8 +491,11 @@ var Unit = Observable.extend({
 		this.fireEvent( "change", this );	
 	}	,
 	
-	speak	: function( text ){
-		PANEL.speak( this, text );
+	//一次只能说一句话
+	speak	: function( text, fn, scope ){
+		if ( fn )
+			this.on( "speak", fn, scope );
+		PANEL.speak( this, text, fn, scope );
 	}			
 }); 
 //计算升级所需经验
