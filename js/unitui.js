@@ -49,7 +49,7 @@ var UnitUI = Observable.extend({
 	draw	:  function( timestamp ){
 		var diff = timestamp - this.stamp;
 		var unit = this.unit, cell = unit.cell;
-		//var dx = cell.dx, dy = cell.dy, img;
+		var w, h;
 		 
 		//有待执行的动画
 		if( this.imgStack.length > 0 ){
@@ -78,8 +78,10 @@ var UnitUI = Observable.extend({
 						this.img = null;
 					}else  if ( item.constructor == Object ) {
 						//修正坐标信息
-						this.dx = item.dx;
-						this.dy = item.dy;
+						if ( item.dx )  this.dx = item.dx;
+						if ( item.dy )  this.dy = item.dy;
+						if ( item.w != undefined )  this.w = item.w;
+						if ( item.h != undefined )  this.h = item.h;
 						this.img = item.img;
 					}
 					else {
@@ -100,24 +102,33 @@ var UnitUI = Observable.extend({
 				this.stamp = timestamp;
 				this._changeFoot();
 			}
-						
-			if (!unit.moving && unit.debility) {
-				//虚弱时
-				this.img = this.imgs.fall[ this.foot - 1 ];
-			} else if( unit.standby ){
-				//待机
-				this.img = this.imgs.gray( this.direct, this.imgs[ this.direct ][0] );
-			} else{
-				this.img = this.imgs[ this.direct ][ this.foot ];
-			} 
+			//执行脚本时，锁定图像
+			if ( !PANEL.isScripting() ) {
+				if (!unit.moving && unit.debility) {
+					//虚弱时
+					this.img = this.imgs.fall[this.foot - 1];
+				}
+				else 
+					if (unit.standby) {
+						//待机
+						this.img = this.imgs.gray(this.direct, this.imgs[this.direct][0]);
+					}
+					else {
+						this.img = this.imgs[this.direct][this.foot];
+					}
+			}
 			//this.img = this.img || this.imgs[ unit.direct ][ this.foot ];
 		}
 			
 		//绘制图像
-		if ( this.img )
+		if (this.img) {
+			this.w = this.w == undefined ? this.img.width : this.w;
+			this.h = this.h == undefined ? this.img.height : this.h;
 			try {
-				ctx.drawImage( this.img, this.dx, this.dy );
-			} catch (e) {}
+				ctx.drawImage( this.img, 0, 0, this.w, this.h, this.dx, this.dy, this.w, this.h );
+			} 
+			catch (e) {}
+		}
 	},
 	
 	drawTip	:  function( timestamp ){
@@ -341,7 +352,71 @@ var UnitUI = Observable.extend({
 		
 		this.imgStack.push( obj );		
 	},
-			
+
+	turnLeft	: function( fn, scope ){
+		var obj = {
+			inter	: SPEED * 2,
+			items	: [ this.imgs.left[0] ],
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.imgStack.push( obj );				
+	},		
+	
+	turnRight	: function( fn, scope ){
+		var obj = {
+			inter	: SPEED * 2,
+			items	: [ this.imgs.right[0] ],
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.imgStack.push( obj );				
+	},
+	
+	turnUp	: function( fn, scope ){
+		var obj = {
+			inter	: SPEED * 2,
+			items	: [ this.imgs.up[0] ],
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.imgStack.push( obj );				
+	},	
+	
+	turnDown	: function( fn, scope ){
+		var obj = {
+			inter	: SPEED * 2,
+			items	: [ this.imgs.down[0] ],
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.imgStack.push( obj );				
+	},		
+	_fillDisappear : function( n ){
+		var ret = [];
+		for (var i=0; i<=n; i++) {
+			ret.push( {
+				img	: this.imgs.down[0],
+				h		: i * this.imgs.down[0].height / n
+			}  )
+		}
+		return ret.reverse();
+	},			
+	disappear	: function( fn, scope ){
+		var obj = {
+			inter	: SPEED / 6,
+			items	: this._fillDisappear( 8 ),
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.imgStack.push( obj );				
+	},
+				
 	invincible	: function( fn , scope ){
 		
 		this.tipStack.push( this._defaultTip( fn, scope, "无效" ) );

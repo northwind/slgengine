@@ -7,6 +7,7 @@ var Panel = Component.extend({
 	cls   : "_panel",
 	suspend	: false,  //停止更新
 	drawable: true,   //可以绘画
+	scripting : false, //是否正在执行脚本
 	ctCls	: "_wrap",
 	
 	scrollLeft : 0,
@@ -207,9 +208,10 @@ var Panel = Component.extend({
 	start				: function(){
 		//报幕
 		this._showTopLine( CHAPTER, function(){
-			this.unitsLayer.start();
 			log("start" );
-			this.fireEvent( "start", this );
+			this.unitsLayer.on( "roundStart", function(){
+				this.fireEvent( "start", this );				
+			}, this ,{ one : true }).start();
 		}, this );
 	},
 	
@@ -422,6 +424,16 @@ var Panel = Component.extend({
 	unmask 		: function (){
 		this.masklayer.hide();
 		return this;	
+	},
+	
+	runScript		: function(){
+		this.scripting = true;
+	},
+	stopScript	: function(){
+		this.scripting = false;
+	},
+	isScripting	: function(){
+		return this.scripting;
 	}
 });
 

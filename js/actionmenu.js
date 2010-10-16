@@ -42,7 +42,7 @@ var ActionMenu = Win.extend({
 		
 		this.preAttack =  function(){
 			this.layer.lock();
-			this.unit.on( "standby", this.onStandBy, this, { one : true } );
+			this.unit.on( "standby", this.disappear, this, { one : true } );
 		};
 		//角色攻击前触发事件
 		this.unit.on( "preAttack", this.preAttack, this ,{ one : true });
@@ -70,13 +70,13 @@ var ActionMenu = Win.extend({
 		this.disappear();
 				
 		this.unit.finish();
+		delete this.unit;
 	},
 	
 	disappear	: function(){
 		//取消角色攻击前触发事件
 		this.unit.un( "preAttack", this.preAttack, this );
 		this.hide();
-		delete this.unit;
 		this.layer.unreg( this );
 		this.layer.unlock();		
 	},
