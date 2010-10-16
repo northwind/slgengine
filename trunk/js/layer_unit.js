@@ -204,9 +204,13 @@ var UnitLayer = Layer.extend({
 		}
 	},
 	
+	canClick	: function(){
+		return PANEL.winLayer.passby() && !PANEL.scripting;
+	},
+	
 	onClick	: function( e ){
 		//有弹出菜单时不触发click
-		if ( PANEL.winLayer.passby()) {
+		if ( this.canClick() ) {
 			var cell = PANEL.getCell(e);
 			var unit = this.units[cell.index];
 			
@@ -453,6 +457,7 @@ var UnitLayer = Layer.extend({
 		var unit = new Unit(config );
 		
 		unit.on( "standby", function( unit ){
+			log( unit.name + " standby" );
 			this.deleteClicked( unit );
 			this.checkTeamEnd( unit.faction, unit.team );
 		}, this )
@@ -473,7 +478,6 @@ var UnitLayer = Layer.extend({
 		}, this )
 		//取消点击时,隐藏该角色属性
 		.on( "unclick", function( unit ){
-			log( unit.name +  " unclick" );
 			if ( unit == this.clicked )
 				PANEL.hideUnitAttr();
 				

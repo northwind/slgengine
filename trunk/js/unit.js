@@ -118,6 +118,13 @@ var Unit = Observable.extend({
 				}
 			} 
 		} );
+		//转向操作都交由UI处理
+		var _self = this;
+		$( [ "turnLeft", "turnRight", "turnUp", "turnDown" ] ).each( function( i, n){
+			_self[ n ] = function(){
+				_self.ui[ n ].apply( _self.ui, arguments );
+			} 
+		} );
 		
 		return this;
 	},
@@ -225,6 +232,7 @@ var Unit = Observable.extend({
 						//TODO 逻辑有问题
 						var n = hit;
 						this.addExp( n, function(){
+							log( this.name + " addExp end" );
 							//结束本回合
 							this.finish();
 						}, this );
@@ -459,7 +467,7 @@ var Unit = Observable.extend({
 		this.ui.upgrade( function(){
 			
 			this.fireEvent( "upgrade", this );
-			
+			//继续升级
 			if ( this.exp >= this.nextExp() )
 				this.onUpgrade( fn, scope );
 			else{
@@ -489,14 +497,22 @@ var Unit = Observable.extend({
 		this.intelligence  += n;
 		this.mpMax += n * INTELLIGENCEMP;
 		this.fireEvent( "change", this );	
-	}	,
+	},
 	
 	//一次只能说一句话
 	speak	: function( text, fn, scope ){
 		if ( fn )
 			this.on( "speak", fn, scope );
 		PANEL.speak( this, text, fn, scope );
-	}			
+	},
+	
+	disappear	: function( fn, scope ){
+		this.ui.disappear( function(){
+			this.onDead();
+			if ( fn )
+				fn.call( scope|| this );
+		}, this );
+	}	
 }); 
 //计算升级所需经验
 //每升一级需额外50点 起始值100

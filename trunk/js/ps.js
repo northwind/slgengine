@@ -270,8 +270,14 @@ PS.prototype = {
 		}	
 		
 		return ret;
-	}					
+	},					
 	
+	//截断
+	 cutImageData	: function( imageData, y ){
+	 	//imageData.length 
+	 	return Array.prototype.slice.call( imageData, 0, y * 4 );
+		return imageData.slice( 0, y * 4 );
+	}		
 };
 
 //DOM树加载完之后
