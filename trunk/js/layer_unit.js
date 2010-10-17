@@ -160,6 +160,10 @@ var UnitLayer = Layer.extend({
 				
 				unit.draw( timestamp );
 			}
+			//绘制状态图标
+			for( var key in this.units ){
+				this.units[ key ].drawBuff();
+			}				
 			//绘制提示信息
 			for( var key in this.units ){
 				var unit = this.units[ key ];
