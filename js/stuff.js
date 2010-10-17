@@ -1,5 +1,6 @@
 /**
- * @author Norris
+ * 物品类
+ * 每个物品都有 apply 方法，使用后调用该方法
  */
 
 var Stuff = Observable.extend({

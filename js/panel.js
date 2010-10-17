@@ -147,6 +147,9 @@ var Panel = Component.extend({
 			}
 		} , this.sequence);
 		
+		this._loadBuffsImg();
+		
+		//加载背景
 		this.on("background", function(){
 			this.process.add( 20, "背景图片加载完毕..." );
 		}, this);
@@ -178,6 +181,26 @@ var Panel = Component.extend({
 		
 		this.board = $( "._board" );
 	},
+	//加载状态图像
+	_loadBuffsImg	: function(){
+		var count = 0, i = 0, _self = this;
+		for( var name in BUFFS ){
+			count++;
+		}
+		for( var name in BUFFS ){
+			(function(){
+				var buff = BUFFS[ name ];
+				_loadImg( buff.src, function(){
+					buff.img = this;
+					i++;
+					//全部加载完
+					if ( i >= count ){
+						_self.process.add( 10, "状态图片加载完毕..." );
+					}
+				} );
+			})();
+		}		
+	},
 		
 	_createCellLayer	: function(){
 		if ( this.cellLayer )
@@ -192,7 +215,7 @@ var Panel = Component.extend({
 		this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
 		
 		this.unitsLayer.on( "loading", function( unit, sum, count ){
-			this.process.add( 80 / sum, "加载" + (unit.name || unit.symbol) + "完备..." );
+			this.process.add( 70 / sum, "加载" + (unit.name || unit.symbol) + "完备..." );
 		}, this );
 	},	
 	_createWinLayer	: function(){
@@ -308,6 +331,16 @@ var Panel = Component.extend({
 		$("#roleagility").text( unit.agility );
 		$("#roleintelligence").text( unit.intelligence );
 		$("#roledefnum").text( unit.defnum );
+		//添加状态
+		var statusDom = $("._status");
+		for( var name in unit.buff ){
+			var buff = unit.buff[ name ];
+			var img = $("<img>").attr({
+				src : buff.src, width : 16, height : 16
+			});
+			$("<a>").attr( "title", buff.desc || "" ).append( img )
+				.appendTo( statusDom );
+		}
 		
 		this.board.show();
 		return this;

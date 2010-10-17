@@ -14,6 +14,8 @@ var UnitUI = Observable.extend({
 	img		: null,
 	direct  : "down",
 	oriDirect : "down",
+	w	: CELL_WIDTH,
+	h  : CELL_HEIGHT,
 	
 	init	: function( config ){
 		this._super( config );
@@ -102,7 +104,7 @@ var UnitUI = Observable.extend({
 				this.stamp = timestamp;
 				this._changeFoot();
 			}
-			//执行脚本时，锁定图像
+			
 			if ( !PANEL.isScripting() ) {
 				if (!unit.moving && unit.debility) {
 					//虚弱时
@@ -116,6 +118,15 @@ var UnitUI = Observable.extend({
 					else {
 						this.img = this.imgs[this.direct][this.foot];
 					}
+			}else{
+				//执行脚本时，锁定图像
+				if (!unit.moving && unit.debility) {
+					//虚弱时
+					this.img = this.imgs.fall[ 0 ];
+				}
+				else {
+					this.img = this.imgs[this.direct][ 0 ];
+				}				
 			}
 			//this.img = this.img || this.imgs[ unit.direct ][ this.foot ];
 		}
@@ -128,6 +139,28 @@ var UnitUI = Observable.extend({
 				ctx.drawImage( this.img, 0, 0, this.w, this.h, this.dx, this.dy, this.w, this.h );
 			} 
 			catch (e) {}
+		}
+	},
+	
+	drawBuff	: function(){
+		var unit = this.unit, buffs = this.unit.buff, cell = this.unit.cell, w = 12, h = 12, count = 0;
+		if ( unit.moving || unit.attacking )
+			return;
+		
+		if ( this.unit.newBuff ){
+			delete this.unit.newBuff;
+		}
+		for( var key in buffs ){
+			var buff = buffs[ key ];
+			try {
+				ctx.drawImage( buff.img, cell.dx + count * w, Math.max( 0, cell.dy - 8 ), w, h );
+			} 
+			catch (e) {}			
+			//右移
+			count++;
+			//最多画6个
+			if ( count >= 4 )
+				break;
 		}
 	},
 	

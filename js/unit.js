@@ -72,6 +72,7 @@ var Unit = Observable.extend({
 	
 	//buff	: {},	//增益buff
 	 //debuff: {},   //损益buff
+	newBuff	: null,
 	
 	ui		: null,
 	loaded	: false,
@@ -137,6 +138,10 @@ var Unit = Observable.extend({
 		
 		this.ui.draw( timestamp );	
 	},
+	//绘制提示信息
+	drawBuff	: function( timestamp ){
+		this.ui.drawBuff( timestamp );			
+	},	
 	//绘制提示信息
 	drawTip	: function( timestamp ){
 		this.ui.drawTip( timestamp );			
@@ -512,7 +517,22 @@ var Unit = Observable.extend({
 			if ( fn )
 				fn.call( scope|| this );
 		}, this );
-	}	
+	},
+	
+	addBuff	: function( name ){
+		var config = $.extend( BUFFS[ name ],  { id : name } );
+		this.newBuff = new Stuff( config );
+		this.buff[ name ] = this.newBuff;
+		
+		return this;
+	},
+	
+	delBuff	: function( name ){
+		this.buff[ name ] = null;
+		delete this.buff[ name ];
+		
+		return this;	
+	}
 }); 
 //计算升级所需经验
 //每升一级需额外50点 起始值100

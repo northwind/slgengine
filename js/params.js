@@ -196,7 +196,18 @@ MAP	= 	[
 					fireman.hurt( unit, 20 );
 				}
 			}			
-		}]		
+		}],		
+		//状态
+		BUFFS = {
+			confuse : {
+				src	   : "images/magic/49-1.png",
+				desc  : "迷糊中"
+			},
+			stop		   : {
+				src	   : "images/magic/51-1.png",
+				desc  : "不能移动"
+			}
+		}
 		
 		;  
 
