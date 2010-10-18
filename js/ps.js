@@ -24,6 +24,7 @@ PS.prototype = {
 		
 		can.width = w;
 		can.height = h;
+		
 		this.ctx.putImageData( data, 0 ,0 );
 		data = can.toDataURL();
 		

@@ -1,7 +1,6 @@
 /**
  * @author Norris
  */
-
 var Manager = Observable.extend({
 	len	: 0,
 	
@@ -31,12 +30,23 @@ var Manager = Observable.extend({
 		return this;
 	},
 	
+	get		: function( key ){
+		return this.hash[ key ];
+	},
+	
 	has		: function( key ){
 		return this.hash[ key ] != undefined;
 	},
 	
 	len		: function(){
 		return this.len;
+	},
+	
+	each	: function( fn, scope ){
+		for( var key in this.hash ){
+			var item = this.hash[ key ];
+			fn.call( scope || item, key, item );
+		}
 	},
 	
 	destroy	: function(){

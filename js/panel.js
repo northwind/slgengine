@@ -15,7 +15,8 @@ var Panel = Component.extend({
 	
 	cellLayer	: null,    //zIndex : 100
 	unitsLayer : null, //zIndex : 200
-	winLayer : null,   //zIndex : 300
+	staticLayer : null,   //zIndex : 300
+	winLayer : null,   //zIndex : 400
 	
 	dps		 : 16, //帧数
 	sequence : 20, //多久更新一次
@@ -39,7 +40,7 @@ var Panel = Component.extend({
 		//初始化画布 开始隐藏
 		canvas = $("#canvas").hide()[0];
 		canvas.width = MAX_W;
-		canvas.height = MAX_H;
+		canvas.height = 3000; // MAX_H;
 		if ( canvas.getContext )
 			ctx = canvas.getContext("2d");
 		
@@ -53,6 +54,7 @@ var Panel = Component.extend({
 		this.process = new Process(  { ct: this.el } );
 		//进度条加载完之后触发panel的load事件
 		this.process.on("end", function(){
+			canvas.height = MAX_H;
 			$( canvas ).show();
 			this.fireEvent( "load" );
 			//开始
@@ -61,8 +63,10 @@ var Panel = Component.extend({
 		
 		//创建的顺序既是绘画时的先后顺序
 		this._createCellLayer();
-		this._createWinLayer();
+		this._createStaticLayer();
 		this._createUnitLayer();
+		this._createWinLayer();
+		this._createMagicLayer();
 		
 		//绑定事件
 		var x, y, drag = false, el=this.el, _self = this;
@@ -148,7 +152,7 @@ var Panel = Component.extend({
 		} , this.sequence);
 		
 		this._loadBuffsImg();
-		
+		this._loadAnimationImg();
 		//加载背景
 		this.on("background", function(){
 			this.process.add( 20, "背景图片加载完毕..." );
@@ -201,7 +205,33 @@ var Panel = Component.extend({
 			})();
 		}		
 	},
-		
+	//加载魔法图像
+	_loadAnimationImg	: function(){
+		var count = 0, i = 0, _self = this;
+		for( var name in ANIMATIONS ){
+			count++;
+		}
+		for( var name in ANIMATIONS ){
+			(function(){
+				var a = ANIMATIONS[ name ];
+				_loadImg( a.src, function(){
+					ctx.clearRect( 0,0, this.width, this.height );
+					ctx.drawImage( this, 0, 0  );
+					//切割图片
+					var totalH = this.height, n = totalH / a.h, imgs = [];
+					for (var j=0; j<n; j++) {
+						imgs.push( PS.getCanImage( ctx, 0, a.h * j, a.w, a.h ) );
+					}
+					a.imgs = imgs;
+					i++;
+					//全部加载完
+					if ( i >= count ){
+						_self.process.add( 10, "魔法图片加载完毕..." );
+					}
+				} );
+			})();
+		}		
+	},		
 	_createCellLayer	: function(){
 		if ( this.cellLayer )
 			this.cellLayer.remove();
@@ -215,19 +245,33 @@ var Panel = Component.extend({
 		this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
 		
 		this.unitsLayer.on( "loading", function( unit, sum, count ){
-			this.process.add( 70 / sum, "加载" + (unit.name || unit.symbol) + "完备..." );
+			this.process.add( 60 / sum, "成功加载" + (unit.name || unit.symbol) + "..." );
 		}, this );
+		
+		this.unitsLayer.setTeams( TEAMS ).setUnits( UNITS );
+	},	
+	_createStaticLayer	: function(){
+		if ( this.staticLayer )
+			this.staticLayer.remove();
+		
+		this.staticLayer = LayerMgr.reg( 300, MAX_W, MAX_H, StaticLayer );
 	},	
 	_createWinLayer	: function(){
 		if ( this.winLayer )
 			this.winLayer.remove();
 		
-		this.winLayer = LayerMgr.reg( 300, MAX_W, MAX_H, WinLayer );
+		this.winLayer = LayerMgr.reg( 400, MAX_W, MAX_H, WinLayer );
 		
 		this.winLayer.on( "pop", function(){ this.wincount++; }, this )
 							  .on( "cansel", function(){ this.wincount--; }, this );
 	},
-	
+	_createMagicLayer	: function(){
+		if ( this.magicLayer )
+			this.magicLayer.remove();
+		
+		this.magicLayer = LayerMgr.reg( 500, MAX_W, MAX_H, MagicLayer );
+	},		
+		
 	start				: function(){
 		//报幕
 		this._showTopLine( CHAPTER, function(){
@@ -467,6 +511,13 @@ var Panel = Component.extend({
 	},
 	isScripting	: function(){
 		return this.scripting;
+	},
+	addStatic	: function(){
+		this.staticLayer.add.apply( this.staticLayer, arguments );
+		return this;
+	},
+	playAnimation	: function( a ){
+		this.magicLayer.add( a );
 	}
 });
 

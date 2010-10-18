@@ -44,14 +44,16 @@ UNITS	= [{
 		dead	: function(){
 			//alert( this.name );
 		}
-	}
+	},
+	magicNames	: [ "light", "storm" ]
 },{
 	gx :  10,  gy : 7,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
 	symbol	: "footman",  faction : 1, team : 200,  name : "刘备", exp : 86,
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
-	imgFace	: "images/face/23-1.png"	
+	imgFace	: "images/face/23-1.png",
+	magicNames	: [ "light" ]	
 },{
 	gx :  10,  gy : 0,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
 	symbol	: "footman",  faction : 0, team : 1,  name : "关羽",
@@ -207,8 +209,55 @@ MAP	= 	[
 				src	   : "images/magic/51-1.png",
 				desc  : "不能移动"
 			}
-		}
+		},
 		
+		ANIMATIONS = {
+			fire	: {
+				src	   : "images/magic/1-1.png",
+				w		: 64,
+				h		: 64,
+				inter   : 1
+			},
+			redStar	: {
+				src	   : "images/magic/35-1.png",
+				w		: 64,
+				h		: 64,
+				inter   : 1
+			},
+			storm	: {
+				src	   : "images/magic/25-1.png",
+				w		: 75,
+				h		: 90,
+				inter   : 2
+			}
+		},
+		
+		MAGICS = {
+			light	: {
+				name	: "圣光",
+				desc	: "恢复HP",
+				img		: "images/item/82-1.png",
+				animation : "redStar",
+				range	: 3, 			
+				rangeType : 1,     	
+				needMP	: 10,	
+				effect	: 3,	
+				listeners : {
+					apply	: function( unit, fireman ){
+						unit.onIncrease( 50 );
+					},
+					over	: function( magic, fireman ){
+						//fireman.finish();
+					}
+				}	
+			},
+			storm	: {
+				name	: "风暴",
+				desc	: "单体减伤",
+				img	   	: "images/item/1-1.png",
+				needMP	: 50
+			}
+		}		
 		;  
 
 
