@@ -27,6 +27,7 @@
 ._prop table tr:last-child td{ border-bottom:1px #400080 ridge; }
 ._prop td img{ float:left; height:16px; width:16px; margin-right:4px; }
 ._prop .active{ background:#0080c0; color:#ffffff; }
+._prop .unactive{ color:#acacac; }
 
 ._board{ color:#ffffff; width:320px; padding-top:3px; cursor:default; display:none; }
 ._board ._face{ height:90px; text-align:center; padding-top:10px; margin-top:10px; }

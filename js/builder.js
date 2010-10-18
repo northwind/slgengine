@@ -15,7 +15,6 @@ $(function(){
 		;
 	
 	PANEL.on( "start", function( panel ){
-		return ;		
 		PANEL.runScript();
 		var unit = panel.getUnit( "caocao" );
 		

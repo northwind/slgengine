@@ -35,8 +35,11 @@ var MagicBox = Win.extend({
 		this.table.children("tbody").empty().append( fragment ).find( 'tr' ).hover( function(){
 			$( this ).toggleClass( "active" );
 		} ).click( function(){
-			var id = $(this).attr("param");
-			_self.select( id );
+			// MP不足时点击不生效
+			if (!$(this).hasClass("unactive")) {
+				var id = $(this).attr("param");
+				_self.select(id);
+			}
 		} );
 	},
 	
@@ -44,7 +47,9 @@ var MagicBox = Win.extend({
 		return $( '<tr param="' + item.id + '"><td><img src="' + item.img + '">' + item.name +
 						'</td><td align="center">' + item.desc + 
 						'</td><td align="center">' + item.needMP +
-						'</td></tr>' )[ 0 ];
+						'</td></tr>' )
+						.addClass( item.needMP > this.unit.mp ? "unactive" : "" )
+						[ 0 ];
 	},
 	
 	select		: function( id ){
@@ -60,8 +65,9 @@ var MagicBox = Win.extend({
 			if ( this.selected.canAttack( cell, unit ) ){
 				this.layer.lock();
 				
+				this.unit.on( "standby", this.onOver, this, { one : true} );
 				//使用
-				this.selected.on( "over", this.onOver, this, { one : true } ).apply( cell, unit );
+				this.selected.apply( cell, unit );
 				
 				delete this.selected;
 			}
