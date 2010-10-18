@@ -46,6 +46,8 @@ var Magic = Observable.extend({
 			}, this );
 			
 		PANEL.playAnimation( this.animation );
+		//减去MP
+		this.unit.onDecreaseMP( this.needMP );
 	},
 	
 	onApply	: function( unit ){

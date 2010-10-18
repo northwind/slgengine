@@ -41,6 +41,7 @@ var Unit = Observable.extend({
 	debility : false,	//濒临死亡
 	dead		: false,
 	moving : false,
+	speaking	: false,
 		
 	regainHP	: 0,  //回血数量
 	regainMP	: 0,  //回魔数量
@@ -108,6 +109,7 @@ var Unit = Observable.extend({
 		}, this);
 				
 		this.on( "move", function(){ this.moving = false; }, this );
+		this.on( "speak", function(){ this.speaking = false; }, this );
 		
 		return this;
 	},
@@ -403,6 +405,15 @@ var Unit = Observable.extend({
 		PANEL.unitsLayer._removeCells();
 	},
 	
+	onDecreaseMP	: function( n ){
+		this.mp = Math.max( 0, this.mp-n );
+		this.fireEvent( "change", this );
+	},
+	onIncreaseMP	: function( n ){
+		this.mp = Math.min( this.mpMax , this.mp+n );
+		this.fireEvent( "change", this );
+	},
+		
 	unClick	: function(){
 		if (!this.standby && this.lock) {
 			this.homing();
@@ -513,6 +524,7 @@ var Unit = Observable.extend({
 	
 	//一次只能说一句话
 	speak	: function( text, fn, scope ){
+		this.speaking = true;
 		if ( fn )
 			this.on( "speak", fn, scope );
 		PANEL.speak( this, text, fn, scope );
@@ -543,6 +555,14 @@ var Unit = Observable.extend({
 	
 	learnMagic	: function( name ){
 		this.magics[ name ] = MagicMgr.get( name );
+	},
+	hasMagic	: function(){
+		var count = 0;
+		for( var key in this.magics){
+			count++;
+			break;
+		}
+		return count > 0; 
 	}
 }); 
 //计算升级所需经验

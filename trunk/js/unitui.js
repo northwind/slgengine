@@ -17,6 +17,10 @@ var UnitUI = Observable.extend({
 	w	: CELL_WIDTH,
 	h  : CELL_HEIGHT,
 	
+	speakClr : 50,
+	speakdps : 0,
+	speakD	: 1,
+	
 	init	: function( config ){
 		this._super( config );
 		
@@ -52,6 +56,23 @@ var UnitUI = Observable.extend({
 		var diff = timestamp - this.stamp;
 		var unit = this.unit, cell = unit.cell;
 		var w, h;
+		 
+		 if ( unit.speaking ){
+/*
+		 	ctx.save();
+			ctx.strokeStyle = 'rgb(' + this.speakClr +',240,' + this.speakClr +')';  
+			this.speakClr += 5;
+			if ( this.speakClr >= 200 )
+				this.speakClr = 3;
+				
+			ctx.lineWidth = 1;
+		 	ctx.beginPath();  
+		 	ctx.arc( cell.dx + CELL_WIDTH /2 , cell.dy  + CELL_HEIGHT/2 + 4, 20,0,Math.PI*2,true ); //画圆
+		 	ctx.closePath();
+			ctx.stroke();  
+			ctx.restore();
+*/
+		 }
 		 
 		//有待执行的动画
 		if( this.imgStack.length > 0 ){
@@ -130,9 +151,29 @@ var UnitUI = Observable.extend({
 			}
 			//this.img = this.img || this.imgs[ unit.direct ][ this.foot ];
 		}
+		//讲话效果
+		if (unit.speaking && this.img ){
+			this.img = PS.highlightImg( this.img, this.speakClr );
 			
+			if (this.speakdps++ % 2 == 0) {
+				if ( this.speakD == 1 )
+					this.speakClr += 10;
+				else
+					this.speakClr -= 10;
+						
+				if ( this.speakClr >= 100){
+					this.speakD = 0; 
+				}
+				if ( this.speakClr <= 20 ){
+					this.speakD = 1; 
+				} 
+				
+				if (this.speakdps >= 100) 
+					this.speakdps = 1;
+			}
+		}
 		//绘制图像
-		if (this.img) {
+		if ( this.img ) {
 			this.w = this.w == undefined ? this.img.width : this.w;
 			this.h = this.h == undefined ? this.img.height : this.h;
 			try {

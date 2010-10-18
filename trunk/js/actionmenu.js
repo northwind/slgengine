@@ -10,10 +10,12 @@ var ActionMenu = Win.extend({
 		this.ul = $("<ul>").appendTo( this.content );
 		
 		this.btnAttack = this.createAction( "进攻", "images/system/1-1.png", this.onAttack );
-		this.btnAttack = this.createAction( "策略", "images/system/76-1.png", this.onMagic );
-		this.btnAttack = this.createAction( "道具", "images/system/82-1.png", this.onProp );
-		this.btnAttack = this.createAction( "待命", "images/system/98-1.png", this.onStandBy );
-
+		this.btnMagic = this.createAction( "策略", "images/system/76-1.png", this.onMagic );
+		this.btnProp = this.createAction( "道具", "images/system/82-1.png", this.onProp );
+		this.btnStandby = this.createAction( "待命", "images/system/98-1.png", this.onStandBy );
+		
+		this.on( "show", this.onShow, this );
+		
 		return this;	
   	},
 	
@@ -21,10 +23,21 @@ var ActionMenu = Win.extend({
 		var li = $("<li>").appendTo( this.ul ), _self = this;;
 		var btn = $("<button>").text( text ).css( "background-image", "url(" + img + ")" ) .click( function( e ){
 			//if (  e.which == 1 )
-				onclick.call( _self, e, text );
+				if ( ($(this).attr( "disabled" )+"") != "true" )
+					onclick.call( _self, e, text );
+					
 		} ).appendTo( li );
 		
 		return btn;
+	},
+	
+	onShow		: function(){
+		this._super();
+		if ( !this.unit.hasMagic() ){
+			this.btnMagic.attr( "disabled", "true" );
+		}else{
+			this.btnMagic.removeAttr( "disabled" );
+		}
 	},
 	
 	onKeydown	: function( e ){
@@ -53,7 +66,7 @@ var ActionMenu = Win.extend({
 			this.magicBox = new MagicBox({
 				ct	: this.ct
 			});
-			this.magicBox.on( "over", this.onStandBy, this );
+			this.magicBox.on( "over", this.disappear, this );
 		}
 		var x = this.el.position().left;
 		var y = this.el.position().top;

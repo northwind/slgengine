@@ -33,7 +33,7 @@ var Panel = Component.extend({
 		
 		this._super( config );
 		
-		this.addEvents("click","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background", "start" );
+		this.addEvents("click", "globalClick","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background", "start" );
 		
 		LayerMgr.setWrap( this.el );
 		
@@ -130,7 +130,9 @@ var Panel = Component.extend({
 			_self.fireEvent( "keydown", e );	
 		} ).keyup( function( e ){
 			_self.fireEvent( "keyup", e );	
-		} );
+		} ).click(function( e ){
+			_self.fireEvent( "globalClick", e );	
+		});
 		
 		//触发器
 		var mem = 0, inter = 1000 / this.dps;
@@ -160,7 +162,7 @@ var Panel = Component.extend({
 		
 		this.on( "keydown", this.onKeydown, this );			
 		this.on( "load", this.onLoad, this );	
-		this.on( "click", this.onClick, this );
+		this.on( "globalClick", this.onGlobalClick, this );
 			 		
 		return this;		
 	},
@@ -172,7 +174,7 @@ var Panel = Component.extend({
 		}
 	},	
 	
-	onClick		: function( e ){
+	onGlobalClick		: function( e ){
 		if ( this.speaking ){
 			this.stopSpeak();
 		}

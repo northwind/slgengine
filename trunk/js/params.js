@@ -35,7 +35,7 @@ TEAMS	= [{
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
 	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, urlImg : "images/move/110-1.png", range : 1, rangeType : 1,
-	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98, id : "caocao",
+	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98, id : "caocao", mp : 20,
 	imgMove	:"images/move/110-1.png",
 	imgAtk	: "images/atk/110-1.png",
 	imgSpc	: "images/spc/110-1.png",
@@ -48,7 +48,7 @@ UNITS	= [{
 	magicNames	: [ "light", "storm" ]
 },{
 	gx :  10,  gy : 7,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 1, team : 200,  name : "刘备", exp : 86,
+	symbol	: "footman",  faction : 1, team : 200,  name : "刘备", exp : 86, mp : 20,
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
@@ -140,6 +140,7 @@ MAP	= 	[
 		MAJORBG ="rgba(31,41,61,0.4)",
 		//单元格颜色信息
 		CELLCOLOR = [ "rgba(255,255,255,0.6)"  ],
+		SELECTEDCLR = [ "#fdc92b"  ],   //选中的颜色
 		
 		HighLightDeep = 190,    //高亮度
 		
@@ -198,6 +199,24 @@ MAP	= 	[
 					fireman.hurt( unit, 20 );
 				}
 			}			
+		}, {
+			id			: 4,
+			desc	: "恢复MP",
+			count	: 5,
+			name	: "绛珠仙草",
+			consumable : true,
+			effect	: 3,
+			img		: "images/item/94-1.png",
+			animation : {
+				color	: "#0080ff",
+				text	: "+50"		
+			},
+			listeners : {
+				apply	: function( unit, fireman ){
+					unit.onIncreaseMP( 50 );
+					fireman.finish();
+				}
+			}
 		}],		
 		//状态
 		BUFFS = {
@@ -238,7 +257,7 @@ MAP	= 	[
 				desc	: "恢复HP",
 				img		: "images/item/82-1.png",
 				animation : "redStar",
-				range	: 3, 			
+				range	: 1, 			
 				rangeType : 1,     	
 				needMP	: 10,	
 				effect	: 3,	
@@ -255,7 +274,19 @@ MAP	= 	[
 				name	: "风暴",
 				desc	: "单体减伤",
 				img	   	: "images/item/1-1.png",
-				needMP	: 50
+				needMP	: 50,
+				range	: 4, 			
+				rangeType : 2,     
+				animation : "storm",	
+				effect	: 4,	
+				listeners : {
+					apply	: function( unit, fireman ){
+						fireman.hurt( unit, 100 );
+					},
+					over	: function( magic, fireman ){
+						//fireman.finish();
+					}
+				}					
 			}
 		}		
 		;  
