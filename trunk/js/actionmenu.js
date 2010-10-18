@@ -49,7 +49,17 @@ var ActionMenu = Win.extend({
 	},
 	
 	onMagic	: function( e ){
-		alert( "magic : " +  e.which );
+		if (!this.magicBox ) {
+			this.magicBox = new MagicBox({
+				ct	: this.ct
+			});
+			this.magicBox.on( "over", this.onStandBy, this );
+		}
+		var x = this.el.position().left;
+		var y = this.el.position().top;
+		
+		this.magicBox.bind( this.unit ).showAt( x - 240 , y ).show();
+		this.layer.reg( this.magicBox );
 	},
 	
 	onProp	: function(e){

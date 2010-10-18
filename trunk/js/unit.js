@@ -71,8 +71,8 @@ var Unit = Observable.extend({
 	standby	: false,	//待机
 	
 	//buff	: {},	//增益buff
-	 //debuff: {},   //损益buff
 	newBuff	: null,
+	//magics	: {}, //会的魔法
 	
 	ui		: null,
 	loaded	: false,
@@ -81,9 +81,9 @@ var Unit = Observable.extend({
 		this.moves	= {};
 		this.attacks= {};
 		this.way = [];
-		
+		this.magicNames = [];
+		this.magics = {};
 		this.buff = {};
-		this.debuff = {};
 		
 		this._super( config );
 		//如果没有id则自动生成一个
@@ -100,6 +100,13 @@ var Unit = Observable.extend({
 		
 		this.setUI();
 		
+		//TODO 优化执行顺序
+		PANEL.process.on("end", function(){
+			for (var i=0; i<this.magicNames.length; i++) {
+				this.learnMagic( this.magicNames[i] );
+			}			
+		}, this);
+				
 		this.on( "move", function(){ this.moving = false; }, this );
 		
 		return this;
@@ -532,6 +539,10 @@ var Unit = Observable.extend({
 		delete this.buff[ name ];
 		
 		return this;	
+	},
+	
+	learnMagic	: function( name ){
+		this.magics[ name ] = MagicMgr.get( name );
 	}
 }); 
 //计算升级所需经验

@@ -2,11 +2,11 @@
  * @author Norris
  * 只继承 Observable
  */
-
 var Layer = Observable.extend({
+	hidden : false,
 	
 	init: function( config ){
-		this.objects = [];
+		this.items = new Manager();
 		
     	this._super( config );
 		//加载完毕后执行init事件
@@ -17,20 +17,22 @@ var Layer = Observable.extend({
 		
 	show	: function(){
 		if (this.hidden) {
-			for (var i = 0; i < this.objects.length; i++) {
-				if ( this.objects[i].show )
-					this.objects[i].show();
-			};
+			this.hidden = false;
+			this.items.each( function(){
+				if ( this.show )
+					this.show();
+			} );
 		}
 		return this;
 	},	
 	
 	hide	: function(){
 		if ( !this.hidden ) {
-			for (var i = 0; i < this.objects.length; i++) {
-				if (this.objects[i].hide)
-					this.objects[i].hide();
-			};
+			this.hidden = true;
+			this.items.each( function(){
+				if ( this.hide )
+					this.hide();
+			} );
 		}
 		return this;
 	},
@@ -42,10 +44,10 @@ var Layer = Observable.extend({
 	
 	destroy	: function(){
 		//销毁这层上的所有单元
-		for (var i=0; i< this.objects.length; i++) {
-			if ( this.objects[i].destroy )
-				this.objects[i].destroy();
-		};
+		this.items.each( function(){
+			if ( this.destroy )
+				this.destroy();
+		} );
 	
 		this._super();
 	}
