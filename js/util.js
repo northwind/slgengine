@@ -49,15 +49,6 @@ function	_loadImg( src, onload, onerror ){
 	img.src = src;
 }
 
-//check数组中的image对象，水平翻转
-function waitTurn( wait, turn, fn ){
-	
-	var p = 0;
-	
-	//while
-	
-}
-
 //获取时间戳
 var __d = new Date();
 function getTime(){

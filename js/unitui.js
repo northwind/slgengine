@@ -3,7 +3,8 @@
  * 动画配置
  * direct : 执行动画后角色面对方向
  * params : 回调函数中接受的参数
- * inter  : 每帧相隔时间
+ * inter  :  没一副图片相隔的帧数
+ * count : 执行过的帧数
  * loop	  : 循环播放
  * index  : 图片索引 
  */
@@ -11,17 +12,12 @@ var UnitUI = Observable.extend({
 	unit	: null, 	//unit主体
 	loaded	: false,
 	foot	: 1,
-	stamp	: 0, //时间戳
-	tipstamp : 0,
 	img		: null,
 	direct  : "down",
 	oriDirect : "down",
 	w	: CELL_WIDTH,
 	h  : CELL_HEIGHT,
-	
-	speakClr : 20,
-	speakdps : 0,
-	speakD	: 1,
+	step : 0, //步伐计数器
 	
 	init	: function( config ){
 		this._super( config );
@@ -55,18 +51,15 @@ var UnitUI = Observable.extend({
 	},
 	
 	draw	:  function( timestamp ){
-		var diff = timestamp - this.stamp;
 		var unit = this.unit, cell = unit.cell;
 		var w, h;
 		 
 		//有待执行的动画
 		if( this.imgStack.length > 0 ){
 			var a = this.imgStack[0];
-			a.index = a.index || 0;
-			
-			if (diff > a.inter) {
-				this.stamp = timestamp;
-				
+
+			if ( a.inter == 1 || a.count++ == a.inter ) {
+				a.count = 0;
 				//如果已经没有图像可画
 				if ( a.index >= a.items.length ) {
 					//更改角色所处方向
@@ -83,7 +76,6 @@ var UnitUI = Observable.extend({
 						a.index = 0;	
 				}
 				else {
-					//var item = a.items.shift();
 					var index = a.index++, item = a.items[ index ];
 					
 					if ( !item ){
@@ -111,8 +103,8 @@ var UnitUI = Observable.extend({
 			
 			//长时间执行的状态
 			//切换步伐
-			if( diff > SPEED ){
-				this.stamp = timestamp;
+			if( this.step++ >= SPEED ){
+				this.step = 0;
 				this._changeFoot();
 			}
 			
@@ -139,7 +131,6 @@ var UnitUI = Observable.extend({
 					this.img = this.imgs[this.direct][ 0 ];
 				}				
 			}
-			//this.img = this.img || this.imgs[ unit.direct ][ this.foot ];
 		}
 
 		//绘制图像
@@ -169,7 +160,7 @@ var UnitUI = Observable.extend({
 			catch (e) {}			
 			//右移
 			count++;
-			//最多画6个
+			//最多画4个
 			if ( count >= 4 )
 				break;
 		}
@@ -189,7 +180,6 @@ var UnitUI = Observable.extend({
 		
 		//绘制血条
 		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
-			
 			var y = dy - 9;
 			y = y < 0 ? 1 : y;
 			//血条黑色背景
@@ -240,11 +230,10 @@ var UnitUI = Observable.extend({
 				
 		//有待执行的动画
 		if( this.tipStack.length > 0 ){
-			var diff = timestamp - this.tipstamp,
-				  a = this.tipStack[0];
+			var a = this.tipStack[0];
 			
-			if (diff > a.inter) {
-				this.tipstamp = timestamp;
+			//if ( a.count++ >= a.inter ) {
+				//a.count = 0;
 				
 				//绘完所有帧
 				if ( a.frame == 0 ) {
@@ -260,7 +249,7 @@ var UnitUI = Observable.extend({
 					a.from[ 0 ] += a.increment[ 0 ];
 					a.from[ 1 ] += a.increment[ 1 ];
 				}
-			}
+			//}
 			
 			ctx.save();
 			if ( a.font )
@@ -274,6 +263,33 @@ var UnitUI = Observable.extend({
 		}
 	},	
 	
+	pushImg : function(){
+		for (var i=0; i<arguments.length; i++) {
+			var a = arguments[ i ];
+			a.index = a.index || 0;
+			a.count = a.count || 0;
+			
+			this.imgStack.push( a );
+		}
+	},
+
+	pushTip : function(){
+		for (var i=0; i<arguments.length; i++) {
+			var a = arguments[ i ];
+			var cell = this.unit.cell, dx = cell.dx, dy = cell.dy;
+			
+			a.count = a.count || 0;
+			a.inter = a.inter || TIPSPEED;
+			a.color	= a.color || "rgba(255,255,0,1)";
+			a.font = a.font || "15px";
+			a.from = a.from || [ dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 2 ];
+			a.increment = a.increment  || [ 0, -1 ];
+			a.frame = a.frame || 15;
+					
+			this.tipStack.push( a );
+		}
+	},
+		
 	moveTo	: function( way ){
 		if (way.length == 0) {
 			//原地
@@ -289,16 +305,14 @@ var UnitUI = Observable.extend({
 				var to = way[ i++ ];
 				var direct = from.directT( to );
 				
-				var arr = this._fillMoveSteps( from, direct, 3 );	
+				var arr = this._fillMoveSteps( from, direct, 4 );	
 				
 				var obj = {
-					inter	: SPEED / 6,
-					//inter	: SPEED * 2,
+					inter	: 1,
 					items	: arr,
 					fn 		: function( cell ){
 						this.fireEvent( "walk", this, this.cell, cell );
 						this.cell = cell;
-						log( "this.cell = " + this.cell.x + " cell.x = " + cell.x );
 						//移动到最后一个位置时触发move事件
 						if ( cell == way[ way.length-1 ] )
 							this.fireEvent( "move", this );
@@ -306,13 +320,11 @@ var UnitUI = Observable.extend({
 					params	: [ to ],
 					direct  : direct,
 					scope	: this.unit
-				};
+				}
 				
-				steps.push( obj );
+				this.pushImg( obj );
 				from = to;
 			}
-			
-			this.imgStack = this.imgStack.concat( steps );
 		}
 	},
 	
@@ -351,6 +363,7 @@ var UnitUI = Observable.extend({
 		this.direct = this.oriDirect;
 	},
 	
+	//分为两个阶段 1聚起武器 2攻击
 	attack	: function( cell, bursting, hit, fn , scope ){
 		//判断方向
 		var direct = this.unit.cell.directT( cell );	
@@ -360,16 +373,21 @@ var UnitUI = Observable.extend({
 			first = this.imgs.highlight( "a" + direct, actions[ 0 ], HighLightDeep );
 		}
 		
-		var obj = {
+		var obj1 = {
 			inter	: ASPEED,
 			//延长攻击第一帧显示时间
-			items	: [ first, first, first, first, actions[1], actions[2], actions[3] ],
+			items	: [ first, first, first, actions[1] ],
 			fn 		: fn, 
 			scope	: scope,
 			direct	: direct
-		};
-		
-		this.imgStack.push( obj );
+		}
+		var obj2 = {
+			inter	: ASPEED,
+			items	: [ actions[2], actions[3] ],
+			direct	: direct
+		}	
+		this.pushImg( obj1 );
+		this.pushImg( obj2 );
 	},
 
 	dead	: function( fn , scope ){
@@ -381,9 +399,9 @@ var UnitUI = Observable.extend({
 			items	: [ fall, null, fall, null, fall, null ],
 			fn 		: fn, 
 			scope	: scope
-		};
+		}
 		
-		this.imgStack.push( obj );
+		this.pushImg( obj );
 	},
 	
 	standby	: function( fn , scope ){
@@ -392,40 +410,39 @@ var UnitUI = Observable.extend({
 			items	: [ this.imgs.gray( this.direct, this.imgs[ this.direct ][0] ) ],
 			fn 		: fn, 
 			scope	: scope
-		};
+		}
 		
-		this.imgStack.push( obj );		
+		this.pushImg( obj );	
 	},
 
 	speak	: function( fn , scope ){
-		var i=0, deeps = [ 20,30,40,50,60,70,80,90,100,100,90,80,70,60,50,40,30 ];
-		var items = [];
+		var i=0, items = [], deeps = [ 20,30,40,50,60,70,80,90,100,100,90,80,70,60,50,40,30 ];
 		for (var i=0; i<deeps.length; i++) {
 			items.push( this.imgs.highlight( this.direct + deeps[i], this.imgs[ this.direct ][0], deeps[i] ) )
 		}
 		var obj = {
-			inter	: SPEED/3,
+			inter	: 1,
 			loop	: true,
 			items	: items,
 			fn 		: fn, 
 			scope	: scope
-		};
+		}
 		
-		this.imgStack.push( obj );		
+		this.pushImg( obj );	
 	},
-	stopSpeak	: function(){
+	stopAnimation	: function(){
 		this.imgStack.shift();
 	},
 	
 	fall		: function( fn, scope ){
 		var obj = {
-			inter	: SPEED * 2,
+			inter	: SPEED,
 			items	: [ this.imgs.fall[1], this.imgs.fall[0], this.imgs.fall[1], this.imgs.fall[0] ],
 			fn 		: fn, 
 			scope	: scope
-		};
+		}
 		
-		this.imgStack.push( obj );			
+		this.pushImg( obj );	
 	},
 	
 	turnLeft	: function( fn, scope ){
@@ -436,7 +453,7 @@ var UnitUI = Observable.extend({
 			scope	: scope
 		};
 		
-		this.imgStack.push( obj );				
+		this.pushImg( obj );				
 	},		
 	
 	turnRight	: function( fn, scope ){
@@ -447,7 +464,7 @@ var UnitUI = Observable.extend({
 			scope	: scope
 		};
 		
-		this.imgStack.push( obj );				
+		this.pushImg( obj );				
 	},
 	
 	turnUp	: function( fn, scope ){
@@ -458,7 +475,7 @@ var UnitUI = Observable.extend({
 			scope	: scope
 		};
 		
-		this.imgStack.push( obj );				
+		this.pushImg( obj );			
 	},	
 	
 	turnDown	: function( fn, scope ){
@@ -469,7 +486,7 @@ var UnitUI = Observable.extend({
 			scope	: scope
 		};
 		
-		this.imgStack.push( obj );				
+		this.pushImg( obj );				
 	},		
 	_fillDisappear : function( n ){
 		var ret = [];
@@ -483,54 +500,50 @@ var UnitUI = Observable.extend({
 	},			
 	disappear	: function( fn, scope ){
 		var obj = {
-			inter	: SPEED / 6,
+			inter	: 1,
 			items	: this._fillDisappear( 8 ),
 			fn 		: fn, 
 			scope	: scope
 		};
 		
-		this.imgStack.push( obj );				
+		this.pushImg( obj );				
 	},
 				
 	invincible	: function( fn , scope ){
-		
-		this.tipStack.push( this._defaultTip( fn, scope, "无效" ) );
+		this.pushTip( {
+			text	: "无效",	fn : fn, scope : scope
+		} );	
 	},
 	
-	_defaultTip	: function( fn, scope, text, color, font ){
-		var cell = this.unit.cell, dx = cell.dx, dy = cell.dy;
-		var obj = {
-			inter	: TIPSPEED,
-			color	: color || "rgba(255,255,0,1)",
-			font	: font || "15px",
-			text	: text,
-			from: [ dx + CELL_WIDTH / 3, dy + CELL_HEIGHT / 2 ],
-			increment    : [ 0, -1 ],
-			frame	: 15,
-			fn 		: fn, 
-			params: [ this.unit ],
-			scope	: scope
-		};
-		return obj;		
-	},		
-	
 	addTip 	: function( config ){
-		config = $.extend( this._defaultTip(), config );
-		this.tipStack.push( config );
+		this.pushTip( config );
 	},	
 	
 	miss	: function( fn , scope ){
-		this.tipStack.push( this._defaultTip( fn , scope, "我闪", "rgba(255,255,255,1)" ) );
+		this.pushTip( {
+			text	: "我闪",	fn : fn, scope : scope, color : "rgba(255,255,255,1)"
+		} );	
 	},	
 	
 	attacked	: function( v, fn , scope ){
-		this.tipStack.push( this._defaultTip( fn , scope, "-"+v,  "rgb(255,0,0)" ) );
+		var obj = {
+			inter	: SPEED,
+			items	: [ this.imgs.attacked[0] ]
+		}
+		this.pushImg( obj );		
+		
+		this.pushTip( {
+			text	: "-"+v,	fn : fn, scope : scope, color : "rgb(255,0,0)"
+		} );	
 	},
 	
 	upgrade		: function( fn , scope ){
-		this.tipStack.push( this._defaultTip( fn , scope, "升级啦",  "rgb(255,255,255)" ) );
+		this.pushTip( {
+			text	: "升级啦",	fn : fn, scope : scope, color : "rgb(255,255,255)"
+		} );			
 	},
 	
+	//在magic层播放动画
 	gainStuff	: function( stuff, fn, scope ){
 		var imgs = [], from = this.unit.cell.dy + 16;
 		for (var i=0; i< 8; i++) {

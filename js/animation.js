@@ -55,7 +55,7 @@ var Animation = Observable.extend({
 	},
 	
 	play	: function(){
-		if ( ++this.count >= this.inter ){
+		if ( this.inter == 1 || ++this.count == this.inter ){
 			this.count = 0;
 			this.next();
 		}	
@@ -68,7 +68,7 @@ var Animation = Observable.extend({
 	next	: function(){
 		this.index++;
 		//到最后一个位置后从新开始
-		if (this.index >= this.imgs.length) {
+		if (this.index == this.imgs.length) {
 			
 			this.fireEvent( "end", this );
 			

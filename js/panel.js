@@ -21,7 +21,6 @@ var Panel = Component.extend({
 	dps		 : 16, //帧数
 	sequence : 20, //多久更新一次
 	
-	wincount : 0,  //弹出菜单数量
 	lineTimer: 0,
 		
 	init		: function( config ){
@@ -298,12 +297,12 @@ var Panel = Component.extend({
 	start				: function(){
 		Pocket.start();
 		//报幕
-		this._showTopLine( CHAPTER, function(){
+		//this._showTopLine( CHAPTER, function(){
 			log("start" );
 			this.unitsLayer.on( "roundStart", function(){
 				this.fireEvent( "start", this );				
 			}, this ,{ one : true }).start();
-		}, this );
+		//}, this );
 	},
 	
 	//战场中间显示提示信息
@@ -318,8 +317,7 @@ var Panel = Component.extend({
 		this.lineTimer =setTimeout( function(){
 			_self._hideTopLine( fn , scope );
 			_self.lineTimer=0;
-		//}, 1500 );			
-		}, 1 );
+		}, 1500 );			
 	},
 
 	_hideTopLine		: function( fn, scope ){
@@ -434,15 +432,16 @@ var Panel = Component.extend({
 		$("._speech").show();
 		
 		//动画显示
-		var i = 0 , board = $("._speak p"), _self = this;
+		var i = 0 , board = $("._speak p"), _self = this, l = text.length;
 		this.speakText = text;
 		this.speakTimer = setInterval( function(){
-			if ( i++ >= text.length ){
+			i = i + 2;
+			if ( i >= l ){
 				_self.stopSpeakAnimate();
 			}else{
 				board.html( text.slice( 0, i ) );	
 			}
-		}, 100 );
+		}, 200 );
 	},
 	stopSpeak		: function(){
 		if ( this.speakTimer ){
