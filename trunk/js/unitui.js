@@ -4,6 +4,8 @@
  * direct : 执行动画后角色面对方向
  * params : 回调函数中接受的参数
  * inter  : 每帧相隔时间
+ * loop	  : 循环播放
+ * index  : 图片索引 
  */
 var UnitUI = Observable.extend({
 	unit	: null, 	//unit主体
@@ -17,7 +19,7 @@ var UnitUI = Observable.extend({
 	w	: CELL_WIDTH,
 	h  : CELL_HEIGHT,
 	
-	speakClr : 50,
+	speakClr : 20,
 	speakdps : 0,
 	speakD	: 1,
 	
@@ -57,32 +59,16 @@ var UnitUI = Observable.extend({
 		var unit = this.unit, cell = unit.cell;
 		var w, h;
 		 
-		 if ( unit.speaking ){
-/*
-		 	ctx.save();
-			ctx.strokeStyle = 'rgb(' + this.speakClr +',240,' + this.speakClr +')';  
-			this.speakClr += 5;
-			if ( this.speakClr >= 200 )
-				this.speakClr = 3;
-				
-			ctx.lineWidth = 1;
-		 	ctx.beginPath();  
-		 	ctx.arc( cell.dx + CELL_WIDTH /2 , cell.dy  + CELL_HEIGHT/2 + 4, 20,0,Math.PI*2,true ); //画圆
-		 	ctx.closePath();
-			ctx.stroke();  
-			ctx.restore();
-*/
-		 }
-		 
 		//有待执行的动画
 		if( this.imgStack.length > 0 ){
 			var a = this.imgStack[0];
+			a.index = a.index || 0;
 			
 			if (diff > a.inter) {
 				this.stamp = timestamp;
 				
 				//如果已经没有图像可画
-				if (a.items.length == 0) {
+				if ( a.index >= a.items.length ) {
 					//更改角色所处方向
 					if ( a.direct )
 						this.direct = a.direct;
@@ -90,11 +76,15 @@ var UnitUI = Observable.extend({
 					if (a.fn) 
 						a.fn.apply(a.scope || this, a.params || [] );
 					
-					//从队列中抛弃当前动画
-					this.imgStack.shift();
+					if ( !a.loop )
+						//从队列中抛弃当前动画
+						this.imgStack.shift();
+					else
+						a.index = 0;	
 				}
 				else {
-					var item = a.items.shift();
+					//var item = a.items.shift();
+					var index = a.index++, item = a.items[ index ];
 					
 					if ( !item ){
 						//空图像
@@ -151,27 +141,7 @@ var UnitUI = Observable.extend({
 			}
 			//this.img = this.img || this.imgs[ unit.direct ][ this.foot ];
 		}
-		//讲话效果
-		if (unit.speaking && this.img ){
-			this.img = PS.highlightImg( this.img, this.speakClr );
-			
-			if (this.speakdps++ % 2 == 0) {
-				if ( this.speakD == 1 )
-					this.speakClr += 10;
-				else
-					this.speakClr -= 10;
-						
-				if ( this.speakClr >= 100){
-					this.speakD = 0; 
-				}
-				if ( this.speakClr <= 20 ){
-					this.speakD = 1; 
-				} 
-				
-				if (this.speakdps >= 100) 
-					this.speakdps = 1;
-			}
-		}
+
 		//绘制图像
 		if ( this.img ) {
 			this.w = this.w == undefined ? this.img.width : this.w;
@@ -427,6 +397,37 @@ var UnitUI = Observable.extend({
 		this.imgStack.push( obj );		
 	},
 
+	speak	: function( fn , scope ){
+		var i=0, deeps = [ 20,30,40,50,60,70,80,90,100,100,90,80,70,60,50,40,30 ];
+		var items = [];
+		for (var i=0; i<deeps.length; i++) {
+			items.push( this.imgs.highlight( this.direct + deeps[i], this.imgs[ this.direct ][0], deeps[i] ) )
+		}
+		var obj = {
+			inter	: SPEED/3,
+			loop	: true,
+			items	: items,
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.imgStack.push( obj );		
+	},
+	stopSpeak	: function(){
+		this.imgStack.shift();
+	},
+	
+	fall		: function( fn, scope ){
+		var obj = {
+			inter	: SPEED * 2,
+			items	: [ this.imgs.fall[1], this.imgs.fall[0], this.imgs.fall[1], this.imgs.fall[0] ],
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.imgStack.push( obj );			
+	},
+	
 	turnLeft	: function( fn, scope ){
 		var obj = {
 			inter	: SPEED * 2,
@@ -528,5 +529,27 @@ var UnitUI = Observable.extend({
 	
 	upgrade		: function( fn , scope ){
 		this.tipStack.push( this._defaultTip( fn , scope, "升级啦",  "rgb(255,255,255)" ) );
-	}
+	},
+	
+	gainStuff	: function( stuff, fn, scope ){
+		var imgs = [], from = this.unit.cell.dy + 16;
+		for (var i=0; i< 8; i++) {
+			imgs.push({
+				dx	: this.unit.cell.dx,
+				dy	: from -= 2,
+				img : stuff.img
+			})
+		}
+		
+		var a = new Animation({
+			inter : 1,
+			imgs  : imgs,
+			fn	: fn,
+			scope : scope			
+		});
+		
+		PANEL.playAnimation( a );
+		
+		return this;
+	}	
 }); 

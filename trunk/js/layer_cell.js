@@ -132,7 +132,8 @@ var CellLayer = Layer.extend({
 		if ( this.borders[ color ] == undefined )
 			  this.borders[ color ] = {};
 		
-		if ( cell.constructor == Cell )
+		//if ( cell.constructor == Cell )
+		if ( cell.direct )
 			this.borders[ color ][ cell.index ] = cell;
 		else
 			this.borders[ color ] = cell;
@@ -144,7 +145,8 @@ var CellLayer = Layer.extend({
 		if ( this.cells[ color ] == undefined )
 			  this.cells[ color ] = {};
 		
-		if ( cell.constructor == Cell )
+		//if ( cell.constructor == Cell )
+		if ( cell.direct )
 			this.cells[ color ][ cell.index ] = cell;
 		else
 			this.cells[ color ] = cell;

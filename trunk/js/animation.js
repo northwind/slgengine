@@ -15,8 +15,8 @@ var Animation = Observable.extend({
 	playing : false,
 	dx		: 0,
 	dy		: 0,
-	w		: 0,
-	h  		: 0,
+	//w		: 0,
+	//h  		: 0,
 	fn		: null,
 	scope   : null,
 	
@@ -31,8 +31,18 @@ var Animation = Observable.extend({
 	},
 	
 	onPaint	: function(){
-		this.img = this.imgs[ this.index ];
+		var item = this.imgs[ this.index ];
 		
+		if ( item.constructor == Object ) {
+			//修正坐标信息
+			if ( item.dx )  this.dx = item.dx;
+			if ( item.dy )  this.dy = item.dy;
+			if ( item.w != undefined )  this.w = item.w;
+			if ( item.h != undefined )  this.h = item.h;
+			this.img = item.img;
+		} else{
+			this.img = item;
+		}		
 		//绘制图像
 		if ( this.img ) {
 			this.w = this.w == undefined ? this.img.width : this.w;
