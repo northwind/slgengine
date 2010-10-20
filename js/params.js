@@ -148,14 +148,15 @@ MAP	= 	[
 		AGILITYDEF  = 0.5, //一点敏捷增加的防御值
 		INTELLIGENCEMP = 10,  //一点智力增加的魔法值
 		
-		GOODS = [ {
+		GOODS = { 
+			1 : {
 			id			: 1,
 			desc	: "恢复HP",
 			count	: 2,
 			name	: "恢复用豆",
 			consumable : true,
 			effect	: 3,
-			img		: "images/item/82-1.png",
+			src		: "images/item/82-1.png",
 			animation : {
 				color	: "#00ff80",
 				text	: "+50"		
@@ -166,7 +167,8 @@ MAP	= 	[
 					fireman.finish();
 				}
 			}
-		},{
+		}, 
+			2	: {
 			id			: 2,
 			desc	: "下雨",
 			count	: 1,
@@ -174,13 +176,14 @@ MAP	= 	[
 			consumable : false,
 			nounit	: true,
 			effect	: 7,
-			img		: "images/item/87-1.png",
+			src		: "images/item/87-1.png",
 			listeners : {
 				apply	: function( unit ){
 					unit.finish();
 				}
 			}
-		},{
+		},
+			3 : 	{
 			id			: 3,
 			desc	: "小李飞刀",
 			count	: 10,
@@ -189,7 +192,7 @@ MAP	= 	[
 			range	: 2, 
 			consumable : true,
 			effect	: 7,
-			img		: "images/item/1-1.png",
+			src		: "images/item/1-1.png",
 			animation : {
 				color	: "#ff0000",
 				text	: "-20"		
@@ -199,14 +202,15 @@ MAP	= 	[
 					fireman.hurt( unit, 20 );
 				}
 			}			
-		}, {
+		}, 
+			4: 		{
 			id			: 4,
 			desc	: "恢复MP",
 			count	: 5,
 			name	: "绛珠仙草",
 			consumable : true,
 			effect	: 3,
-			img		: "images/item/94-1.png",
+			src		: "images/item/94-1.png",
 			animation : {
 				color	: "#0080ff",
 				text	: "+50"		
@@ -217,7 +221,8 @@ MAP	= 	[
 					fireman.finish();
 				}
 			}
-		}],		
+		}
+		},		
 		//状态
 		BUFFS = {
 			confuse : {

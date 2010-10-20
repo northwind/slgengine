@@ -7,8 +7,6 @@ var Cell = function( config ){
 	
 	this.dx = this.x * CELL_WIDTH;
 	this.dy = this.y * CELL_HEIGHT;
-	
-	return this;
 };
 
 Cell.prototype = {
@@ -42,8 +40,20 @@ Cell.prototype = {
 			default:
 				return "down";	
 		}
-	}
-		
+	},
+	
+	up	: function(){
+		return CellMgr.get( this.x, this.y -1 );
+	},
+	down	: function(){
+		return CellMgr.get( this.x, this.y +1 );
+	},
+	left	: function(){
+		return CellMgr.get( this.x - 1, this.y );
+	},
+	right	: function(){
+		return CellMgr.get( this.x + 1, this.y );
+	}			
 };
 
 CellMgr	= new function(){
@@ -54,7 +64,9 @@ CellMgr	= new function(){
 			var index = x * CELL_YNUM + y;
 			if ( cells[ index ] )
 				return cells[ index ];
-			else{
+			else if ( x < 0 || y < 0 || x >= CELL_XNUM || y >= CELL_YNUM ){
+				return null; //超出边界
+			} else {
 				var cell = new Cell( {
 					x 	:	x, y : y,  index : index
 				} );

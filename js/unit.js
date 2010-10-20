@@ -130,7 +130,7 @@ var Unit = Observable.extend({
 		} );
 		//转向操作都交由UI处理
 		var _self = this;
-		$( [ "turnLeft", "turnRight", "turnUp", "turnDown" ] ).each( function( i, n){
+		$( [ "turnLeft", "turnRight", "turnUp", "turnDown", "fall" ] ).each( function( i, n){
 			_self[ n ] = function(){
 				_self.ui[ n ].apply( _self.ui, arguments );
 			} 
@@ -184,21 +184,42 @@ var Unit = Observable.extend({
 	
 	moveTo		: function( cell ){
 		if (!this.moving) {
-			this.moving = true;
-			this.lock = true;
-			
-			this.oriCell = this.cell;
 			//寻路
 			var way = [];
 			while (cell.parent && cell != this.cell) {
 				way.push(cell);
 				cell = cell.parent;
 			}
-			this.way = way;
 			
-			this.ui.moveTo( this.way );
+			this.throughway( way );
 		}
 		return this;
+	},
+	
+	//直接走到某个单元格
+	go	: function( to, fn, scope ){
+		if (!this.moving) {
+
+			var way = this.layer.findWay( this, this.cell, to );
+			
+			if ( fn )
+				this.on( "move", fn, scope, { one : true});
+			
+			this.throughway( way );				
+		} else if ( fn )
+			fn.call( scope || this, this );
+			
+		return this;
+	},
+	
+	throughway		: function( way ){
+		this.moving = true;
+		this.lock = true;
+		
+		this.oriCell = this.cell;
+					
+		this.way = way;
+		this.ui.moveTo( this.way );
 	},
 	
 	//回到行动前的状态
@@ -525,9 +546,22 @@ var Unit = Observable.extend({
 	//一次只能说一句话
 	speak	: function( text, fn, scope ){
 		this.speaking = true;
+		this.ui.speak();
+		
 		if ( fn )
-			this.on( "speak", fn, scope );
-		PANEL.speak( this, text, fn, scope );
+			this.on( "speak", fn, scope, { one : true } );
+			
+		PANEL.speak( this, text );
+		
+		return this;
+	},
+	stopSpeak : function(){
+		if ( this.speaking ){
+			this.speaking = false;
+			this.ui.stopSpeak();
+			this.fireEvent( "speak", this );
+		}
+		return this;
 	},
 	
 	disappear	: function( fn, scope ){
@@ -563,7 +597,16 @@ var Unit = Observable.extend({
 			break;
 		}
 		return count > 0; 
+	},
+	
+	gainStuff	: function( stuff, fn, scope ){
+		this.ui.gainStuff( stuff, function(){
+			
+		}, this );
+
+		return this;
 	}
+	
 }); 
 //计算升级所需经验
 //每升一级需额外50点 起始值100

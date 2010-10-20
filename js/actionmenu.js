@@ -76,17 +76,17 @@ var ActionMenu = Win.extend({
 	},
 	
 	onProp	: function(e){
-		if (!this.pocket) {
-			this.pocket = new Pocket({
+		if (!this.pocketWin) {
+			this.pocketWin = new PocketWin({
 				ct	: this.ct
 			});
-			this.pocket.on( "over", this.disappear, this );
+			this.pocketWin.on( "over", this.disappear, this );
 		}
 		var x = this.el.position().left;
 		var y = this.el.position().top;
 		
-		this.pocket.bind( this.unit ).showAt( x - 240 , y ).show();
-		this.layer.reg( this.pocket );
+		this.pocketWin.bind( this.unit ).showAt( x - 240 , y ).show();
+		this.layer.reg( this.pocketWin );
 	},
 	
 	onStandBy	: function(){

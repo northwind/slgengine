@@ -154,6 +154,7 @@ var Panel = Component.extend({
 		} , this.sequence);
 		
 		this._loadBuffsImg();
+		this._loadGoodsImg();
 		this._loadAnimationImg();
 		//加载背景
 		this.on("background", function(){
@@ -207,6 +208,26 @@ var Panel = Component.extend({
 			})();
 		}		
 	},
+	//加载状态图像
+	_loadGoodsImg	: function(){
+		var count = 0, i = 0, _self = this;
+		for( var name in GOODS ){
+			count++;
+		}
+		for( var name in GOODS ){
+			(function(){
+				var buff = GOODS[ name ];
+				_loadImg( buff.src, function(){
+					buff.img = this;
+					i++;
+					//全部加载完
+					if ( i >= count ){
+						_self.process.add( 10, "物品图片加载完毕..." );
+					}
+				} );
+			})();
+		}		
+	},	
 	//加载魔法图像
 	_loadAnimationImg	: function(){
 		var count = 0, i = 0, _self = this;
@@ -247,7 +268,7 @@ var Panel = Component.extend({
 		this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
 		
 		this.unitsLayer.on( "loading", function( unit, sum, count ){
-			this.process.add( 60 / sum, "成功加载" + (unit.name || unit.symbol) + "..." );
+			this.process.add( 50 / sum, "成功加载" + (unit.name || unit.symbol) + "..." );
 		}, this );
 		
 		this.unitsLayer.setTeams( TEAMS ).setUnits( UNITS );
@@ -275,6 +296,7 @@ var Panel = Component.extend({
 	},		
 		
 	start				: function(){
+		Pocket.start();
 		//报幕
 		this._showTopLine( CHAPTER, function(){
 			log("start" );
@@ -439,7 +461,7 @@ var Panel = Component.extend({
 		this.stopSpeakAnimate();
 		
 		if (this.speakUnit) {
-			this.speakUnit.fireEvent("speak", this.speakUnit);
+			this.speakUnit.stopSpeak();
 			delete this.speakUnit;
 		}
 		$("._speech").hide();
@@ -520,6 +542,17 @@ var Panel = Component.extend({
 	},
 	playAnimation	: function( a ){
 		this.magicLayer.add( a );
+	},
+	lightenCell	: function( cell, fn, scope ){
+		this.cellLayer.paintCells( "rgba(254,0,0,0.5)", cell );
+		
+		//2s后回调
+		var _self = this;
+		setTimeout( function(){
+			_self.cellLayer.paintCells( "rgba(254,0,0,0.5)", {} );
+			if ( fn )
+				fn.call( scope || this );
+		}, 2000 );
 	}
 });
 

@@ -197,14 +197,16 @@ var UnitLayer = Layer.extend({
 	
 	onMousemove	: function( e ){
 		var  cell = PANEL.getCell( e );
-		var unit = this.units[ cell.index ];
-		//已经存在则隐藏
-		if (this.overed && unit != this.overed) {
-			this.overed.hideMajor();
-			delete this.overed;
-		}
-		if ( unit && this.overed != unit ){
-			this.overed = unit.showMajor();
+		if (cell) {
+			var unit = this.units[cell.index];
+			//已经存在则隐藏
+			if (this.overed && unit != this.overed) {
+				this.overed.hideMajor();
+				delete this.overed;
+			}
+			if (unit && this.overed != unit) {
+				this.overed = unit.showMajor();
+			}
 		}
 	},
 	
@@ -360,6 +362,87 @@ var UnitLayer = Layer.extend({
 		
 		return closed;
 	},
+	
+	//A* 算法寻路
+	findWay			: function( character, from, to ){
+		//return [ from ];
+		var ret =[], opened = {}, closed = {}, units = this.units, 
+			node = null, minD, tmpNode, faction = character.faction,
+			targetX = to.x, targetY = to.y, loops = 0;
+		
+		//直线距离 	
+	    function calcD( tmp ){
+			if ( tmp.d )
+				return tmp.d;
+				
+			var m = targetX - tmp.x , n = targetY - tmp.y;
+	        return tmp.d = Math.sqrt( m *m + n * n );
+	    } 
+		function insertSon( node, p ){
+			var key = node.index, unit = units[ key ];
+			
+			if ( !open[key] && !closed[key] && node && MAP[node.y][node.x] ==0 && ( unit ? ( unit.overlay && !unit.isEnemy( faction ) ) : true ) ) {
+				calcD( node );
+				node.parent = p;
+				opened[node.index] = node;
+			}
+		}			
+		//获得子节点
+		function getChildren( node ){
+			//up
+			insertSon( node.up(), node );
+			//down
+			insertSon( node.down(), node );
+			//left
+			insertSon( node.left(), node );
+			//right
+			insertSon( node.right(), node );
+		} 	
+
+		//删除原指针
+		delete from.parent;
+		calcD( from );
+		opened[ from.index ] = from;
+				
+		while( !_isEmpty( opened ) && loops++ < 100 ){
+			minD = 10000000; 
+			//找到权值最小的节点
+			for( var i in opened ){
+				tmpNode = opened[i];
+				var d = calcD( tmpNode );
+				if ( d < minD ){
+					minD = d;
+					node = tmpNode;
+				}	
+			}
+			
+			//添加到已处理过的closed表
+			closed[ node.index ] = node;
+						
+			//如果找到了，终止循环
+			if ( node == to ) {
+				opened = {};
+				break;
+			}else{
+				//获得子节点
+				getChildren( node );
+			}
+			
+			//并从OPEN表中删除
+			delete opened[ node.index ];				
+		}
+		
+		//回朔找出路径
+		if ( closed[ to.index ] ){
+			var step = node;// closed[ target.key ];
+			while ( step.parent ) {
+				ret.push( step );
+				step = step.parent;
+			}
+		}
+		
+		return ret;				
+	},
 			
 	onContextmenu	: function( e ){
 		//没有弹出菜单时右键才有效
@@ -466,7 +549,9 @@ var UnitLayer = Layer.extend({
 			this.checkTeamEnd( unit.faction, unit.team );
 		}, this )
 		.on( "move", function( unit ){
-			PANEL.popActionMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
+			//运行脚本时不弹框
+			if ( !PANEL.isScripting() )
+				PANEL.popActionMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
 		}, this )
 		//角色移动时及时更新管理器
 		.on( "walk", function( unit, from, to ){

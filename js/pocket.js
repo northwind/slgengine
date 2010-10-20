@@ -1,7 +1,7 @@
 /*
 	角色移动后弹出的菜单项
 */
-var Pocket = Win.extend({
+var PocketWin = Win.extend({
 	cls		: "_win _prop",	
 	unit	: null,
 	selected	: null,
@@ -17,37 +17,19 @@ var Pocket = Win.extend({
 								'<td align="center" width="40px">库存</td>' +
                 			    '</tr></thead><tbody></tbody></table>' ).appendTo( this.content );
 		
-		this.initGoods( GOODS );
-		
 		PANEL.unitsLayer.on( "click", this.onClick, this );
 		this.on( "show", this.list, this );
 		
 		return this;	
   	},
 	
-	initGoods	: function( data ){
-		this.data = data;
-		this.goods = {};
-		for (var i=0; i<data.length; i++) {
-			var stuff = new Stuff( data[i] );
-			//stuff.on( "over", this.onOver, this );
-			
-			this.goods[ stuff.id ] = stuff;
-		}
-		//this.list();
-	},
-	
 	list	: function(){
-		var fragment = document.createDocumentFragment();
-		for( var key in this.goods ){
-			var item = this.goods[ key ];
-			if ( item.count > 0 ){
-				fragment.appendChild( this._createTr( item ) );
-			}
-		}
+		this.fragment = document.createDocumentFragment();
+		
+		Pocket.each( this._createTr, this );
 		
 		var _self = this;
-		this.table.children("tbody").empty().append( fragment ).find( 'tr' ).hover( function(){
+		this.table.children("tbody").empty().append( this.fragment ).find( 'tr' ).hover( function(){
 			$( this ).toggleClass( "active" );
 		} ).click( function(){
 			var id = $(this).attr("param");
@@ -55,17 +37,17 @@ var Pocket = Win.extend({
 		} );
 	},
 	
-	_createTr	: function( item ){
-		return $( '<tr param="' + item.id + '"><td><img src="' + item.img + '">' + item.name +
+	_createTr	: function( key, item ){
+		this.fragment.appendChild( $( '<tr param="' + item.id + '"><td><img src="' + item.src + '">' + item.name +
 						'</td><td align="center">' + item.desc + 
 						'</td><td align="center">' + item.count +
-						'</td></tr>' )[ 0 ];
+						'</td></tr>' )[ 0 ] );
 	},
 	
 	select		: function( id ){
 		this.layer.concealWin();
 		this.hide();
-		this.selected = this.goods[ id ];
+		this.selected = Pocket.get( id );
 		this.selected.use( this.unit );
 	},
 	
@@ -91,8 +73,6 @@ var Pocket = Win.extend({
 	
 	onOver		: function(){
 		this.layer.unlock();
-		//this.layer.unreg( this );
-		//this.fireEvent( "over", this );
 	},
 	
 	//覆盖父类 
@@ -107,5 +87,20 @@ var Pocket = Win.extend({
 		this.unit = unit;
 		return this;
 	}
-	
 });
+
+// 物品管理类
+var Pocket = Manager.extend({
+	
+	start	: function( data ){
+		this.data = data;
+		
+		for( var key in GOODS ){
+			var stuff = new Stuff( GOODS[key] );
+			
+			this.reg( key, stuff );
+		}
+	}
+});
+
+Pocket = new Pocket();
