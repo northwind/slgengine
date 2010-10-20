@@ -19,10 +19,10 @@ WINDOW_WIDTH = 960,
 WINDOW_HEIGHT= 480,
 DISPLAY_HEIGHT = 160,
 
-SPEED	= 340,	//调节unit切换图片的速度
-STEP	= 60 ,	//调节走路速度
-ASPEED  = 120,  //攻击速度
-TIPSPEED  = 0,  //提示信息显示速度
+SPEED	= 5,	//调节unit切换图片的速度
+STEP	= 1 ,	//调节走路速度
+ASPEED  = 1,  //攻击速度
+TIPSPEED  = 1,  //提示信息显示速度
 
 //队伍集合
 TEAMS	= [{

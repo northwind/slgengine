@@ -229,13 +229,9 @@ var UnitLayer = Layer.extend({
 				if (this.clicked.preAttack && unit && this.clicked.canAttack(cell)) {
 					this._removeCells();
 					
-					this.clicked.on("attack", function(){
-					
-					//delete this.clicked;
-					
-					}, this, {
-						single: true
-					}).attack(unit);
+					this.clicked.attack( unit , function(){
+						//this.finish();
+					}, this );
 				}
 				else 
 					//如果可以移动

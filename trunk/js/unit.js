@@ -37,6 +37,7 @@ var Unit = Observable.extend({
 	miss		: 5,  //百分数 躲闪的概率
 	burst		: 40,	//百分数 暴击的概率
 	enlarge	: 1.5,  //暴击时系数
+	revenge	: 4, //反击
 	invincible	: false, //无敌
 	debility : false,	//濒临死亡
 	dead		: false,
@@ -255,15 +256,15 @@ var Unit = Observable.extend({
 					
 			this.ui.attack( unit.cell, bursting, hit, function(){
 				log( this.name + "attack over" );
-				this.fireEvent("attack", this);
+				//this.fireEvent("attack", this);
 				this.attacking = false;
 				
 				//通知被攻击者
 				unit.attacked( this, hit, function( defender, miss, v ){
-					
 					//绑定防御事件 被攻击的unit受到伤害后反馈
 					this.attackFreq++;
 					if ( this.attackFreq >= this.attackFreqMax || defender.dead ){
+						this.fireEvent("attack", this, unit, hit );
 						//TODO 逻辑有问题
 						var n = hit;
 						this.addExp( n, function(){
@@ -307,29 +308,38 @@ var Unit = Observable.extend({
 	//被攻击
 	attacked		: function( unit, v, fn, scope ){
 		//判断是否可攻击
-		if ( this.invincible ){
-			this.ui.invincible( function(){
-				if( fn )
-					fn.call( scope || this, this, false );
-					
-			}, this );
-		}else
-		//判断闪避
-		if ( (1 + Math.random() * 99) <= this.miss ){
-			this.ui.miss( function(){
-				if( fn )
-					fn.call( scope || this, this, false );
-					
-			}, this );
-		}else
-		//判断抵抗
-		{
-			//伤害值
-			var decrease = this._genDamageValue(  v );
-			decrease = 100;
-			this.ui.attacked( decrease, function(){
-				this.onDecrease( decrease, unit, fn, scope );
-			}, this );
+		if (this.invincible) {
+			this.ui.invincible(function(){
+				if (fn) 
+					fn.call(scope || this, this, false);
+			}, this);
+		}
+		else {
+			//判断反击
+			if ( unit && (1 + Math.random() * 99) <= this.revenge ) {
+/*
+				var oldFn = fn, oldScope = scope;
+				fn = function(){
+					this.attack( unit );
+				};
+				scope = this;
+*/
+			}
+			
+			//判断闪避
+			if ((1 + Math.random() * 99) <= this.miss) {
+				this.ui.miss(function(){
+					if (fn) 
+						fn.call(scope || this, this, false);
+				}, this);
+			}
+			else //判断抵抗
+			//扣血
+			{
+				//伤害值
+				var decrease = this._genDamageValue(v);
+				this.getHurt(decrease, unit, fn, scope);
+			}
 		}
 	},
 	
@@ -339,6 +349,12 @@ var Unit = Observable.extend({
 			//濒临死亡
 			this.debility = true;
 		}
+	},
+	//受到伤害
+	getHurt	: function( d, unit, fn, scope ){
+		this.ui.attacked( d, function(){
+			this.onDecrease( d, unit, fn, scope );
+		}, this );		
 	},
 	
 	//扣血
@@ -558,7 +574,7 @@ var Unit = Observable.extend({
 	stopSpeak : function(){
 		if ( this.speaking ){
 			this.speaking = false;
-			this.ui.stopSpeak();
+			this.ui.stopAnimation();
 			this.fireEvent( "speak", this );
 		}
 		return this;
