@@ -273,7 +273,9 @@ var Panel = Component.extend({
 		var _self = this;
 		$( [ "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" ] ).each( function( i, n ){
 			_self.unitsLayer.on( n, function(){
-				_self.fireEvent.apply( _self, n, arguments );
+				var a = Array.prototype.slice.call( arguments, 0 );
+				a.unshift( n );
+				_self.fireEvent.apply( _self, a );
 			}, _self );
 		} );
 		

@@ -11,6 +11,7 @@ var Unit = Observable.extend({
 	tipable :false,			//是否有提示框
 	active  : true,			//是否有效
 	overlay	: false,			//是否可以叠加
+	auto	: false,	//是否在自动移动
 	gx		: -1,			//所处行
 	gy		: -1,			//所处列
 	step		: 5,          //行动力
@@ -174,6 +175,10 @@ var Unit = Observable.extend({
 		this.hpLine = false;
 		return this;
 	},	
+	//显示可移动单元格
+	showMoves	: function(){
+		
+	},
 	
 	canMove	: function( cell ){
 		return !this.moving && !this.lock && this.moves && this.moves[ cell.index ];
@@ -270,7 +275,7 @@ var Unit = Observable.extend({
 						this.addExp( n, function(){
 							log( this.name + " addExp end" );
 							//结束本回合
-							this.finish();
+								this.finish();
 						}, this );
 						
 					}else{

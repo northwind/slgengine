@@ -53,6 +53,9 @@ Cell.prototype = {
 	},
 	right	: function(){
 		return CellMgr.get( this.x + 1, this.y );
+	},
+	distance	: function( cell ){
+		return Math.abs( this.x - cell.x ) +  Math.abs( this.y - cell.y );
 	}			
 };
 
