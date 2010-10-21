@@ -31,7 +31,7 @@ var UnitImg = Observable.extend({
 		
 		//4张图片全部加载完之后
 		function done( src ){
-			console.debug( _self.unit.name + " : " + src + " done");
+			//log( _self.unit.name + " : " + src + " done");
 			if (loaded++ >= 3) {
 				_self.loaded = true;
 				_self.fireEvent( "load" );

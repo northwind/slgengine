@@ -96,7 +96,7 @@ var UnitLayer = Layer.extend({
 			}
 		}	
 		
-		this.fireEvent( "teamEnd", f, t, this );	
+		this.fireEvent( "teamEnd",  this.teams[ this.teamIndex ], this );	
 		
 		if ( this.teamIndex++ >= this.teams.length - 1 ) {
 			//回合结束
@@ -291,9 +291,12 @@ var UnitLayer = Layer.extend({
 				open[ index ] = cell;
 				
 				function prepare( x, y ){
-					var tmp = PANEL.getCell( x, y ), i = tmp.index;
-					if ( !open[ i ] && !all[ i ] )
-						open[ i ] = tmp;
+					var tmp = PANEL.getCell( x, y );
+					if (tmp) {
+						var i = tmp.index;
+						if (!open[i] && !all[i]) 
+							open[i] = tmp;
+					}
 				}
 				
 				while( range-- > 0 ){			
@@ -375,12 +378,14 @@ var UnitLayer = Layer.extend({
 	        return tmp.d = Math.sqrt( m *m + n * n );
 	    } 
 		function insertSon( node, p ){
-			var key = node.index, unit = units[ key ];
-			
-			if ( !open[key] && !closed[key] && node && MAP[node.y][node.x] ==0 && ( unit ? ( unit.overlay && !unit.isEnemy( faction ) ) : true ) ) {
-				calcD( node );
-				node.parent = p;
-				opened[node.index] = node;
+			if (node) {
+				var key = node.index, unit = units[key];
+				
+				if (!open[key] && !closed[key] && node && MAP[node.y][node.x] == 0 && (unit ? (unit.overlay && !unit.isEnemy(faction)) : true)) {
+					calcD(node);
+					node.parent = p;
+					opened[node.index] = node;
+				}
 			}
 		}			
 		//获得子节点
@@ -545,8 +550,9 @@ var UnitLayer = Layer.extend({
 			this.checkTeamEnd( unit.faction, unit.team );
 		}, this )
 		.on( "move", function( unit ){
+			log( "unit.auto = "  + unit.auto);
 			//运行脚本时不弹框
-			if ( !PANEL.isScripting() )
+			if ( !PANEL.isScripting() && !unit.auto )
 				PANEL.popActionMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
 		}, this )
 		//角色移动时及时更新管理器

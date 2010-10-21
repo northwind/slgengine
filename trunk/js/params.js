@@ -12,7 +12,7 @@ CELL_YNUM	= 20,
 MAX_H = CELL_HEIGHT * CELL_YNUM,
 MAX_W = CELL_WIDTH * CELL_XNUM,
 
-UNDERCOVER = true, 
+UNDERCOVER = false, 
 PANEL = null,
 //窗口的宽高
 WINDOW_WIDTH = 960,
@@ -56,7 +56,7 @@ UNITS	= [{
 	magicNames	: [ "light" ]	
 },{
 	gx :  10,  gy : 0,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 0, team : 1,  name : "关羽",
+	symbol	: "footman",  faction : 1, team : 200,  name : "关羽",
 	imgMove	:"images/move/1-1.png",
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
