@@ -32,7 +32,7 @@ var Panel = Component.extend({
 		
 		this._super( config );
 		
-		this.addEvents("click", "globalClick","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background", "start" );
+		this.addEvents("click", "globalClick","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background", "start", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
 		
 		LayerMgr.setWrap( this.el );
 		
@@ -269,6 +269,13 @@ var Panel = Component.extend({
 		this.unitsLayer.on( "loading", function( unit, sum, count ){
 			this.process.add( 50 / sum, "成功加载" + (unit.name || unit.symbol) + "..." );
 		}, this );
+		//PANEL具有unitsLayer的事件
+		var _self = this;
+		$( [ "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" ] ).each( function( i, n ){
+			_self.unitsLayer.on( n, function(){
+				_self.fireEvent.apply( _self, n, arguments );
+			}, _self );
+		} );
 		
 		this.unitsLayer.setTeams( TEAMS ).setUnits( UNITS );
 	},	
@@ -296,6 +303,7 @@ var Panel = Component.extend({
 		
 	start				: function(){
 		Pocket.start();
+		AIController.start();
 		//报幕
 		//this._showTopLine( CHAPTER, function(){
 			log("start" );
