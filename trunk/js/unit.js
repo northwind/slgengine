@@ -45,9 +45,6 @@ var Unit = Observable.extend({
 	moving : false,
 	speaking	: false,
 		
-	regainHP	: 0,  //回血数量
-	regainMP	: 0,  //回魔数量
-	
 	qHead		: null,	//头部装备
 	qClothes	: null, //衣服
 	qWeapon		: null, //武器
@@ -77,7 +74,6 @@ var Unit = Observable.extend({
 	//magics	: {}, //会的魔法
 	
 	ui		: null,
-	loaded	: false,
 	
 	init	: function( config ){
 		this.moves	= {};
@@ -88,46 +84,35 @@ var Unit = Observable.extend({
 		this.buff = {};
 		
 		this._super( config );
+		//增加角色事件
+		this.addEvents( "click", "unclick", "change", "dead", "preDead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "upgrade" );
+				
 		//如果没有id则自动生成一个
-		if ( this.id == undefined ){
-			this.id = getTime();
-		}
+		this.id = this.id || getTime();
 		
 		this._calcHpPercent();
 		
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		
-		//增加角色事件
-		this.addEvents( "click", "unclick", "change", "dead", "preDead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "load", "upgrade" );
-		
 		this.setUI();
-		
-		//TODO 优化执行顺序
-		PANEL.process.on("end", function(){
-			for (var i=0; i<this.magicNames.length; i++) {
-				this.learnMagic( this.magicNames[i] );
-			}			
-		}, this);
+		this.setMagic();
 				
 		this.on( "move", function(){ this.moving = false; }, this );
 		this.on( "speak", function(){ this.speaking = false; }, this );
 		
 		return this;
 	},
+	
+	setMagic	: function(){
+		for (var i=0; i<this.magicNames.length; i++) {
+			this.learnMagic( this.magicNames[i] );
+		}				
+	},
 		
 	setUI	: function(){
 		//UI加载完成后触发load事件
 		this.ui = new UnitUI( { 
-			unit : this,
-			listeners	: {
-				load	: {
-					fn	: function(){
-						this.loaded = true;
-						this.fireEvent( "load", this );
-					},
-					scope : this 
-				}
-			} 
+			unit : this
 		} );
 		//转向操作都交由UI处理
 		var _self = this;
@@ -142,19 +127,16 @@ var Unit = Observable.extend({
 	
 	//绘制图像
 	//继承者需要覆盖次方法
-	draw	: function( timestamp ){
-		if ( !this.loaded )
-			return;
-		
-		this.ui.draw( timestamp );	
+	draw	: function( ){
+		this.ui.draw( );	
 	},
 	//绘制提示信息
-	drawBuff	: function( timestamp ){
-		this.ui.drawBuff( timestamp );			
+	drawBuff	: function( ){
+		this.ui.drawBuff( );			
 	},	
 	//绘制提示信息
-	drawTip	: function( timestamp ){
-		this.ui.drawTip( timestamp );			
+	drawTip	: function( ){
+		this.ui.drawTip( );			
 	},
 	
 	addTip	: function( config, fn, scope ){
@@ -640,7 +622,6 @@ var Unit = Observable.extend({
 
 		return this;
 	}
-	
 }); 
 //计算升级所需经验
 //每升一级需额外50点 起始值100

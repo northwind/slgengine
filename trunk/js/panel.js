@@ -5,7 +5,7 @@ var Panel = Component.extend({
 	w		: WINDOW_WIDTH,
 	h		: WINDOW_HEIGHT,
 	cls   : "_panel",
-	suspend	: false,  //停止更新
+	suspend	: true,  //停止更新
 	drawable: true,   //可以绘画
 	scripting : false, //是否正在执行脚本
 	ctCls	: "_wrap",
@@ -32,7 +32,7 @@ var Panel = Component.extend({
 		
 		this._super( config );
 		
-		this.addEvents("click", "globalClick","mousemove","contextmenu","keydown","keyup", "update", "paint", "load", "background", "start", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
+		this.addEvents("click", "globalClick","mouseleave","mousemove","contextmenu","keydown","keyup", "paint", "load", "start", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
 		
 		LayerMgr.setWrap( this.el );
 		
@@ -50,15 +50,9 @@ var Panel = Component.extend({
 										height	: $(document).height()
 									} );
 		//初始化进度条
-		this.process = new Process(  { ct: this.el } );
+		this.process = new Process();
 		//进度条加载完之后触发panel的load事件
-		this.process.on("end", function(){
-			canvas.height = MAX_H;
-			$( canvas ).show();
-			this.fireEvent( "load" );
-			//开始
-			this.start();
-		}, this).start();
+		this.process.on("end", this.start, this).start();
 		
 		//创建的顺序既是绘画时的先后顺序
 		this._createCellLayer();
@@ -69,7 +63,6 @@ var Panel = Component.extend({
 		
 		//绑定事件
 		var x, y, drag = false, el=this.el, _self = this;
-		//this.el.mousedown( function( e ){
 		this.el.mousedown( function( e ){
 			if (e.which == 1) {
 				x = e.pageX;
@@ -114,7 +107,7 @@ var Panel = Component.extend({
 				e.stopPropagation();
 				_self.fireEvent("contextmenu", e);			
 		}).mouseleave( function(e){
-			_self.cellLayer.unactiveCell();
+			_self.fireEvent("mouseleave", e);		
 		} );	
 		
 		$(document).mouseup( function( e ){
@@ -136,31 +129,14 @@ var Panel = Component.extend({
 		var mem = 0, inter = 1000 / this.dps;
 		this.timer = setInterval( function(){
 			if (!_self.suspend) { //停止更新
-				var d = (new Date()).getTime();
-				_self.fireEvent("update", d );
-				
-				//在超过1000 / this.dps时间段之后绘画
-				if (_self.drawable && d - mem > inter ) {
-					mem = d;
-					
-					//TODO 优化为只需要重新的地方才清除
-					ctx.clearRect( 0,0, MAX_W, MAX_H );
-			
-					_self.fireEvent("paint", d);
-				}
+				//TODO 优化为只需要重新的地方才清除
+				ctx.clearRect( 0,0, MAX_W, MAX_H );
+		
+				_self.fireEvent("paint");
 			}
 		} , this.sequence);
 		
-		this._loadBuffsImg();
-		this._loadGoodsImg();
-		this._loadAnimationImg();
-		//加载背景
-		this.on("background", function(){
-			this.process.add( 20, "背景图片加载完毕..." );
-		}, this);
-		
 		this.on( "keydown", this.onKeydown, this );			
-		this.on( "load", this.onLoad, this );	
 		this.on( "globalClick", this.onGlobalClick, this );
 			 		
 		return this;		
@@ -179,80 +155,6 @@ var Panel = Component.extend({
 		}
 	},
 	
-	//加载完之后
-	onLoad		: function(){
-		//显示控制面板
-		this.display = $("._display").width( MAX_W ).css( "visibility", "visible" );
-		
-		this.board = $( "._board" );
-	},
-	//加载状态图像
-	_loadBuffsImg	: function(){
-		var count = 0, i = 0, _self = this;
-		for( var name in BUFFS ){
-			count++;
-		}
-		for( var name in BUFFS ){
-			(function(){
-				var buff = BUFFS[ name ];
-				_loadImg( buff.src, function(){
-					buff.img = this;
-					i++;
-					//全部加载完
-					if ( i >= count ){
-						_self.process.add( 10, "状态图片加载完毕..." );
-					}
-				} );
-			})();
-		}		
-	},
-	//加载状态图像
-	_loadGoodsImg	: function(){
-		var count = 0, i = 0, _self = this;
-		for( var name in GOODS ){
-			count++;
-		}
-		for( var name in GOODS ){
-			(function(){
-				var buff = GOODS[ name ];
-				_loadImg( buff.src, function(){
-					buff.img = this;
-					i++;
-					//全部加载完
-					if ( i >= count ){
-						_self.process.add( 10, "物品图片加载完毕..." );
-					}
-				} );
-			})();
-		}		
-	},	
-	//加载魔法图像
-	_loadAnimationImg	: function(){
-		var count = 0, i = 0, _self = this;
-		for( var name in ANIMATIONS ){
-			count++;
-		}
-		for( var name in ANIMATIONS ){
-			(function(){
-				var a = ANIMATIONS[ name ];
-				_loadImg( a.src, function(){
-					ctx.clearRect( 0,0, this.width, this.height );
-					ctx.drawImage( this, 0, 0  );
-					//切割图片
-					var totalH = this.height, n = totalH / a.h, imgs = [];
-					for (var j=0; j<n; j++) {
-						imgs.push( PS.getCanImage( ctx, 0, a.h * j, a.w, a.h ) );
-					}
-					a.imgs = imgs;
-					i++;
-					//全部加载完
-					if ( i >= count ){
-						_self.process.add( 10, "魔法图片加载完毕..." );
-					}
-				} );
-			})();
-		}		
-	},		
 	_createCellLayer	: function(){
 		if ( this.cellLayer )
 			this.cellLayer.remove();
@@ -265,9 +167,6 @@ var Panel = Component.extend({
 		
 		this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
 		
-		this.unitsLayer.on( "loading", function( unit, sum, count ){
-			this.process.add( 50 / sum, "成功加载" + (unit.name || unit.symbol) + "..." );
-		}, this );
 		//PANEL具有unitsLayer的事件
 		var _self = this;
 		$( [ "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" ] ).each( function( i, n ){
@@ -291,9 +190,6 @@ var Panel = Component.extend({
 			this.winLayer.remove();
 		
 		this.winLayer = LayerMgr.reg( 400, MAX_W, MAX_H, WinLayer );
-		
-		this.winLayer.on( "pop", function(){ this.wincount++; }, this )
-							  .on( "cansel", function(){ this.wincount--; }, this );
 	},
 	_createMagicLayer	: function(){
 		if ( this.magicLayer )
@@ -306,6 +202,14 @@ var Panel = Component.extend({
 		Pocket.start();
 		AIController.start();
 		Toolbar.start();
+		
+		canvas.height = MAX_H;
+		$( canvas ).show();
+		//显示控制面板
+		this.display = $("._display").width( MAX_W ).css( "visibility", "visible" );
+		this.board = $( "._board" );
+		this.suspend = false;		
+		this.fireEvent( "load", this );		
 		//报幕
 		//this._showTopLine( CHAPTER, function(){
 			log("start" );
@@ -380,14 +284,9 @@ var Panel = Component.extend({
 	
 	//设置背景图片
 	setBgImage	: function( url ){
-		var _self = this;
-		_loadImg( url, function(){
-			if ( !UNDERCOVER )
-				canvas.style.background = "url('" + url + "') no-repeat";
-				
-			_self.fireEvent( "background" );
-		} );
-		
+		if ( !UNDERCOVER )
+			canvas.style.background = "url('" + url + "') no-repeat";
+			
 		return this;
 	},
 	
@@ -560,12 +459,12 @@ var Panel = Component.extend({
 		this.magicLayer.add( a );
 	},
 	lightenCell	: function( cell, fn, scope ){
-		this.cellLayer.paintCells( "rgba(254,0,0,0.5)", cell );
+		this.cellLayer.paintCells( ATTACKCOLOR, cell );
 		
 		//2s后回调
 		var _self = this;
 		setTimeout( function(){
-			_self.cellLayer.paintCells( "rgba(254,0,0,0.5)", {} );
+			_self.cellLayer.paintCells( ATTACKCOLOR, {} );
 			if ( fn )
 				fn.call( scope || this );
 		}, 2000 );

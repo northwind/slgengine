@@ -32,14 +32,32 @@ TEAMS	= [{
 },{
 	faction : 0, team : 1, name : "敌军"
 }],
+//角色集合
+ROLES = {
+	"caocao"	: {
+		imgMove	:"images/move/110-1.png",
+		imgAtk	: "images/atk/110-1.png",
+		imgSpc	: "images/spc/110-1.png",
+		imgFace	: "images/face/1-1.png"		
+	},
+	"archer"	: {
+		imgMove	:"images/move/26-1.png",
+		imgAtk	: "images/atk/26-1.png",
+		imgSpc	: "images/spc/26-1.png",
+		imgFace	: "images/face/16-1.png"			
+	},
+	"footman" :	{
+		imgMove	:"images/move/1-1.png",
+		imgAtk	: "images/atk/1-1.png",
+		imgSpc	: "images/spc/1-1.png",
+		imgFace	: "images/face/23-1.png"			
+	}
+},
+
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
-	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, urlImg : "images/move/110-1.png", range : 1, rangeType : 1,
+	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, range : 1, rangeType : 1,
 	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98, id : "caocao", mp : 20,
-	imgMove	:"images/move/110-1.png",
-	imgAtk	: "images/atk/110-1.png",
-	imgSpc	: "images/spc/110-1.png",
-	imgFace	: "images/face/1-1.png",
 	listeners : {
 		dead	: function(){
 			//alert( this.name );
@@ -47,66 +65,35 @@ UNITS	= [{
 	},
 	magicNames	: [ "light", "storm" ]
 },{
-	gx :  10,  gy : 7,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
+	gx :  10,  gy : 7,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
 	symbol	: "footman",  faction : 1, team : 200,  name : "刘备", exp : 86, mp : 20,
-	imgMove	:"images/move/1-1.png",
-	imgAtk	: "images/atk/1-1.png",
-	imgSpc	: "images/spc/1-1.png",
-	imgFace	: "images/face/23-1.png",
 	magicNames	: [ "light" ]	
 },{
-	gx :  10,  gy : 0,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 1, team : 200,  name : "关羽",
-	imgMove	:"images/move/1-1.png",
-	imgAtk	: "images/atk/1-1.png",
-	imgSpc	: "images/spc/1-1.png",
-	imgFace	: "images/face/23-1.png"	
+	gx :  10,  gy : 0,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
+	symbol	: "footman",  faction : 1, team : 200,  name : "关羽"
 }
 ,{
-	gx :  11,  gy : 4,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 1, team : 200,  name : "张飞",
-	imgMove	:"images/move/1-1.png",
-	imgAtk	: "images/atk/1-1.png",
-	imgSpc	: "images/spc/1-1.png",
-	imgFace	: "images/face/23-1.png"	
+	gx :  11,  gy : 4,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
+	symbol	: "footman",  faction : 1, team : 200,  name : "张飞"
 },{
-	gx :  11,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman", faction : 0, team : 1,
-	imgMove	:"images/move/1-1.png",
-	imgAtk	: "images/atk/1-1.png",
-	imgSpc	: "images/spc/1-1.png",
-	imgFace	: "images/face/23-1.png"	
+	gx :  11,  gy : 12,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
+	symbol	: "footman", faction : 0, team : 1
 }, {
-	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 0, team : 1,
-	imgMove	:"images/move/1-1.png",
-	imgAtk	: "images/atk/1-1.png",
-	imgSpc	: "images/spc/1-1.png",
-	imgFace	: "images/face/23-1.png"	
+	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
+	symbol	: "footman",  faction : 0, team : 1
 },{
-	gx :  0,  gy : 19,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
-	symbol	: "footman", faction : 0, team : 1,
-	imgMove	:"images/move/1-1.png",
-	imgAtk	: "images/atk/1-1.png",
-	imgSpc	: "images/spc/1-1.png",
-	imgFace	: "images/face/23-1.png"	
+	gx :  0,  gy : 19,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
+	symbol	: "footman", faction : 0, team : 1
 },{
-	gx :  19,  gy : 5,  step: 9, type : 101, moveable : true, overlay : false, urlImg : "images/move/26-1.png", range : 2, rangeType : 2,
-	symbol	: "archer", name : "弓箭手", faction : 0, team : 1,
-	imgMove	:"images/move/26-1.png",
-	imgAtk	: "images/atk/26-1.png",
-	imgSpc	: "images/spc/26-1.png",
-	imgFace	: "images/face/16-1.png"	
+	gx :  19,  gy : 5,  step: 9, type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
+	symbol	: "archer", name : "弓箭手", faction : 0, team : 1
 }],
 
 CHAPTER = "第一章 破晓",
+BGIMAGE	= "images/bigmap/1-1.jpg",
 /*
-	0  草地
-	1  树木
-	2  山地
-	3  河流
-	4  桥梁
-	5  帐篷
+	0  可以行走
+	1  不可行走
 */
 MAP	= 	[
 			[ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ],

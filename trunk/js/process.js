@@ -1,11 +1,9 @@
 /**
- * @author sina
+ * 进度条
+ * 所有加载完毕后再执行其他
  */
-
 var Process = Observable.extend({
-	process : 0, //当前加载进度
-	speed	: 100, //更新速度
-	next	: 0, //下一步可显示最大数值
+	count : 0, //当前加载进度
 	msg	: "", //说明文字
 		
 	init	: function( config ){
@@ -13,69 +11,131 @@ var Process = Observable.extend({
 		
 		this.el = $("#loader");
 		//加载完毕后执行init事件
-		this.addEvents( "start", "end" );
+		this.addEvents( "end" );
 		
 		return this;
 	},
 	
-	start	: function(){
-		//自动递增到next
-		var _self = this;
-		var fn = function(){
+	//加载状态图像
+	_loadBuffsImg	: function(){
+		var count = 0, i = 0, _self = this;
+		for( var name in BUFFS ){
+			count++;
+		}
+		for( var name in BUFFS ){
+			(function(){
+				var buff = BUFFS[ name ];
+				_loadImg( buff.src, function(){
+					buff.img = this;
+					i++;
+					//全部加载完
+					if ( i >= count ){
+						_self.add( 10, "状态图片加载完毕..." );
+					}
+				} );
+			})();
+		}		
+	},
+	//加载状态图像
+	_loadGoodsImg	: function(){
+		var count = 0, i = 0, _self = this;
+		for( var name in GOODS ){
+			count++;
+		}
+		for( var name in GOODS ){
+			(function(){
+				var buff = GOODS[ name ];
+				_loadImg( buff.src, function(){
+					buff.img = this;
+					i++;
+					//全部加载完
+					if ( i >= count ){
+						_self.add( 10, "物品图片加载完毕..." );
+					}
+				} );
+			})();
+		}		
+	},	
+	//加载魔法图像
+	_loadAnimationImg	: function(){
+		var count = 0, i = 0, _self = this;
+		for( var name in ANIMATIONS ){
+			count++;
+		}
+		for( var name in ANIMATIONS ){
+			(function(){
+				var a = ANIMATIONS[ name ];
+				_loadImg( a.src, function(){
+					ctx.clearRect( 0,0, this.width, this.height );
+					ctx.drawImage( this, 0, 0  );
+					//切割图片
+					var totalH = this.height, n = totalH / a.h, imgs = [];
+					for (var j=0; j<n; j++) {
+						imgs.push( PS.getCanImage( ctx, 0, a.h * j, a.w, a.h ) );
+					}
+					a.imgs = imgs;
+					i++;
+					//全部加载完
+					if ( i >= count ){
+						_self.add( 10, "魔法图片加载完毕..." );
+					}
+				} );
+			})();
+		}		
+	},		
+	
+	_loadBackgroundImg	: function(){
+		_loadImg( BGIMAGE, bind( function(){
+			this.add( 20, "背景图片加载完毕..." );
+		}, this) );
+	},
+
+	_loadRoleImg	: function(){
+		ImgMgr = new Manager();
+		var count = 0, _self = this;
+		for( var key in ROLES ){
+			count++;
+		} 		
+		for( var key in ROLES ){
+			var r = new UnitImg( $.extend( {
+				id	: key,
+				listeners	: {
+					load	: function( role ){
+						_self.add( Math.floor( 52/ count ) , role.id + "图片加载完毕..." );
+					}
+				}
+			}, ROLES[ key ] ) );
 			
-			if (_self.process < _self.next) {
-				_self.process++;
-				//显示当前进度
-				_self.count();
-			}
-			if ( _self.process >= 100 )
-				_self.end();
-		};
-		this.timer = setInterval( fn, this.speed ); 
-		
+			ImgMgr.reg( key, r );
+		} 
+	},
+			
+	start	: function(){
 		PANEL.mask();
 		this.el.show();
 		
-		this.fireEvent("start");
-		
-		this.tip( 1, "开始加载..." );
-		
-		fn();
-		
-		return this;
-	},
-	
-	count	: function(){
-		this.el.html( this.process + "/100%　　" +  this.msg );
-	},
-	
-	tip	: function( next, msg ){
-		
-		this.next = next;
-		this.msg = msg;
-		
-		//console.debug( "tip : next : " + this.next + " msg : " + msg );
-		
+		this._loadBuffsImg();
+		this._loadGoodsImg();
+		this._loadAnimationImg();
+		this._loadBackgroundImg();
+		this._loadRoleImg();
+				
 		return this;
 	},
 	
 	add	: function( n, msg ){
-		this.next += n;
+		this.count += n;
 		this.msg = msg;
 		
-		//console.debug( "add : next : " + this.next + " msg : " + msg );
-		if ( this.next >= 100 )
+		this.el.html( this.count + "/100%　　" +  this.msg );
+				
+		if ( this.count >= 100 )
 			this.end();
 			
 		return this;
 	},
 	
 	end	: function(){
-		if ( this.timer )
-			clearInterval( this.timer );
-			
-		//console.debug( "process end" );
-		
 		this.el.html("").hide();
 		PANEL.unmask();
 		
