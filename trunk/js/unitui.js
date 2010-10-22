@@ -394,7 +394,7 @@ var UnitUI = Observable.extend({
 		var fall = this.imgs.fall[0];
 					
 		var obj = {
-			inter	: SPEED,
+			inter	: 2,
 			//延长攻击第一帧显示时间
 			items	: [ fall, null, fall, null, fall, null ],
 			fn 		: fn, 

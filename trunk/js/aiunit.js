@@ -22,9 +22,14 @@ var AIUnit  = Observable.extend({
 
 */		
 		this.unit.auto = true;
-		
+		this.unit.showMe();
 		this.enemy = this.scanEnemy();
-		this.fight( this.enemy );
+		if (this.enemy) {
+			this.fight(this.enemy);
+		}else{
+			//没有敌人时
+			this.end();
+		}
 	},
 	
 	end	: function(){
@@ -45,22 +50,56 @@ var AIUnit  = Observable.extend({
 			this.closeTo( neighbor );
 		}
 	},
-	
+	//移动后并攻击敌人
 	attack	: function( enemy ){
-		var near = this.nearCell( enemy );
-		this.unit.go( near, function(){
-			this.unit.on( "attack", this.end, this, { one : true } );
-			this.unit.attack( enemy );			
-		}, this );
+		//在攻击范围内直接攻击
+		if (this.isInRange(enemy.cell)) {
+			this.sword( enemy );
+		}
+		else {
+			var near = this.nearCell(enemy);
+			//显示移动的单元格
+			this.unit.showMoves();
+			setTimeout(bind(function(){
+				this.unit.clearMoves();
+				
+				this.unit.on( "move", function(){
+					this.sword( enemy );
+				}, this, { one:true } );
+				this.unit.moveTo(near );
+				
+			}, this), 500);
+		}
 	},
 	
+	sword	: function( enemy ){
+		//显示攻击的单元格
+		this.unit.showAttack();
+		setTimeout(bind(function(){
+			this.unit.clearAttack();
+			
+			this.unit.on("attack", this.end, this, {
+				one: true
+			});
+			this.unit.attack(enemy);
+		}, this), 500);		
+	},
+	
+	//靠近敌人
 	closeTo	: function( enemy ){
 		var cell = this.nearCell( enemy );
 		if ( cell ){
-			this.unit.on( "move", function(){
-				this.end();
-			}, this, { one:true } );
-			this.unit.go( cell );
+			//显示移动的单元格
+			this.unit.showMoves();
+			setTimeout( bind( function(){
+				this.unit.clearMoves();
+				
+				this.unit.on( "move", function(){
+					this.end();
+				}, this, { one:true } );				
+				this.unit.moveTo( cell );
+						
+			}, this), 500 );
 		}else{
 			//没有可移动的
 			this.end();
@@ -84,7 +123,7 @@ var AIUnit  = Observable.extend({
 	
 	//找到离敌人最近可移动到的单元格
 	nearCell	: function( enemy ){
-		var walkCells = PANEL.unitsLayer.getWalkCells( this.unit.cell, this.unit.step ),
+		var walkCells = this.unit.getMoves(),
 			   min = 10000, near = null, origin = enemy.cell;
 		for( var index in walkCells ){
 			var cell = walkCells[ index ], d = origin.distance( cell ), 
@@ -103,7 +142,7 @@ var AIUnit  = Observable.extend({
 	},
 	
 	isInRange	: function( cell ){
-		var attackCells = PANEL.unitsLayer.getAttackCells( this.unit.cell, this.unit.range, this.unit.rangeType );
+		var attackCells = this.unit.getAttacks();
 		return attackCells.hasOwnProperty( cell.index );
 	},
 	

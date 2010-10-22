@@ -99,12 +99,11 @@ var Panel = Component.extend({
 			_self.fireEvent( "click", e );	
 		} )
 		.mousewheel( function( e, delta, x, y){
-			//console.debug( delta + " x = " + x + " y = " + y );
 			//向下滚动
 			if ( y  == -1 ){
-				_self.moveBy( 0, CELL_HEIGHT );
+				_self.moveWinBy( 0, CELL_HEIGHT );
 			}else{
-				_self.moveBy( 0, -CELL_HEIGHT );
+				_self.moveWinBy( 0, -CELL_HEIGHT );
 			}
 			
 			e.preventDefault();
@@ -306,6 +305,7 @@ var Panel = Component.extend({
 	start				: function(){
 		Pocket.start();
 		AIController.start();
+		Toolbar.start();
 		//报幕
 		//this._showTopLine( CHAPTER, function(){
 			log("start" );
@@ -349,7 +349,7 @@ var Panel = Component.extend({
 		return this;
 	},
 		
-	moveTo			: function(x, y){
+	moveWinTo			: function(x, y){
 		if (x != undefined) 
 			this.el[0].scrollLeft = (this.scrollLeft = x);
 		
@@ -359,16 +359,23 @@ var Panel = Component.extend({
 		return this;			
 	},
 	
-	moveBy		: function( x, y ){
+	moveWinBy		: function( x, y ){
 		x = x || 0;
 		y = y || 0;
 		
 		x = this.el[0].scrollLeft + x;
 		y = this.el[0].scrollTop + y;
 		
-		this.moveTo( x, y );
+		this.moveWinTo( x, y );
 		
 		return this;
+	},
+	
+	moveToCell	: function( cell ){
+		var cx = WINDOW_WIDTH /2, cy = WINDOW_HEIGHT /2,
+			dx = Math.max(cell.dx - cx, 0), dy = Math.max( cell.dy - cy, 0 );
+		
+		this.moveWinTo( dx, dy );
 	},
 	
 	//设置背景图片

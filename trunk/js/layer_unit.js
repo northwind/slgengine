@@ -4,7 +4,6 @@
 var UnitLayer = Layer.extend({
 	clicked : null,	//已点击
 	overed	 : null,  //滑过的
-	moveColor	: "rgba(39,167,216,0.6)", 
 	attaColor		: "rgba(255,0,0,0.5)", 
 	
 	teamIndex	: 0,	//当前哪只队伍在行动
@@ -28,7 +27,7 @@ var UnitLayer = Layer.extend({
 		PANEL.on("keydown", this.onKeydown, this);
 		PANEL.on("keyup", this.onKeyup, this);
 		PANEL.on("paint", this.onPaint, this );
-				
+		
 		return this;
 	},
 	
@@ -46,6 +45,7 @@ var UnitLayer = Layer.extend({
 	},
 	
 	startRound	: function(){
+		log( "startRound" );
 		//先播放动画再触发事件			
 		this.round++;
 		//第一回合不显示动画
@@ -82,6 +82,7 @@ var UnitLayer = Layer.extend({
 			
 			if ( unit.faction == team.faction && unit.team == team.team ){
 				unit.unLock();
+				unit.restore();
 			}
 		}		
 	},
@@ -98,7 +99,7 @@ var UnitLayer = Layer.extend({
 		
 		this.fireEvent( "teamEnd",  this.teams[ this.teamIndex ], this );	
 		
-		if ( this.teamIndex++ >= this.teams.length - 1 ) {
+		if ( this.teamIndex++ == this.teams.length - 1 ) {
 			//回合结束
 			this.fireEvent("roundEnd", this.round );
 			
@@ -108,6 +109,16 @@ var UnitLayer = Layer.extend({
 			var team = this.teams[ this.teamIndex ];
 			this.startTeam( team );
 		}
+	},
+	
+	endTeamUnits : function( f, t ){
+		for (var key in this.units) {
+			var unit = this.units[key];
+			//当同一队伍中有任何一个可以移动时跳出循环
+			if ( unit.faction == f && unit.team == t && !unit.standby ) {
+				unit.finish();
+			}
+		}			
 	},
 	
 	overTeam	: function( f, t ){
@@ -226,7 +237,7 @@ var UnitLayer = Layer.extend({
 			
 			if (this.clicked) {
 				//如果可以攻击
-				if (this.clicked.preAttack && unit && this.clicked.canAttack(cell)) {
+				if ( unit && this.clicked.canAttack(cell)) {
 					this._removeCells();
 					
 					this.clicked.attack( unit , function(){
@@ -243,15 +254,8 @@ var UnitLayer = Layer.extend({
 			}
 			else {
 				//没有锁定同时具有移动性
-				if (unit && !unit.lock && unit.moveable) {
-					//获得可移动格子
-					var obj = this.getWalkCells(cell, unit.step);
-					PANEL.cellLayer.paintCells(this.moveColor, obj);
-					unit.moves = obj;
-					//获得可攻击的格子
-					//obj = this.getAttackCells( cell, unit.range, unit.rangeType, unit.team );
-					//PANEL.cellLayer.strokeCells( this.attaColor, obj );
-					//unit.attacks = obj;
+				if ( unit && !unit.lock && unit.moveable && unit.isSibling( FACTION, TEAM) ) {
+					unit.showMoves();
 					
 					this.clicked = unit;
 				}
@@ -263,10 +267,9 @@ var UnitLayer = Layer.extend({
 	},
 	
 	_removeCells			: function(){
-		PANEL.cellLayer.paintCells( this.moveColor, {} );
-		PANEL.cellLayer.paintCells( this.attaColor, {} );
-		PANEL.cellLayer.strokeCells( this.attaColor, {} );
-		//delete this.clicked;
+		PANEL.cellLayer.paintCells( MOVECOLOR, {} );
+		PANEL.cellLayer.paintCells( ATTACKCOLOR, {} );
+		PANEL.cellLayer.strokeCells( ATTACKCOLOR, {} );
 	},
 	
 	showAttackCells		: function( obj ){
@@ -557,8 +560,12 @@ var UnitLayer = Layer.extend({
 		}, this )
 		//角色移动时及时更新管理器
 		.on( "walk", function( unit, from, to ){
-			 this.units[ to.index ] = this.units[ from.index ];
-			 delete this.units[ from.index ];
+			//窗口自动跟随
+			if ( unit.auto ){
+				PANEL.moveToCell( to );
+			}
+			this.units[ to.index ] = this.units[ from.index ];
+			delete this.units[ from.index ];
 		}, this )
 		//点击角色时显示该角色属性
 		.on( "click", PANEL.showUnitAttr, PANEL )

@@ -38,6 +38,7 @@ var PocketWin = Win.extend({
 	},
 	
 	_createTr	: function( key, item ){
+		if ( item.count > 0 )
 		this.fragment.appendChild( $( '<tr param="' + item.id + '"><td><img src="' + item.src + '">' + item.name +
 						'</td><td align="center">' + item.desc + 
 						'</td><td align="center">' + item.count +
