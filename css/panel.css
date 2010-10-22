@@ -49,3 +49,6 @@
 ._masklayerUp{ cursor:default; position:absolute; z-index:100001; background:#262626; height: 200px; line-height:200px; font-size:100px; color:#fff; text-align:center; display:none; opacity : 0.9; }
 
 ._loader{ margin:auto; line-height:100px; margin:0 auto; height:100px; width:400px; color:#ff8040; font-size:16px; display:none; position:absolute; z-index:100002; }
+
+._toolbar{ background:#c0c0c0; text-align:center; }
+._toolbar button{ margin:0 5dx; }

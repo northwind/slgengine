@@ -76,7 +76,7 @@ UNITS	= [{
 	imgAtk	: "images/atk/1-1.png",
 	imgSpc	: "images/spc/1-1.png",
 	imgFace	: "images/face/23-1.png"	
-},{
+}, {
 	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, urlImg : "images/move/1-1.png", range : 2, rangeType : 2,
 	symbol	: "footman",  faction : 0, team : 1,
 	imgMove	:"images/move/1-1.png",
@@ -142,6 +142,9 @@ MAP	= 	[
 		CELLCOLOR = [ "rgba(255,255,255,0.6)"  ],
 		SELECTEDCLR = [ "#fdc92b"  ],   //选中的颜色
 		
+		MOVECOLOR = "rgba(39,167,216,0.6)",  //移动时颜色 
+		ATTACKCOLOR = "rgba(255,0,0,0.5)",	//攻击时颜色 
+		
 		HighLightDeep = 190,    //高亮度
 		
 		STRENGTHHP	= 10, //一点力量增加的血量
@@ -152,7 +155,7 @@ MAP	= 	[
 			1 : {
 			id			: 1,
 			desc	: "恢复HP",
-			count	: 2,
+			count	: 1,
 			name	: "恢复用豆",
 			consumable : true,
 			effect	: 3,

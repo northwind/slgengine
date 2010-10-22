@@ -45,6 +45,7 @@
 		<script type="text/javascript" src="js/aiteam.js" charset="utf-8"></script>
 		<script type="text/javascript" src="js/aicontroller.js" charset="utf-8"></script>
 		
+		<script type="text/javascript" src="js/toolbar.js" charset="utf-8"></script>
 		<script type="text/javascript" src="js/ps.js" charset="utf-8"></script>				
 		<script type="text/javascript" src="js/process.js" charset="utf-8"></script>
 		
@@ -60,6 +61,13 @@
 		
 		<div id="loader" class="_loader" style="display: none;"></div>
 		
+		<div id="toolbar" class="_toolbar">
+			<button param="endTeam" class="active">回合结束</button>
+			<button param="saveGame" class="active">存档</button>
+			<button param="loadGame" class="active">读档</button>
+			<button param="condition" class="active">胜利/失败条件</button>
+			<button param="restart" >重新开始</button>
+		</div>
 	    <div id="panel" class="_panel">
 	        <canvas id="canvas"></canvas>
 			<div id="winLayer" style="z-index: 300;" class="_winLayer">
@@ -151,34 +159,6 @@
 		<div class="_masklayer" style="display: none;"></div>
 		<div id="maskUp" class="_masklayerUp"></div>
 		
-		</div>
-		
-		<div id="control" style=" display:none; padding:0 20px; background:#ffffff; " >
-			<center>
-				<button id="grid">显示/隐藏单元格</button>
-				<button id="hpline">显示/隐藏血条</button>
-			</center>
-			<p>
-				<fieldset>
-					id  :<input value="norris" id="id">
-					名称：<input value="关羽" id="name">
-					位置：X=<input value="3" id="posX" > Y=<input value="3" id="posY">
-					血量：<input value="30" id="hp">
-					角色：<select id="role"> <option value="caocao">曹操</option><option value="footman">步兵</option> </select>
-					队伍：<select id="team"> <option value="1">友军</option><option value="2">敌军</option><option value="3">我军</option> </select>
-					等级：<input id="level" value="8">
-					行动力：<input id="step" value="6">
-					攻击距离：<input id="range" value="3">
-					<button id="add">添加角色</button>
-				</fieldset>
-			</p>
-			<p>
-					id  :<input value="norris" id="id2">
-					<button id="del">删除角色</button>
-			</p>
-			<p>
-				X ：<input value="100" id="moveX"> Y：<input value="400" id="moveY"> <button id="move">移动窗口</button>
-			</p>
 		</div>
 		
 		<center id="download" >

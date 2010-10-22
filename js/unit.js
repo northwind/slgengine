@@ -28,8 +28,8 @@ var Unit = Observable.extend({
 	hpPercent   :   100, 	//血量百分比
 	mpMax		: 100,	//魔法
 	mp			: 100,	//魔法
-	atknumMax	: 12,	//攻击力上限
-	atknumMin	: 10,   //攻击力下限
+	atknumMax	: 62,	//攻击力上限
+	atknumMin	: 40,   //攻击力下限
 	defnum	: 3,	//防御力
 	strength: 3,	//力量
 	agility : 3,	//敏捷
@@ -64,7 +64,6 @@ var Unit = Observable.extend({
 	
 	attackFreqMax	: 1, 		//一回合可攻击总数		
 	attackFreq		: 0,		//本回合攻击几次了
-	preAttack	: false,	//是否准备攻击
 	attacking		: false, //是否正在攻击
 	missing		: false, //闪避中
 	
@@ -175,11 +174,36 @@ var Unit = Observable.extend({
 		this.hpLine = false;
 		return this;
 	},	
+	getMoves	: function(){
+		return this.layer.getWalkCells( this.cell, this.step );
+	},
+	getAttacks	: function(){
+		return this.layer.getAttackCells( this.cell, this.range, this.rangeType, this.team );
+	},
 	//显示可移动单元格
 	showMoves	: function(){
-		
+		this.moves = this.getMoves();
+		PANEL.cellLayer.paintCells( MOVECOLOR, this.moves );
+		return this.moves;
 	},
-	
+	clearMoves	: function(){
+		PANEL.cellLayer.paintCells( MOVECOLOR, {} );
+	},
+	//获得可攻击的格子
+	showAttack	: function(){
+		this.attacks = this.getAttacks();
+		PANEL.cellLayer.paintCells( ATTACKCOLOR, this.attacks );
+		return this.attacks;
+	},
+	clearAttack	: function(){
+		PANEL.cellLayer.paintCells( ATTACKCOLOR, {} );
+	},
+	//窗口移动到可以显示该角色
+	showMe		: function(){
+		PANEL.moveToCell( this.cell );
+		return this;
+	},	
+			
 	canMove	: function( cell ){
 		return !this.moving && !this.lock && this.moves && this.moves[ cell.index ];
 	},
@@ -231,7 +255,6 @@ var Unit = Observable.extend({
 	//回到行动前的状态
 	homing		: function(){
 		this.moving = false;
-		this.preAttack = false;
 		this.lock = false;
 		delete this.attacks;
 		this.way = [];
@@ -246,9 +269,6 @@ var Unit = Observable.extend({
 	},
 	
 	attack			: function( unit ){
-		//取消显示攻击范围	
-		this.preAttack = false;
-		
 		//预备攻击返回false则取消执行
 		if (this.fireEvent("preAttack", this) !== false) {
 			this.attacking = true;
@@ -433,16 +453,7 @@ var Unit = Observable.extend({
 		return Math.max( 0, Math.round(v) - this.defnum );
 	},
 		
-	showAttack	: function(){
-		//获得可攻击的格子
-		obj = this.layer.getAttackCells( this.cell, this.range, this.rangeType, this.team );
-		PANEL.cellLayer.paintCells( this.layer.attaColor, obj );
-		this.attacks = obj;
-		this.preAttack = true;
-	},
-	
 	hideAttack	: function(){
-		this.preAttack = false;
 		delete this.attacks;
 		PANEL.unitsLayer._removeCells();
 	},
@@ -465,14 +476,16 @@ var Unit = Observable.extend({
 	
 	//操作结束
 	finish	: function(){
-		this.standby = true;
-		this.lock = true;
-		this.oriCell = this.cell;
-		this.attackFreq = 0; 
-		
-		this.ui.standby( function(){
-			this.fireEvent( "standby", this );
-		}, this );
+		if (!this.standby) {
+			this.standby = true;
+			this.lock = true;
+			this.oriCell = this.cell;
+			this.attackFreq = 0;
+			
+			this.ui.standby(function(){
+				this.fireEvent("standby", this);
+			}, this);
+		}
 	},
 	
 	//取消锁定与待机状态
