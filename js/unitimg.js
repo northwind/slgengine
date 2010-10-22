@@ -6,7 +6,6 @@ var UnitImg = Observable.extend({
 	imgAtk	: "",		//攻击
 	imgSpc	: "",		//特殊
 	imgFace	: "",		//头像
-	loaded  : false,
 	
 	init	: function( config ){
 		this.grays = {};
@@ -26,15 +25,13 @@ var UnitImg = Observable.extend({
 	*/
 	_getImageData	: function(){
 		var _self = this, 
-				loaded = 0,
-				unit = this.unit;
+				loaded = 0;
 		
 		//4张图片全部加载完之后
 		function done( src ){
-			//log( _self.unit.name + " : " + src + " done");
+			//log( _self.name + " : " + src + " done");
 			if (loaded++ >= 3) {
-				_self.loaded = true;
-				_self.fireEvent( "load" );
+				_self.fireEvent( "load", _self );
 			}
 		}
 		
@@ -78,9 +75,9 @@ var UnitImg = Observable.extend({
 							PS.getCanImageTurn( _self.left[2] ) ];
 */
 												
-			done( unit.imgMove );
+			done( _self.imgMove );
 		}
-		_loadImg( unit.imgMove, fn );	
+		_loadImg( _self.imgMove, fn );	
 		
 		//攻击
 		var fn2	= function(){
@@ -124,9 +121,9 @@ var UnitImg = Observable.extend({
 							PS.getCanImageTurn( _self.aleft[3] ) ];	
 */
 			
-			done( unit.imgAtk );
+			done( _self.imgAtk );
 		}
-		_loadImg( unit.imgAtk, fn2 );	
+		_loadImg( _self.imgAtk, fn2 );	
 		
 		//防御 被击中  致命一击
 		var fn3	= function(){
@@ -154,18 +151,18 @@ var UnitImg = Observable.extend({
 			} ,10);
 			//_self.dright = [PS.getCanImageTurn(  _self.dleft[0] ) ];
 			
-			done( unit.imgSpc );
+			done( _self.imgSpc );
 		}
-		_loadImg( unit.imgSpc, fn3 );		
+		_loadImg( _self.imgSpc, fn3 );		
 		
 		//头像	
 		var fn4	= function(){
 			
 			_self.face = [	this ];
 																				
-			done( unit.imgFace );
+			done( _self.imgFace );
 		}
-		_loadImg( unit.imgFace, fn4 );				
+		_loadImg( _self.imgFace, fn4 );				
 	},
 	
 	gray	: function( key, img ){
@@ -186,5 +183,4 @@ var UnitImg = Observable.extend({
 		
 		return this.highlights[ key ];	
 	}	
-	
 }); 

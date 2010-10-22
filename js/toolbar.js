@@ -15,7 +15,7 @@ var Toolbar  = Observable.extend({
 		PANEL.on( "teamStart", this.onTeamStart, this );
 		PANEL.on( "teamEnd", this.onTeamEnd, this );
 		
-		this.el = $("#toolbar");
+		this.el = $("#toolbar").show();
 		this.unactiveButtons();
 		
 		var _self = this;

@@ -1,5 +1,6 @@
 /**
- * @author Norris
+ * 管理类
+ * 负责管理子对象
  */
 var Manager = Observable.extend({
 	len	: 0,

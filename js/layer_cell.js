@@ -11,9 +11,10 @@ var CellLayer = Layer.extend({
 		this.cells = {};
 		this.borders = {};
 		this._super( arguments[0] );
-		PANEL.on("update", this.update, this );
+		
 		PANEL.on("mousemove", this.activeCell, this );
 		PANEL.on("paint", this.onPaint, this );
+		PANEL.on("mouseleave", this.unactiveCell, this );
 		
 		return this;
 	},
@@ -122,11 +123,6 @@ var CellLayer = Layer.extend({
 			ctx.restore();
 		}
 	},
-	
-	update				: function(){
-		
-	},
-	
 	
 	strokeCells			: function( color, cell ){
 		if ( this.borders[ color ] == undefined )

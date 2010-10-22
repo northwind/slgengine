@@ -71,13 +71,15 @@ Event.prototype = {
             var args = Array.prototype.slice.call(arguments, 0);
             for(var i = 0; i < len; i++){
                 var l = ls[i];
-                if(l.fireFn.apply(l.scope||this.obj||window, arguments) === false){
-                    this.firing = false;
-                    return false;
-                }
-				//删除单次执行
-				if ( l.options.one ){
-		            this.listeners.splice(i, 1);
+				if (l.fireFn) {
+					if (l.fireFn.apply(l.scope || this.obj || window, arguments) === false) {
+						this.firing = false;
+						return false;
+					}
+					//删除单次执行
+					if (l.options.one) {
+						this.listeners.splice(i, 1);
+					}
 				}
             }
             this.firing = false;

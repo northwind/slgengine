@@ -10,7 +10,6 @@
  */
 var UnitUI = Observable.extend({
 	unit	: null, 	//unit主体
-	loaded	: false,
 	foot	: 1,
 	img		: null,
 	direct  : "down",
@@ -25,22 +24,11 @@ var UnitUI = Observable.extend({
 		this.imgStack = [];
 		this.tipStack = [];
 		
-		this.addEvents( "load" );
+		//this.addEvents( );
 		
 		//获取相同角色的img集合
 		var unit = this.unit;
-		this.imgs = ImgMgr.get( unit.symbol, {
-			unit	: unit,
-			listeners : {
-				load	: {
-					fn	: function(){
-						this.loaded = true;
-						this.fireEvent( "load", unit );
-					},
-					scope : this
-				}
-			}
-		});
+		this.imgs = ImgMgr.get( unit.symbol );
 		
 		return this;
 	},
