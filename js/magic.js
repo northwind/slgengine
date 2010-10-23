@@ -29,8 +29,11 @@ var Magic = Observable.extend({
 	apply	: function( cell, units ){
 		this.hideAttack();
 		
-		//播放动画
-		this.animation.position( cell.dx, cell.dy )
+		//居中播放
+		var x = cell.dx - (this.animation.w - CELL_WIDTH) / 2,
+			  y =  cell.dy - (this.animation.h - CELL_HEIGHT) / 2;
+		//播放动画	  
+		this.animation.position( x, y )
 			.callback( function(){
 				
 				if ( units && units.constructor == Array ){

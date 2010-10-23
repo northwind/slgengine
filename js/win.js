@@ -33,6 +33,20 @@ var Win = Component.extend({
   	},
 	
 	onShow	: function(){
+		var x = this.el.position().left, y = this.el.position().top,
+			   w = this.el.outerWidth( true ), h = this.el.outerHeight( true );
+		log( "x = " + x + ", y = " + y );
+		//边缘检测
+		if ( x < 0 )
+			x = CELL_WIDTH * 2;
+		if ( y < 0 )
+			y = CELL_HEIGHT;
+		if ( x + w > MAX_W )
+			x = MAX_W  -w;
+		if ( y + h > MAX_H )
+			y = MAX_H - h;	
+		
+		this.showAt( x, y );					
 		//清除正在显示的攻击单元格
 		PANEL.unitsLayer._removeCells();		
 	},

@@ -1,5 +1,6 @@
 /**
- * @author Norris
+ * 战场控制
+ * 外部调用统计的入口
  */
 var Panel = Component.extend({
 	w		: WINDOW_WIDTH,
@@ -18,8 +19,7 @@ var Panel = Component.extend({
 	staticLayer : null,   //zIndex : 300
 	winLayer : null,   //zIndex : 400
 	
-	dps		 : 16, //帧数
-	sequence : 20, //多久更新一次
+	dps		 :  24, //帧数
 	
 	lineTimer: 0,
 		
@@ -53,13 +53,6 @@ var Panel = Component.extend({
 		this.process = new Process();
 		//进度条加载完之后触发panel的load事件
 		this.process.on("end", this.start, this).start();
-		
-		//创建的顺序既是绘画时的先后顺序
-		this._createCellLayer();
-		this._createStaticLayer();
-		this._createUnitLayer();
-		this._createWinLayer();
-		this._createMagicLayer();
 		
 		//绑定事件
 		var x, y, drag = false, el=this.el, _self = this;
@@ -134,7 +127,7 @@ var Panel = Component.extend({
 		
 				_self.fireEvent("paint");
 			}
-		} , this.sequence);
+		} , inter );
 		
 		this.on( "keydown", this.onKeydown, this );			
 		this.on( "globalClick", this.onGlobalClick, this );
@@ -205,8 +198,17 @@ var Panel = Component.extend({
 		
 		canvas.height = MAX_H;
 		$( canvas ).show();
+
+		//创建的顺序既是绘画时的先后顺序
+		this._createCellLayer();
+		this._createStaticLayer();
+		this._createUnitLayer();
+		this._createWinLayer();
+		this._createMagicLayer();
+		
 		//显示控制面板
 		this.display = $("._display").width( MAX_W ).css( "visibility", "visible" );
+		this.setBgImage( BGIMAGE );
 		this.board = $( "._board" );
 		this.suspend = false;		
 		this.fireEvent( "load", this );		
