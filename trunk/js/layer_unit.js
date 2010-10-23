@@ -285,7 +285,8 @@ var UnitLayer = Layer.extend({
 				for ( i= x-range ; i<=x + range; i++) {
 					for ( j= y-range ; j<=y + range; j++) {
 							var node = PANEL.getCell( i, j);
-							all[ node.index ] = node;
+							if ( node )
+								all[ node.index ] = node;
 					}
 				}			
 				break;

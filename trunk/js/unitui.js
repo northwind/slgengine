@@ -97,16 +97,15 @@ var UnitUI = Observable.extend({
 			}
 			
 			if ( !PANEL.isScripting() ) {
+				if (unit.standby) {
+						//待机
+						this.img = this.imgs.gray(this.direct, this.imgs[this.direct][0]);
+				} else
 				if (!unit.moving && unit.debility) {
 					//虚弱时
 					this.img = this.imgs.fall[this.foot - 1];
 				}
-				else 
-					if (unit.standby) {
-						//待机
-						this.img = this.imgs.gray(this.direct, this.imgs[this.direct][0]);
-					}
-					else {
+				else {
 						this.img = this.imgs[this.direct][this.foot];
 					}
 			}else{
@@ -160,16 +159,18 @@ var UnitUI = Observable.extend({
 			
 		//当角色位于两边时调证坐标系
 		ctx.save();
+/*
 		if ( dx == 0 ){
-			ctx.translate( 10, 0 )
+			//ctx.translate( 0, 0 )
 		}else if ( cell.x == CELL_XNUM-1 ){
-			ctx.translate( -10, 0 )
+			//ctx.translate( 0, 0 )
 		}
+*/
 		
 		//绘制血条
 		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
 			var y = dy - 9;
-			y = y < 0 ? 1 : y;
+			y = y < 0 ? 0 : y;
 			//血条黑色背景
 			ctx.fillStyle = "rgb(0,0,0)";
 			ctx.fillRect(dx, y, CELL_WIDTH, HPHEIGHT);

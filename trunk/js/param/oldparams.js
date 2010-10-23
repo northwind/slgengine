@@ -19,10 +19,10 @@ WINDOW_WIDTH = 960,
 WINDOW_HEIGHT= 480,
 DISPLAY_HEIGHT = 160,
 
-SPEED	= 5,	//调节unit切换图片的速度
-STEP	= 1 ,	//调节走路速度
-ASPEED  = 1,  //攻击速度
-TIPSPEED  = 1,  //提示信息显示速度
+SPEED	= 8,	//调节unit切换图片的速度
+STEP	= 4 ,	//调节走路速度
+ASPEED  = 3,  //攻击速度
+TIPSPEED  = 4,  //提示信息显示速度
 
 //队伍集合
 TEAMS	= [{
@@ -56,8 +56,8 @@ ROLES = {
 
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
-	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, range : 1, rangeType : 1,
-	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98, id : "caocao", mp : 20,
+	gx :  11,  gy : 13,  type : 100, moveable : true, overlay : false, range : 1, rangeType : 1,
+	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98, id : "caocao", mp : 100,
 	listeners : {
 		dead	: function(){
 			//alert( this.name );
@@ -65,8 +65,8 @@ UNITS	= [{
 	},
 	magicNames	: [ "light", "storm" ]
 },{
-	gx :  10,  gy : 7,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 1, team : 200,  name : "刘备", exp : 86, mp : 20,
+	gx :  19,  gy : 19,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
+	symbol	: "footman",  faction : 1, team : 100,  name : "刘备", exp : 86, mp : 20,
 	magicNames	: [ "light" ]	
 },{
 	gx :  10,  gy : 0,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
@@ -76,7 +76,7 @@ UNITS	= [{
 	gx :  11,  gy : 4,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
 	symbol	: "footman",  faction : 1, team : 200,  name : "张飞"
 },{
-	gx :  11,  gy : 12,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
+	gx :  11,  gy : 12,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2, hp : 1,
 	symbol	: "footman", faction : 0, team : 1
 }, {
 	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
@@ -273,7 +273,7 @@ MAP	= 	[
 				range	: 4, 			
 				rangeType : 2,     
 				animation : "storm",	
-				effect	: 4,	
+				effect	: 7,	
 				listeners : {
 					apply	: function( unit, fireman ){
 						fireman.hurt( unit, 100 );

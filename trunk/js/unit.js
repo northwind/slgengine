@@ -387,6 +387,8 @@ var Unit = Observable.extend({
 							fn.call( scope || this, this, true, d, unit );
 							
 						this.onDead( unit );
+						//死了也要触发standby事件
+						this.fireEvent( "standby", this );
 					}, this );
 				}
 			}else{
