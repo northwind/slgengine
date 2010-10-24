@@ -101,7 +101,7 @@ var Process = Observable.extend({
 				id	: key,
 				listeners	: {
 					load	: function( role ){
-						_self.add( Math.floor( 52/ count ) , role.id + "图片加载完毕..." );
+						_self.add( 52/ count , role.id + "图片加载完毕..." );
 					}
 				}
 			}, ROLES[ key ] ) );
@@ -127,7 +127,7 @@ var Process = Observable.extend({
 		this.count += n;
 		this.msg = msg;
 		
-		this.el.html( this.count + "/100%　　" +  this.msg );
+		this.el.html( Math.ceil( this.count ) + "/100%　　" +  this.msg );
 				
 		if ( this.count >= 100 )
 			this.end();

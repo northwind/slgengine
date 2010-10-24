@@ -4,7 +4,7 @@
 var 
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
-	gx :  11,  gy : 13,  type : 100, moveable : true, overlay : false, range : 1, rangeType : 1,
+	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, range : 1, rangeType : 1,
 	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98, id : "caocao", mp : 100,
 	listeners : {
 		dead	: function(){
@@ -12,29 +12,68 @@ UNITS	= [{
 		}
 	},
 	magicNames	: [ "light", "storm" ]
+},
+//友军
+{
+	gx :  7,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 1, symbol	: "archerYellow", miss : 0,
+	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓箭兵", level : 1, face : "images/face/182-1.png"	
 },{
-	gx :  19,  gy : 19,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 1, team : 100,  name : "刘备", exp : 86, mp : 20,
-	magicNames	: [ "light" ]	
+	gx :  12,  gy : 17, range : 2, rangeType : 2, hpMax : 110, hp : 20, symbol	: "archerYellow",
+	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓箭兵", level : 1, face : "images/face/182-1.png"	
 },{
-	gx :  10,  gy : 0,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 1, team : 200,  name : "关羽"
-}
-,{
-	gx :  11,  gy : 4,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 1, team : 200,  name : "张飞"
+	gx :  10,  gy : 17, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "footmanYellow", 
+	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "步兵", level : 1, face : "images/face/182-1.png"	
 },{
-	gx :  11,  gy : 12,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2, hp : 1,
-	symbol	: "footman", faction : 0, team : 1
-}, {
-	gx :  12,  gy : 12,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
-	symbol	: "footman",  faction : 0, team : 1
+	gx :  9,  gy : 18, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "footmanYellow", 
+	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "步兵", level : 1, face : "images/face/182-1.png"	
 },{
-	gx :  0,  gy : 19,  type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
-	symbol	: "footman", faction : 0, team : 1
+	gx :  12,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 1, symbol	: "enchanterYellow", miss : 0, 
+	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "术士", level : 1, face : "images/face/182-1.png"	
+},
+
+//敌军
+{
+	gx :  9,  gy : 11, range : 2, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
+	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张宝", level : 5, face : "images/face/154-1.png"	
 },{
-	gx :  19,  gy : 5,  step: 9, type : 101, moveable : true, overlay : false, range : 2, rangeType : 2,
-	symbol	: "archer", name : "弓箭手", faction : 0, team : 1
+	gx :  10,  gy : 11, range : 2, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
+	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张梁", level : 5, face : "images/face/155-1.png"	
+},{
+	gx :  5,  gy : 10, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  5,  gy : 11, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  8,  gy : 10, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  7,  gy : 11, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  12,  gy : 10, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  12,  gy : 12, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  9,  gy : 14, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  10,  gy : 14, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  9,  gy : 15, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  10,  gy : 15, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  12,  gy : 15, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
+},{
+	gx :  6,  gy : 16, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5,
 }]
 ;  
 

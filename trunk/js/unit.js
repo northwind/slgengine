@@ -1,5 +1,5 @@
 /**
- * @author Norris
+ * 负责处理角色的所有对外接口和内部逻辑处理
  */
 var Unit = Observable.extend({
 	//id			: 1,
@@ -89,7 +89,8 @@ var Unit = Observable.extend({
 				
 		//如果没有id则自动生成一个
 		this.id = this.id || getTime();
-		
+		this.hp = this.hp || this.hpMax;
+		this.mp = this.mp || this.mpMax;
 		this._calcHpPercent();
 		
 		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
@@ -122,6 +123,8 @@ var Unit = Observable.extend({
 			} 
 		} );
 		
+		this.face = this.face || this.ui.imgs.imgFace;
+			
 		return this;
 	},
 	
@@ -623,6 +626,10 @@ var Unit = Observable.extend({
 		}, this );
 
 		return this;
+	},
+	
+	showOptions	: function( title, options, fn, scope ){
+		PANEL._showOptions( this.face, title, options, fn, scope );
 	}
 }); 
 //计算升级所需经验

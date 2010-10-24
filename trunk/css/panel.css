@@ -52,3 +52,10 @@
 
 ._toolbar{ background:#c0c0c0; text-align:center; }
 ._toolbar button{ margin:0 5dx; }
+
+._options{ display:none; color:#fff;  width:350px; padding:50px; height:100px; text-align:left; margin:0 auto;  line-height:20px; background:#262626; }
+._options .face{ width:80px; vertical-align:top; }
+._options h6{ font-size:20px;  color:#fff; }
+._options ul{ font-size:20px; list-style:none; }
+._options li { cursor:pointer; list-style:none;  color:#fff; font-weight:bold; font-family:"Arial Black"; }
+._options li.active{ background:#8080ff; }

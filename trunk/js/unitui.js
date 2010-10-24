@@ -395,7 +395,7 @@ var UnitUI = Observable.extend({
 	
 	standby	: function( fn , scope ){
 		var obj = {
-			inter	: SPEED * 2,
+			inter	: 10,
 			items	: [ this.imgs.gray( this.direct, this.imgs[ this.direct ][0] ) ],
 			fn 		: fn, 
 			scope	: scope
@@ -490,7 +490,7 @@ var UnitUI = Observable.extend({
 	disappear	: function( fn, scope ){
 		var obj = {
 			inter	: 1,
-			items	: this._fillDisappear( 8 ),
+			items	: this._fillDisappear( 14 ),
 			fn 		: fn, 
 			scope	: scope
 		};
