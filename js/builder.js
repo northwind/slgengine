@@ -1,7 +1,6 @@
 /**
- * @author sina
+ * 程序主入门
  */
-
 $(function(){
 	
 	if ( $.browser.msie )
@@ -13,9 +12,10 @@ $(function(){
 		;
 	
 	PANEL.on( "start", function( panel ){
-		return;
-		PANEL.runScript();
-		var unit = panel.getUnit( "caocao" );
+		
+		//ActionMgr.start( 2 );
+		
+		//var unit = panel.getUnit( "caocao" );
 		
 		/*
 		unit.go( CellMgr.get( 10, 5 ), function(){
@@ -36,14 +36,13 @@ $(function(){
 		//unit.addBuff( "confuse" );
 		//unit.addBuff( "stop" );
 		
-		unit.speak( "这是第几天 这一座城市每天在下雪", function(){
+		//unit.speak( "这是第几天 这一座城市每天在下雪", function(){
 			
-			unit.gainStuff( Pocket.get( "1" ) );
+			//unit.gainStuff( Pocket.get( "1" ) );
 			//unit.fall();
 			//unit.attackCell( PANEL.getCell( 0,0 )  );
 			
-			PANEL.stopScript();
-		} );
+		//} );
 
 	} );
 		

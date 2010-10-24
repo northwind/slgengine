@@ -29,7 +29,11 @@ var Toolbar  = Observable.extend({
 		
 		this.on( "endTeam", function(){
 			PANEL.unitsLayer.endTeamUnits( FACTION, TEAM );
-		}, this );		
+		}, this );	
+		
+		this.on("condition", function(){
+			PANEL.showGoal();
+		})	
 	},
 
 	onTeamStart	: function( team ){

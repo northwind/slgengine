@@ -195,6 +195,7 @@ var Panel = Component.extend({
 		Pocket.start();
 		AIController.start();
 		Toolbar.start();
+		ActionMgr.load();
 		
 		canvas.height = MAX_H;
 		$( canvas ).show();
@@ -223,11 +224,16 @@ var Panel = Component.extend({
 	
 	//战场中间显示提示信息
 	_showTopLine		: function( str, fn, scope ){
+		this.mask();
+		
 		if ( this.lineTimer )
 			clearTimeout( this.lineTimer );
 		
-		this.mask();
-		$("#maskUp").html( str ).width( MAX_W ).css( "top", (WINDOW_HEIGHT -200)/2 ).show();
+		$("#maskUp").html( str ).css({
+				height  : 200,
+				width	: MAX_W,
+				top		: (WINDOW_HEIGHT -200)/2
+		}).show();
 		
 		var _self = this;
 		this.lineTimer =setTimeout( function(){
@@ -235,7 +241,16 @@ var Panel = Component.extend({
 			_self.lineTimer=0;
 		}, 1500 );			
 	},
-
+	//整个战场显示提示信息
+	showGoal		: function( fn, scope ){
+			this._showTopLine(  "" , fn, scope );
+			$("#maskUp").html( GOAL ).css({
+				width	: MAX_W,
+				height  : WINDOW_HEIGHT,
+				top		:  23,
+				lineHeight : "100px"
+			});
+	},
 	_hideTopLine		: function( fn, scope ){
 		var _self = this;
 		$("#maskUp").fadeOut( 800, function(){
@@ -244,7 +259,46 @@ var Panel = Component.extend({
 				fn.call( scope || _self )			
 		} );
 	},
+	showOptions			: function( title, options, fn, scope ){
+		this._showOptions( null, title, options, fn, scope );
+	},	
+	//显示选择框
+	_showOptions		: function( src, title, options, fn, scope ){
+		this.mask();
+		
+		var ct = $("._options").clone(), _self = this, clicked = false;
+		if ( src )
+			ct.find(".face").show().find("img").attr("src", src );
+		else
+			ct.find(".face").hide();
 				
+		ct.find("h6").html( title );
+		
+		var sel = ct.find("ul");
+		for (var i=0; i<options.length; i++) {
+			$("<li>").attr( "value", options[i].v ).html( i + ". " + options[i].t ).appendTo( sel );
+		}
+		sel.children("li").click( function(){
+			if ( clicked )
+				return;
+			clicked = true;	
+			var v =  $(this).attr("value");
+			_self._hideTopLine( function(){
+				$("#maskUp")[0].style.background = "";
+				if ( fn )
+					fn.call( scope || this, v );				
+			} );
+		} ).hover( function(){
+			$(this).toggleClass("active");
+		} );
+		
+		$("#maskUp").empty().append( ct.show() ).css({
+				height  : 200,
+				width	: MAX_W,
+				background : "none",
+				top		: (WINDOW_HEIGHT -200)/2
+		}).show();
+	},					
 	showGrid			: function(){
 		this.cellLayer.showGrid();
 		return this;
@@ -301,7 +355,7 @@ var Panel = Component.extend({
 	
 	showUnitAttr		: function( unit ){
 		
-		$("._face").empty().append( unit.ui.imgs.face[ 0 ] );
+		$("._board ._face img").attr( "src", unit.face );
 		$("#hp").text( unit.hp + "/" + unit.hpMax );
 		$("#mp").text( unit.mp + "/" + unit.mpMax );
 		
@@ -345,7 +399,7 @@ var Panel = Component.extend({
 		this.speaking = true;
 		this.speakUnit = unit;
 			
-		$("#face").attr( "src", unit.imgFace );
+		$("#face").attr( "src", unit.face );
 		$("._speak h2").text( unit.name );
 		$("._speech").show();
 		
@@ -353,13 +407,13 @@ var Panel = Component.extend({
 		var i = 0 , board = $("._speak p"), _self = this, l = text.length;
 		this.speakText = text;
 		this.speakTimer = setInterval( function(){
-			i = i + 2;
+			i = i + 5;
 			if ( i >= l ){
 				_self.stopSpeakAnimate();
 			}else{
 				board.html( text.slice( 0, i ) );	
 			}
-		}, 200 );
+		}, 150 );
 	},
 	stopSpeak		: function(){
 		if ( this.speakTimer ){

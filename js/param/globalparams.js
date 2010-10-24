@@ -19,7 +19,7 @@ DISPLAY_HEIGHT = 160,
 
 SPEED	= 8,	//调节unit切换图片的速度
 STEP	= 4 ,	//调节走路速度
-ASPEED  = 3,  //攻击速度
+ASPEED  = 2,  //攻击速度
 TIPSPEED  = 5,  //提示信息显示速度
 
 HPHEIGHT = 7,//血条的高度
