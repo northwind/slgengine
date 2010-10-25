@@ -1,6 +1,5 @@
 /**
- * @author Norris
- * 只继承 Observable
+ * 战场采用分层展示，该类是其他层的基类
  */
 var Layer = Observable.extend({
 	hidden : false,

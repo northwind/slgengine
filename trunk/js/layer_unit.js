@@ -1,5 +1,8 @@
 /**
- * @author Norris
+ * 单元层
+ * 负责统一调用角色的接口
+ * 触发 回合/队伍 事件
+ * 支持寻路/攻击/移动的方法
  */
 var UnitLayer = Layer.extend({
 	clicked : null,	//已点击
@@ -276,46 +279,87 @@ var UnitLayer = Layer.extend({
 		PANEL.cellLayer.paintCells( this.attaColor, obj );
 	},
 	
+	//得到以cell为中心，相隔range的所有cell
+	_getRectAtkCells	: function( cell, range ){
+		var all = {}, x = cell.x, y = cell.y;
+		
+		for ( i= x-range ; i<=x + range; i++) {
+			for ( j= y-range ; j<=y + range; j++) {
+					var node = PANEL.getCell( i, j);
+					if ( node )
+						all[ node.index ] = node;
+			}
+		}			
+		return all;
+	},
+	
 	getAttackCells	: function( cell,	range, type ){
 		var all = {}, index = cell.index, x = cell.x, y = cell.y;
 		
 		switch( type ) {
 			case 1:	//全方位攻击
-				var tmp, i, j;
-				for ( i= x-range ; i<=x + range; i++) {
-					for ( j= y-range ; j<=y + range; j++) {
-							var node = PANEL.getCell( i, j);
-							if ( node )
-								all[ node.index ] = node;
-					}
-				}			
+				all = this._getRectAtkCells( cell, range );		
 				break;
-			case 2:	//十字型
-				var open = {}, node;
-				open[ index ] = cell;
-				
-				function prepare( x, y ){
-					var tmp = PANEL.getCell( x, y );
-					if (tmp) {
-						var i = tmp.index;
-						if (!open[i] && !all[i]) 
-							open[i] = tmp;
-					}
-				}
-				
-				while( range-- > 0 ){			
-					for( var key in open){
-						all[ key ] = node =  open[ key ];
-						
-						prepare( node.x, node.y -1 );
-						prepare( node.x, node.y+1 );
-						prepare( node.x-1, node.y );
-						prepare( node.x+1, node.y );
-						
-						delete open[ key ];
+			case 2:	//蔓延型
+				//先找出全方位攻击的CELL
+				var  ret = this._getRectAtkCells( cell, range );	
+				//再筛选相距cell range远的单元格
+				for( var key in ret ){
+					var tmp = ret[ key ];
+					if ( cell.distance( tmp ) <= range ){
+						all[ tmp.index ] = tmp;
 					}
 				}
 				break;
+			case 3:	//散射型
+				//先找出全方位攻击的CELL
+				var  ret = this._getRectAtkCells( cell, range );	
+				//再筛选相距cell range远的单元格
+				for( var key in ret ){
+					var tmp = ret[ key ];
+					if ( cell.distance( tmp ) == range ){
+						all[ tmp.index ] = tmp;
+					}
+				}
+				
+				break;		
+			case 4:	//十字型
+				//先找出全方位攻击的CELL
+				var  ret = this._getRectAtkCells( cell, range );	
+				//再筛选相距cell range远的单元格 并且X/Y轴相等
+				for( var key in ret ){
+					var tmp = ret[ key ];
+					if ( cell.distance( tmp ) == range && ( tmp.x == cell.x || tmp.y == cell.y ) ){
+						all[ tmp.index ] = tmp;
+					}
+				}
+				
+				break;		
+			case 5:	//直线型
+				//先找出全方位攻击的CELL
+				var  ret = this._getRectAtkCells( cell, range );	
+				//再筛选相距cell range远的单元格 并且X/Y轴相等
+				for( var key in ret ){
+					var tmp = ret[ key ];
+					if ( cell.distance( tmp ) <= range && ( tmp.x == cell.x || tmp.y == cell.y ) ){
+						all[ tmp.index ] = tmp;
+					}
+				}
+				
+				break;	
+			case 6:	//方框型
+				//先找出全方位攻击的CELL
+				var  ret = this._getRectAtkCells( cell, range );	
+				//再筛选相距cell range远的单元格 并且X/Y轴相等
+				for( var key in ret ){
+					var tmp = ret[ key ];
+					if ( tmp.x == (cell.x + range) || tmp.y == (cell.y + range) ||
+						 tmp.x == (cell.x - range) || tmp.y == (cell.y - range)  ){
+						all[ tmp.index ] = tmp;
+					}
+				}
+				
+				break;													
 		}
 		
 		//把自身刨出去
@@ -537,14 +581,6 @@ var UnitLayer = Layer.extend({
 	
 	_initUnit	: function( config ){
 		config.layer = this;
-		if( UNDERCOVER ){
-			$.extend( config, {
-				imgMove	: "images/move/0.png",
-				imgAtk	: "images/atk/0.png",
-				imgSpc	: "images/spc/0.png",
-				imgFace	: "images/face/0.png"
-			} )
-		}
 					
 		var unit = new Unit(config );
 		

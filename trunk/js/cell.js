@@ -1,5 +1,9 @@
 /**
- * @author Norris
+ * 单元格
+ * x : 行
+ * y : 列
+ * dx : 所在行的像素
+ * dy : 所在列的像素
  */
 
 var Cell = function( config ){
@@ -10,7 +14,7 @@ var Cell = function( config ){
 };
 
 Cell.prototype = {
-	parent 	: null,
+	parent 	: null,	//用于寻路
 	
 	/*	方位
 	 * 			4		3		2

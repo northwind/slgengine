@@ -1,11 +1,9 @@
-
-/*
+/**
  * 观察者设计模式
  * 所有对象具有事件响应的能力
  * 
  * one : 只执行一次
 */
-
 var Event = function(obj, name){
     this.name = name;
     this.obj = obj;

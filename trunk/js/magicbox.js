@@ -1,6 +1,7 @@
-/*
- * 角色移动后弹出的菜单项
-*/
+/**
+ *	负责展示每个角色会使用的魔法
+    选中后调用魔法的apply方法
+ */
 var MagicBox = Win.extend({
 	cls		: "_win _prop",	
 	unit	: null,

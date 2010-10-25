@@ -1,5 +1,7 @@
 /**
- * @author Norris
+ * Class 
+ * 所有类的基类，支持继承的功能
+ * 每个类必须有init方法
  */
 // Inspired by base2 and Prototype
 (function(){

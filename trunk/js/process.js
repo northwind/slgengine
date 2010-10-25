@@ -97,7 +97,7 @@ var Process = Observable.extend({
 			count++;
 		} 		
 		for( var key in ROLES ){
-			var r = new UnitImg( $.extend( {
+			var r = new Role( $.extend( {
 				id	: key,
 				listeners	: {
 					load	: function( role ){

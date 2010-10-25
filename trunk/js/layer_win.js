@@ -1,8 +1,8 @@
 /**
- * @author Norris
- * 继承Component
+ * 窗口层
+ * 统一控制窗口，同一时间只有一个窗口可显示
+ * 统一处理 ESC/右键 取消当前窗口
  */
-
 var WinLayer = Component.extend({
 	cls	: "_winLayer",
 	top	: null,  //最顶层窗口

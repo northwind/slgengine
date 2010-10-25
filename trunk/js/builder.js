@@ -15,7 +15,8 @@ $(function(){
 		
 		//ActionMgr.start( 2 );
 		
-		//var unit = panel.getUnit( "caocao" );
+		var unit = panel.getUnit( "caocao" );
+		unit.showAttack();
 		
 		/*
 		unit.go( CellMgr.get( 10, 5 ), function(){

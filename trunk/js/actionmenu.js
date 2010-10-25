@@ -1,5 +1,5 @@
-/*
-	角色移动后弹出的菜单项
+/**
+ * 角色移动后弹出的菜单项
 */
 var ActionMenu = Win.extend({
 	unit	: null,

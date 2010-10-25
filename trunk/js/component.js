@@ -1,7 +1,8 @@
 /**
- * @author Norris
+ * 组件类
+ * 主要负责DOM组件的操作
+ * 显示/隐藏 设置宽高等
  */
-
 var Component = Observable.extend({
 	hidden	: false,
 	absolute: true,

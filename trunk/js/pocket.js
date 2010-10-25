@@ -1,5 +1,5 @@
-/*
-	角色移动后弹出的菜单项
+/**
+ * PocketWin 显示所拥有的物品
 */
 var PocketWin = Win.extend({
 	cls		: "_win _prop",	
@@ -89,8 +89,9 @@ var PocketWin = Win.extend({
 		return this;
 	}
 });
-
-// 物品管理类
+/**
+ * 物品管理类
+*/
 var Pocket = Manager.extend({
 	
 	start	: function( data ){

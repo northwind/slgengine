@@ -1,4 +1,6 @@
-
+/**
+ * 工具集
+ */
 if ( window.console == undefined )
 	console = {};
 if ( console.debug == undefined )
