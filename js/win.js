@@ -1,5 +1,7 @@
 /**
- * @author Norris
+ * 窗口类
+ * 所有弹出窗口的基类
+ * 统一样式与取消操作
  */
 var Win = Component.extend({
 	cls		: "_win",

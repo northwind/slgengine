@@ -11,8 +11,8 @@ var Panel = Component.extend({
 	scripting : false, //是否正在执行脚本
 	ctCls	: "_wrap",
 	
-	scrollLeft : 0,
-	scrollTop : 0,
+	scrollLeft : 0,	//窗口左移的像素
+	scrollTop : 0,  //窗口上移的像素
 	
 	cellLayer	: null,    //zIndex : 100
 	unitsLayer : null, //zIndex : 200
@@ -354,7 +354,9 @@ var Panel = Component.extend({
 	},
 	
 	showUnitAttr		: function( unit ){
-		
+		if ( UNDERCOVER )
+			return;
+			
 		$("._board ._face img").attr( "src", unit.face );
 		$("#hp").text( unit.hp + "/" + unit.hpMax );
 		$("#mp").text( unit.mp + "/" + unit.mpMax );

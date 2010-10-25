@@ -4,7 +4,7 @@
 var 
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
-	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, range : 1, rangeType : 1,
+	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, range : 3, rangeType : 6,
 	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98, id : "caocao", mp : 100,
 	listeners : {
 		dead	: function(){

@@ -1,5 +1,7 @@
 /**
  * 魔法层
+ * items 存放需要播放的动画
+ * 支持同时播放多个动画
  */
 var MagicLayer = Layer.extend({
 	

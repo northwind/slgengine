@@ -1,7 +1,7 @@
 /**
- * @author Administrator
+ * 图像处理工具
+ * 灰化高亮切割图片等操作
  */
-
 var PS = function( config ){
 	$.extend( this, config );
 	

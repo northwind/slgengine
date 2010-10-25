@@ -1,7 +1,7 @@
 /**
- * @author Norris
+ * 单元格层
+ * 负责显示单元格的着色
  */
-
 var CellLayer = Layer.extend({
 	selected	: null,
 	clicked		: null,
@@ -49,27 +49,23 @@ var CellLayer = Layer.extend({
 	},
 	
 	onPaint					: function(){
-		//console.debug( "cell layer" );
 		//画格子
 		if ( this.lines ){
 			ctx.save();
 			
 			ctx.fillStyle  = "rgba(255,255,255, 1)";
 			ctx.font = "14px";
-			//竖线
-			for (var i=1; i<CELL_XNUM; i++) {
-				ctx.fillText(  i ,  i * CELL_WIDTH + 15, 15 );
-			}
-			//横线
-			for (var i=1; i<CELL_YNUM; i++) {
-				ctx.fillText(  i ,  15, i * CELL_HEIGHT + 15 );
-			}
 
+/*
 			for (var i=0; i<CELL_XNUM; i++) {
 				for (var j=0; j<CELL_YNUM; j++) {
 					ctx.strokeRect( i *CELL_WIDTH , j* CELL_HEIGHT, CELL_WIDTH , CELL_HEIGHT );
 				}
 			}
+*/
+			ctx.translate( Math.max(0,PANEL.scrollLeft), Math.max(0,PANEL.scrollTop) );
+			ctx.fillText( "(" + this.x + "," + this.y + ")" , 5, 15 );
+			ctx.restore();				
 		}
 		//绘制cell
 		for( var color in  this.cells ){
@@ -117,9 +113,10 @@ var CellLayer = Layer.extend({
 			ctx.shadowOffsetY = 1;  
 			ctx.shadowColor = "rgba(0, 0, 0, 0.5)";  
 */
-				
+					
 			ctx.strokeStyle = CELLCOLOR[0];
 			ctx.strokeRect( this.x * CELL_WIDTH + half , this.y * CELL_HEIGHT + half, CELL_WIDTH - w, CELL_HEIGHT -w );
+			
 			ctx.restore();
 		}
 	},

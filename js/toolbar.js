@@ -1,5 +1,6 @@
 /**
  * 工具条
+ * 每个按钮拥有一个对应的事件，点击后触发
  */
 var Toolbar  = Observable.extend({
 	active	: false,

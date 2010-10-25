@@ -1,5 +1,6 @@
 /**
- * @author Norris
+ * 层管理器
+ * 采用canvas后基本不需要管理层
  */
 var LayerMgr = Manager.extend({
 	

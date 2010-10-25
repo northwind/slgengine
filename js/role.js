@@ -1,7 +1,8 @@
 /**
- * @author Norris
+ * 单位所扮演的角色
+ * 存放通用的配置项
  */
-var UnitImg = Observable.extend({
+var Role = Observable.extend({
 	imgMove	: "",		//移动
 	imgAtk	: "",		//攻击
 	imgSpc	: "",		//特殊
@@ -11,6 +12,14 @@ var UnitImg = Observable.extend({
 		this.grays = {};
 		this.highlights = {};
 		
+		if( UNDERCOVER ){
+			$.extend( config, {
+				imgMove	: "images/move/0.png",
+				imgAtk	: "images/atk/0.png",
+				imgSpc	: "images/spc/0.png",
+				imgFace	: "images/face/0.png"
+			} )
+		}		
 		this._super( config );
 		
 		this.addEvents( "load" );
