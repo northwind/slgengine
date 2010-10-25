@@ -8,15 +8,13 @@ $(function(){
 		
 	PANEL = new Panel();
 	
-	PANEL.setSmallMap(  "images/smallmap/1-1.png" )
-		;
-	
 	PANEL.on( "start", function( panel ){
+		PANEL.moveWinTo( 0,1000 );
+		PANEL.showGrid();
+		ActionMgr.start( 0 );
 		
-		//ActionMgr.start( 2 );
-		
-		var unit = panel.getUnit( "caocao" );
-		unit.showAttack();
+		//var unit = panel.getUnit( "caocao" );
+		//unit.showAttack();
 		
 		/*
 		unit.go( CellMgr.get( 10, 5 ), function(){

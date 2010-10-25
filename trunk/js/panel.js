@@ -409,7 +409,7 @@ var Panel = Component.extend({
 		var i = 0 , board = $("._speak p"), _self = this, l = text.length;
 		this.speakText = text;
 		this.speakTimer = setInterval( function(){
-			i = i + 5;
+			i = i + 3;
 			if ( i >= l ){
 				_self.stopSpeakAnimate();
 			}else{
@@ -437,6 +437,8 @@ var Panel = Component.extend({
 			this.speakUnit.stopSpeak();
 			delete this.speakUnit;
 		}
+		$("#face").removeAttr( "src" );
+		$("._speak p").html("");
 		$("._speech").hide();
 		this.speaking = false;
 	},

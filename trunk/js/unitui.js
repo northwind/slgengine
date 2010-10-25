@@ -25,6 +25,9 @@ var UnitUI = Observable.extend({
 		this.imgStack = [];
 		this.tipStack = [];
 		
+		//初始化方向
+		this.oriDirect = this.direct = this.unit.direct || "down";
+		
 		//this.addEvents( );
 		
 		//获取相同角色的img集合
@@ -427,7 +430,7 @@ var UnitUI = Observable.extend({
 	fall		: function( fn, scope ){
 		var obj = {
 			inter	: SPEED,
-			items	: [ this.imgs.fall[1], this.imgs.fall[0], this.imgs.fall[1], this.imgs.fall[0] ],
+			items	: [ this.imgs.fall[1], this.imgs.fall[0], this.imgs.fall[1], this.imgs.fall[0],  this.imgs.fall[1], this.imgs.fall[0] ],
 			fn 		: fn, 
 			scope	: scope
 		}

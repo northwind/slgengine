@@ -253,10 +253,13 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
-	attack			: function( unit ){
+	attack			: function( unit, fn, scope ){
+		if (typeof unit == "string")
+			unit = PANEL.getUnit( unit );
 		//预备攻击返回false则取消执行
 		if (this.fireEvent("preAttack", this) !== false) {
 			this.attacking = true;
+			this.on("attack", fn, scope, { one : true });
 			//判断暴击
 			var bursting = false;
 			if ( (1 + Math.random() * 99) <= this.burst ){
@@ -275,14 +278,15 @@ var Unit = Observable.extend({
 					this.attackFreq++;
 					if ( this.attackFreq >= this.attackFreqMax || defender.dead ){
 						this.fireEvent("attack", this, unit, hit );
-						//TODO 逻辑有问题
-						var n = hit;
-						this.addExp( n, function(){
-							log( this.name + " addExp end" );
-							//结束本回合
+						if (!PANEL.isScripting()) {
+							//TODO 逻辑有问题
+							var n = hit;
+							this.addExp(n, function(){
+								log(this.name + " addExp end");
+								//结束本回合
 								this.finish();
-						}, this );
-						
+							}, this);
+						}
 					}else{
 						//继续攻击同一目标
 						this.attack( unit );
@@ -290,7 +294,8 @@ var Unit = Observable.extend({
 				}, this );
 				
 			}, this);
-		}
+		}else if ( fn )
+			fn.call( scope || this, this, unit, -1 );
 		
 		return this;
 	},
@@ -380,19 +385,10 @@ var Unit = Observable.extend({
 			if (this.hp == 0) {
 				if (this.fireEvent("preDead", this) === false) {
 					//如果不让死
+					if( fn )
+						fn.call( scope || this, this, true, d, unit );					
 				}else{
-					log( this.name + " dead" );
-					this.ui.dead( function(){
-						this.dead = true;
-						
-						//先反馈攻击者，再触发dead事件
-						if ( fn )
-							fn.call( scope || this, this, true, d, unit );
-							
-						this.onDead( unit );
-						//死了也要触发standby事件
-						this.fireEvent( "standby", this );
-					}, this );
+					this.die( unit, fn, scope );
 				}
 			}else{
 				//回调扣血数值
@@ -418,6 +414,21 @@ var Unit = Observable.extend({
 			}
 		}
 	},	
+	
+	die		: function( unit, fn, scope ){
+		log( this.name + " dead" );
+		this.ui.dead( function(){
+			this.dead = true;
+			
+			//先反馈攻击者，再触发dead事件
+			if ( fn )
+				fn.call( scope || this, this, true, 0, unit );
+				
+			this.onDead( unit );
+			//死了也要触发standby事件
+			this.fireEvent( "standby", this );
+		}, this );		
+	},
 	
 	onDead		: function( unit ){
 		//死亡时锁定角色
