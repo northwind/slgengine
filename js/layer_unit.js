@@ -585,9 +585,11 @@ var UnitLayer = Layer.extend({
 		var unit = new Unit(config );
 		
 		unit.on( "standby", function( unit ){
-			log( unit.name + " standby" );
-			this.deleteClicked( unit );
-			this.checkTeamEnd( unit.faction, unit.team );
+			if (!PANEL.isScripting()) {
+				log(unit.name + " standby");
+				this.deleteClicked(unit);
+				this.checkTeamEnd(unit.faction, unit.team);
+			}
 		}, this )
 		.on( "move", function( unit ){
 			log( "unit.auto = "  + unit.auto);
@@ -620,7 +622,8 @@ var UnitLayer = Layer.extend({
 		}, this )
 		.on( "dead", function( unit ){
 			this.delUnit( unit.id );
-			this.checkTeamOver( unit.faction, unit.team );
+			if ( !PANEL.isScripting() )
+				this.checkTeamOver( unit.faction, unit.team );
 		}, this )
 		;
 		

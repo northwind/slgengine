@@ -77,7 +77,7 @@ var Role = Observable.extend({
 							PS.getCanImageTurn( _self.left[1] ),
 							PS.getCanImageTurn( _self.left[2] ) ];
 				}
-			} ,10);
+			} ,50);
 /*
 			_self.right = [PS.getCanImageTurn( _self.left[0] ),  
 							PS.getCanImageTurn( _self.left[1] ),

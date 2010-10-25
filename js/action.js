@@ -119,8 +119,8 @@ var ActionMgr = Manager.extend({
 	next	: function(){
 		var b = this.current.getNext.apply( this.current, arguments );
 		if ( b )
-			this.start( b )
-		else{
+			this.start( b );
+		else if ( b == -1 ){
 			this.stop();
 		}	
 	},
