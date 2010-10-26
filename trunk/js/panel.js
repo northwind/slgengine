@@ -195,7 +195,7 @@ var Panel = Component.extend({
 		Pocket.start();
 		AIController.start();
 		Toolbar.start();
-		ActionMgr.load();
+		EventMgr.load();
 		
 		canvas.height = MAX_H;
 		$( canvas ).show();
@@ -308,25 +308,29 @@ var Panel = Component.extend({
 		this.cellLayer.hideGrid();
 		return this;
 	},
-		
-	moveWinTo			: function(x, y){
+	
+	//移动屏幕300ms后回调	
+	moveWinTo			: function(x, y, fn, scope ){
 		if (x != undefined) 
 			this.el[0].scrollLeft = (this.scrollLeft = x);
 		
 		if (y != undefined) 
 			this.el[0].scrollTop = (this.scrollTop = y);
+		
+		if ( fn )
+			setTimeout( bind( fn, scope || PANEL ), 300 );
 			
 		return this;			
 	},
 	
-	moveWinBy		: function( x, y ){
+	moveWinBy		: function( x, y, fn, scope ){
 		x = x || 0;
 		y = y || 0;
 		
 		x = this.el[0].scrollLeft + x;
 		y = this.el[0].scrollTop + y;
 		
-		this.moveWinTo( x, y );
+		this.moveWinTo( x, y, fn, scope );
 		
 		return this;
 	},
@@ -394,7 +398,7 @@ var Panel = Component.extend({
 	speakTimer		: 0,	
 	speakText		: "",
 	speakUnit		: null,
-	speak			: function( unit, text, fn, scope ){
+	speak			: function( unit, text ){
 		if (this.speaking)
 			this.clearSpeak();
 			
@@ -431,16 +435,17 @@ var Panel = Component.extend({
 	},
 	//取消显示并回调函数
 	clearSpeak		: function(){
-		this.stopSpeakAnimate();
+		this.speaking = false;
+		//this.stopSpeakAnimate();
 		
+		$("#face").removeAttr( "src" );
+		$("._speak p").html("");
+		$("._speech").hide();
+				
 		if (this.speakUnit) {
 			this.speakUnit.stopSpeak();
 			delete this.speakUnit;
 		}
-		$("#face").removeAttr( "src" );
-		$("._speak p").html("");
-		$("._speech").hide();
-		this.speaking = false;
 	},
 	
 	setUnits		: function( data ){

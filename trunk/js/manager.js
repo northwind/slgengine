@@ -6,6 +6,8 @@ var Manager = Observable.extend({
 	len	: 0,
 	
 	init	: function(){
+		this._super( arguments[0] );
+		
 		this.hash = {};
 		
 		return this;

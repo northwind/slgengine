@@ -1,8 +1,7 @@
 /**
- * 单位所扮演的角色
- * 存放通用的配置项
+ * 角色形象展示
  */
-var Role = Observable.extend({
+var Figure  = Observable.extend({
 	imgMove	: "",		//移动
 	imgAtk	: "",		//攻击
 	imgSpc	: "",		//特殊
@@ -26,10 +25,34 @@ var Role = Observable.extend({
 		
 		this._getImageData();
 		
+		//用主动循环检测替代被动接收
+		//canvas.toDataURL或drawImage是异步的
+		var _self = this, attrs = ["down","up","left","right","fall"];
+		this.timer = setInterval( function(){
+			var done = true;
+			for (var i=0; i<attrs.length; i++) {
+				var a = _self[attrs[i]];
+				if ( a ) {
+					for (var j = 0; j < a.length; j++) {
+						var img = a[j];
+						if ( !(img && img.width != 0) ) {
+							done = false;
+							return;
+						}
+					}
+				}else
+					done = false;
+			}
+			if ( done ){
+				clearInterval( _self.timer );
+				_self.fireEvent( "load", _self );
+			}
+		}, 10 );
+		
 		return this;
 	},
 	
-	/*
+	/**
 	 * 将整张图片切割为很多小图片 并缓存起来
 	*/
 	_getImageData	: function(){
@@ -39,9 +62,9 @@ var Role = Observable.extend({
 		//4张图片全部加载完之后
 		function done( src ){
 			//log( _self.name + " : " + src + " done");
-			if (loaded++ >= 3) {
-				_self.fireEvent( "load", _self );
-			}
+			//if (loaded++ >= 3) {
+				//_self.fireEvent( "load", _self );
+			//}
 		}
 		
 		//移动		
@@ -57,78 +80,52 @@ var Role = Observable.extend({
 							PS.getCanImage( ctx, 0, CELL_HEIGHT*0, CELL_WIDTH, CELL_HEIGHT ),
 							PS.getCanImage( ctx, 0, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
 
-			_self.up = [ PS.getCanImage( ctx, 0, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
+			_self.up = [ 	PS.getCanImage( ctx, 0, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
 							PS.getCanImage( ctx, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ),
 							PS.getCanImage( ctx, 0, CELL_HEIGHT *3, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.left = [PS.getCanImage( ctx, 0, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
+			_self.left = [	PS.getCanImage( ctx, 0, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
 							PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
 							PS.getCanImage( ctx, 0, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
 							
 			_self.fall = [	PS.getCanImage( ctx, 0, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
 							PS.getCanImage( ctx, 0, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
 
-			//wait for left image
-			var timer = setInterval( function(){
-				var img = _self.left[ 0 ];
-				if ( img && img.width ){
-					clearInterval( timer );
-					_self.right = [ PS.getCanImageTurn( _self.left[0] ),  
-							PS.getCanImageTurn( _self.left[1] ),
-							PS.getCanImageTurn( _self.left[2] ) ];
-				}
-			} ,50);
-/*
-			_self.right = [PS.getCanImageTurn( _self.left[0] ),  
-							PS.getCanImageTurn( _self.left[1] ),
-							PS.getCanImageTurn( _self.left[2] ) ];
-*/
-												
-			done( _self.imgMove );
+			_self.right = [ PS.getCanImageTurn( this,  0, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
+							PS.getCanImageTurn( this,  0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
+							PS.getCanImageTurn( this,  0, CELL_HEIGHT*5, CELL_WIDTH, CELL_HEIGHT ) ];
 		}
 		_loadImg( _self.imgMove, fn );	
 		
 		//攻击
 		var fn2	= function(){
 			
+			var w = 48;
 			ctx.clearRect( 0,0, this.width, this.height );
 			ctx.drawImage( this, 0, 0  );
 			
 			//生成上下左右ImageData 
 			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
 			_self.adown = [
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT      , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 2, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 3, CELL_WIDTH, CELL_HEIGHT ) ];
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 0, w, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT      , w, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 2, w, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 3, w, CELL_HEIGHT ) ];
 							
-			_self.aup =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT   *   5   , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 6, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 7, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.aup =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 4, w, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT   *   5   , w, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 6, w, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 7, w, CELL_HEIGHT ) ];
 							
-			_self.aleft =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 8, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT    *  9  , CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 10, CELL_WIDTH, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 11, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.aleft =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 8, w, CELL_HEIGHT ),
+							PS.getCanImage( ctx, 0, CELL_HEIGHT    *  9  , w, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 10, w, CELL_HEIGHT ) ,
+							PS.getCanImage( ctx, 0, CELL_HEIGHT * 11, w, CELL_HEIGHT ) ];
 
-			//wait for left image
-			var timer = setInterval( function(){
-				var img = _self.aleft[ 0 ];
-				if ( img && img.width ){
-					clearInterval( timer );
-					_self.aright = [ PS.getCanImageTurn( _self.aleft[0] ),
-							PS.getCanImageTurn( _self.aleft[1] ) ,
-							PS.getCanImageTurn( _self.aleft[2] ) ,
-							PS.getCanImageTurn( _self.aleft[3] ) ];
-				}
-			} ,10);							
-/*
-			_self.aright =[PS.getCanImageTurn( _self.aleft[0] ),
-							PS.getCanImageTurn( _self.aleft[1] ) ,
-							PS.getCanImageTurn( _self.aleft[2] ) ,
-							PS.getCanImageTurn( _self.aleft[3] ) ];	
-*/
+			_self.aright =[	PS.getCanImageTurn( this,  0, CELL_HEIGHT*8,  w, CELL_HEIGHT ),
+							PS.getCanImageTurn( this,  0, CELL_HEIGHT*9,  w, CELL_HEIGHT ) ,
+							PS.getCanImageTurn( this,  0, CELL_HEIGHT*10, w, CELL_HEIGHT ) ,
+							PS.getCanImageTurn( this,  0, CELL_HEIGHT*11, w, CELL_HEIGHT ) ];	
 			
 			done( _self.imgAtk );
 		}
@@ -150,15 +147,7 @@ var Role = Observable.extend({
 			
 			_self.burst = [PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
 			
-			//wait for dleft image
-			var timer = setInterval( function(){
-				var img = _self.dleft[ 0 ];
-				if ( img && img.width ){
-					clearInterval( timer );
-					_self.dright = [PS.getCanImageTurn(  img ) ];
-				}
-			} ,10);
-			//_self.dright = [PS.getCanImageTurn(  _self.dleft[0] ) ];
+			_self.dright = [PS.getCanImageTurn(  this,  0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ) ];
 			
 			done( _self.imgSpc );
 		}

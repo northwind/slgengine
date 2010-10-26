@@ -11,7 +11,7 @@ $(function(){
 	PANEL.on( "start", function( panel ){
 		PANEL.moveWinTo( 0,1000 );
 		PANEL.showGrid();
-		ActionMgr.start( 0 );
+		//ActionMgr.start( 9 );
 		
 		//var unit = panel.getUnit( "caocao" );
 		//unit.showAttack();

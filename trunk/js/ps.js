@@ -14,9 +14,9 @@ var PS = function( config ){
 
 PS.prototype = {
 	
-	/*
+	/**
 	 * 复制ctx中某一区域图像，转成Image
-*/
+	*/
 	getCanImage	: function( ctxOri, x,y, w, h, callback ){
 		var img = new Image(), can = this.canvas;
 		
@@ -33,11 +33,13 @@ PS.prototype = {
 		
 		return img;
 	},
-
-	getCanImageTurn	: function( img ){
-		//console.debug( "img = " + img );
+	/**
+	 * 反转图片并裁剪
+	 * 没有传裁剪信息时返回整张图
+	*/
+	getCanImageTurn	: function( img, x, y, w, h ){
 		var ret = new Image(), can = this.canvas, c = this.ctx;
-		var w = img.width, h = img.height;
+		var w = w || img.width, h = h || img.height;
 		
 		can.width = w;
 		can.height = h;
@@ -48,7 +50,11 @@ PS.prototype = {
 		c.translate( w, 0 );
 		c.transform( matrix.M11,  matrix.M12, matrix.M21, matrix.M22, 0,0 );
 		
-		c.drawImage( img, 0, 0 );
+		if ( x == undefined )
+			c.drawImage( img, 0, 0 );
+		else
+			c.drawImage( img, x, y, w, h, 0, 0, w, h );
+			
 		var data = can.toDataURL();
 		
 		c.restore();
