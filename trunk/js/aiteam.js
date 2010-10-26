@@ -3,10 +3,10 @@
  * 负责协调调度各个角色执行顺序
  */
 var AITeam = Observable.extend({
-	team	: null,
+	unit	: null,
 	units	: null,
 	mode	: null, //TODO 每个角色拥有各自的AI逻辑
-	suspend : false,
+	running : false,
 	
 	init	: function(){
 		this._super( arguments[0] );
@@ -19,6 +19,7 @@ var AITeam = Observable.extend({
 	},
 	
 	start	: function( team ){
+		this.running = true;
 		this.team = team;
 		this.scanUnits();
 		this.analyze();
@@ -38,15 +39,23 @@ var AITeam = Observable.extend({
 	//分析执行顺序
 	analyze	: function(){
 		for( var key in this.units ){
-			var unit = this.units[ key ];
-			this.mode.start( unit );
+			this.unit = this.units[ key ];
+			this.mode.start( this.unit );
 			break;
 		}
 	},
 	
-	stop	: function( team ){
-		this.units = {};
+	pause	: function(){
+		if (this.running && this.unit) {
+			this.unit.pause();
+		}
 	},
+	
+	goon	: function(){
+		if ( this.running && this.unit ) {
+			this.unit.goon();
+		}
+	},	
 	
 	//扫描自己人
 	scanUnits	: function(){

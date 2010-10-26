@@ -1,13 +1,14 @@
 /**
  * 动作
  * 事件触发后按序执行动作
- * next  : 该动作执行过后的下个动作
+ * next  : 该动作执行过后的下个动作 >下个动作 <上一个动作
  * desc : 该动作的描述
  * type	: 动作类型 1 角色动作 2系统动作 
  * options : 弹出选择项
  */
 var Action = Observable.extend({
-	next	: null,
+	index		: null,
+	next	: ">",
 	desc : "",
 	script : "",
 	fn		  : null,
@@ -47,7 +48,11 @@ var Action = Observable.extend({
 			//如果是有选择框 第一个参数为选择项
 			var v = arguments[0];
 			return v;
-		}else		
+		}else if ( this.next == ">" )
+			return ++this.index;
+		else if ( this.next == "<" )
+			return --this.index;
+		else				
 			return this.next;
 	}
 }); 

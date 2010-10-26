@@ -300,10 +300,11 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
-	attackCell		: function( cell, fn, scope ){
+	attackEmpty		: function( fn, scope ){
 		this.attacking = true;
-		this.ui.attack( cell, false, 0, function(){
-			log( this.name + "attack over" );
+		this.on("attack", fn, scope, { one : true });
+		
+		this.ui.attack( null, false, 0, function(){
 			this.fireEvent("attack", this);
 			this.attacking = false;
 		}, this);		

@@ -32,7 +32,7 @@ var Panel = Component.extend({
 		
 		this._super( config );
 		
-		this.addEvents("click", "globalClick","mouseleave","mousemove","contextmenu","keydown","keyup", "paint", "load", "start", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
+		this.addEvents("click", "runScript", "stopScript", "globalClick","mouseleave","mousemove","contextmenu","keydown","keyup", "paint", "load", "start", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
 		
 		LayerMgr.setWrap( this.el );
 		
@@ -193,9 +193,9 @@ var Panel = Component.extend({
 		
 	start				: function(){
 		Pocket.start();
-		AIController.start();
 		Toolbar.start();
 		EventMgr.load();
+		AIController.start();
 		
 		canvas.height = MAX_H;
 		$( canvas ).show();
@@ -509,9 +509,11 @@ var Panel = Component.extend({
 	
 	runScript		: function(){
 		this.scripting = true;
+		this.fireEvent( "runScript", this );
 	},
 	stopScript	: function(){
 		this.scripting = false;
+		this.fireEvent( "stopScript", this );
 	},
 	isScripting	: function(){
 		return this.scripting;
