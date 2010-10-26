@@ -3,16 +3,8 @@
  */
 var 
 //UNIT集合，配置项参考UNIT类
-UNITS	= [{
-	gx :  10,  gy : 6,  type : 100, moveable : true, overlay : false, range : 3, rangeType : 6,
-	symbol	: "caocao", name : "曹操", hp : 4 , attackFreqMax : 2, faction : 1, team : 100, exp : 98, id : "caocao", mp : 100,
-	listeners : {
-		dead	: function(){
-			//alert( this.name );
-		}
-	},
-	magicNames	: [ "light", "storm" ]
-},
+UNITS	= [
+
 //友军
 {
 	id: "firstDie", gx :  7,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 1, symbol	: "archerYellow", miss : 0,
@@ -39,14 +31,17 @@ UNITS	= [{
 			return false;
 		}
 	}		 	
+},{
+	id : "liubei", gx :  12,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "liubei", 
+	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "刘备", level : 1	 	
 },
 
 //敌军
 {
-	 gx :  9,  gy : 11, range : 2, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
+	 id : "zhangbao", gx :  9,  gy : 11, range : 2, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张宝", level : 5, face : "images/face/154-1.png"	
 },{
-	gx :  10,  gy : 11, range : 2, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
+	 id : "zhangliang", gx :  10,  gy : 11, range : 2, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张梁", level : 5, face : "images/face/155-1.png"	
 },{
 	gx :  5,  gy : 10, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",

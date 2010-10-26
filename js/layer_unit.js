@@ -69,14 +69,19 @@ var UnitLayer = Layer.extend({
 	},
 	
 	startTeam	: function( team ){
-		if ( team.faction != FACTION || team.team != TEAM ) 
-			//提示信息消失后再触发
-			PANEL._showTopLine(team.name + " 阶段", function(){
-				this.fireEvent("teamStart", team, this.teamIndex);
-			}, this);
-		else {
-			this.fireEvent("teamStart", team, this.teamIndex);
-		}	
+		if ( this.getTeamMember( team ) == 0 ){
+			//没有可行动的角色时 跳过该队伍
+			this.endTeam( team.faction, team.team );
+		}else{
+			//if ( team.faction != FACTION || team.team != TEAM ) 
+				//提示信息消失后再触发
+				PANEL._showTopLine(team.name + " 阶段", function(){
+					this.fireEvent("teamStart", team, this.teamIndex);
+				}, this);
+			//else {
+			//	this.fireEvent("teamStart", team, this.teamIndex);
+			//}				
+		}		
 	},
 	
 	onTeamStart	: function( team ){
@@ -110,8 +115,20 @@ var UnitLayer = Layer.extend({
 		}else{
 			//继续下一个队伍
 			var team = this.teams[ this.teamIndex ];
+			
 			this.startTeam( team );
 		}
+	},
+	
+	getTeamMember	: function( team ){
+		var count = 0, f = team.faction, t = team.team;
+		for (var key in this.units) {
+			var unit = this.units[key];
+			if ( unit.faction == f && unit.team == t && !unit.dead ) {
+				count++;
+			}
+		}		
+		return count;	
 	},
 	
 	endTeamUnits : function( f, t ){

@@ -8,41 +8,12 @@ $(function(){
 		
 	PANEL = new Panel();
 	
+/*
 	PANEL.on( "start", function( panel ){
 		PANEL.moveWinTo( 0,1000 );
 		PANEL.showGrid();
-		//ActionMgr.start( 9 );
-		
-		//var unit = panel.getUnit( "caocao" );
-		//unit.showAttack();
-		
-		/*
-		unit.go( CellMgr.get( 10, 5 ), function(){
-			
-			unit.speak( "这是第几天 这一座城市每天在下雪", function(){
-				
-				unit.attackCell( PANEL.getCell( 0,0 )  );
-				
-				PANEL.stopScript();
-			} );			
-			
-		} );
-		*/
-		//PANEL.addStatic( "fire", 100, 100 );
-		//PANEL.addStatic( "redStar", 200, 100 );
-		//PANEL.addStatic( "storm", 200, 100 );
-		
-		//unit.addBuff( "confuse" );
-		//unit.addBuff( "stop" );
-		
-		//unit.speak( "这是第几天 这一座城市每天在下雪", function(){
-			
-			//unit.gainStuff( Pocket.get( "1" ) );
-			//unit.fall();
-			//unit.attackCell( PANEL.getCell( 0,0 )  );
-			
-		//} );
 
 	} );
+*/
 		
  });

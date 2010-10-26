@@ -359,7 +359,7 @@ var UnitUI = Observable.extend({
 	//分为两个阶段 1聚起武器 2攻击
 	attack	: function( cell, bursting, hit, fn , scope ){
 		//判断方向
-		var direct = this.unit.cell.directT( cell );	
+		var direct = cell ? this.unit.cell.directT( cell ) : this.direct;	
 		var actions = this.imgs["a" + direct], first  = actions[ 0 ];
 		//如果致命一击 则高亮第一个动作
 		if ( bursting ){
@@ -369,14 +369,14 @@ var UnitUI = Observable.extend({
 		var obj1 = {
 			inter	: ASPEED,
 			//延长攻击第一帧显示时间
-			items	: [ first, first, first, actions[1] ],
+			items	: [ first, first, actions[1] ],
 			fn 		: fn, 
 			scope	: scope,
 			direct	: direct
 		}
 		var obj2 = {
 			inter	: ASPEED,
-			items	: [ actions[2], actions[3] ],
+			items	: [ actions[2], actions[3],  actions[3] ],
 			direct	: direct
 		}	
 		this.pushImg( obj1 );

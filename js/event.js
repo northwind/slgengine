@@ -14,11 +14,11 @@ var Event = Manager.extend({
 	options	: null,
 	current	: null,
 	index	: 0, 
+	condition : null,
 	
 	init	: function( config ){
 		this._super( arguments[0] );
 		
-		//this.actions = config.actions;
 		this.options = this.options || { one : true };
 		
 		return this;
@@ -34,6 +34,8 @@ var Event = Manager.extend({
 			var actions = this.actions;
 			for (var i=0; i<actions.length; i++) {
 				var a, config = $.extend( {
+					index	: i,
+					type		: 1,
 					fn	: this.next,
 					scope : this
 				}, actions[ i ] );
@@ -48,12 +50,38 @@ var Event = Manager.extend({
 				this.reg( i, a );					
 			}
 			//注册事件
-			obj.on( this.name, this.start, this, this.options );
+			obj.on( this.name, this.check, this, this.options );
+		}
+	},
+	
+	/**
+	 * 进行判断
+	 * index : 第几个参数
+	 * symbol : == | >= | <= | < | > ...
+	 * compare	 :  待对比项
+	 */
+	check	: function(){
+		var flag = true;
+		if ( this.condition && this.condition.length > 0 ){
+			for (var i=0; i<this.condition.length; i++) {
+				var c = this.condition[i];
+				var l = arguments[ c.index || 0 ];
+				try {
+					eval("flag=flag && (" + l + (c.symbol || "==") + c.compare + ")");
+				} 
+				catch (e) {
+					flag = true;
+				}
+			}
+		}
+		if ( flag ){
+			this.start();
 		}
 	},
 	
 	next	: function(){
 		var b = this.current.getNext.apply( this.current, arguments );
+		log( "b=" + b );
 		if ( b )
 			this.process( b );
 		else if ( b == -1 ){

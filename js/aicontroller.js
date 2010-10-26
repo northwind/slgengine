@@ -1,15 +1,14 @@
 /**
  * AI控制器
  * 负责开启与关闭AI
+ * 主动轮询是否正在执行脚本，如果是则暂停
  */
 var AIController = Observable.extend({
 	teamAI	: null,
-	runing	: false,
+	running	: false,
 	
 	init: function(){
 		this._super(arguments[0]);
-		
-		
 		
 		return this;
 	},
@@ -17,6 +16,8 @@ var AIController = Observable.extend({
 	start	: function(){
 		PANEL.on( "teamStart", this.onTeamStart, this );
 		PANEL.on( "teamEnd", this.onTeamEnd, this );
+		PANEL.on( "runScript", this.pause, this );
+		PANEL.on( "stopScript", this.goon, this );
 	},
 	
 	getAITeam	: function(){
@@ -28,20 +29,31 @@ var AIController = Observable.extend({
 	
 	onTeamStart	: function( team ){
 		log( "team start : faction = " + team.faction + " team = " + team.team );
-		log( "running = " + this.runing );
-		if ( !this.runing && (team.faction != FACTION || team.team != TEAM) ){
-			this.runing = true;
+		if ( !this.running && (team.faction != FACTION || team.team != TEAM) ){
+			this.running = true;
 			this.team = team;
 			this.getAITeam().start( team );
 		} 
 	},
 	
 	onTeamEnd	: function( team ){
-		if ( this.runing && (team.faction == this.team.faction  && team.team == this.team.team ) ){
-			this.runing = false;
+		if ( this.running && (team.faction == this.team.faction  && team.team == this.team.team ) ){
+			this.running = false;
 			this.getAITeam().stop( team );
 			delete this.team;
 		} 
+	},
+	
+	pause	: function(){
+		if (this.running) {
+			this.getAITeam().pause();
+		}
+	},
+	
+	goon	: function(){
+		if (this.running) {
+			this.getAITeam().goon();
+		}
 	}	
 	
 }); 
