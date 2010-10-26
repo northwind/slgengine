@@ -410,8 +410,9 @@ var UnitUI = Observable.extend({
 
 	speak	: function( fn , scope ){
 		var i=0, items = [], deeps = [ 20,30,40,50,60,70,80,90,100,100,90,80,70,60,50,40,30 ];
+		var status = this.unit.debility ? "fall" : this.direct;
 		for (var i=0; i<deeps.length; i++) {
-			items.push( this.imgs.highlight( this.direct + deeps[i], this.imgs[ this.direct ][0], deeps[i] ) )
+			items.push( this.imgs.highlight( status + deeps[i], this.imgs[ status ][0], deeps[i] ) )
 		}
 		var obj = {
 			inter	: 1,
@@ -443,6 +444,7 @@ var UnitUI = Observable.extend({
 			inter	: SPEED * 2,
 			items	: [ this.imgs.left[0] ],
 			fn 		: fn, 
+			direct	: "left",
 			scope	: scope
 		};
 		
@@ -454,6 +456,7 @@ var UnitUI = Observable.extend({
 			inter	: SPEED * 2,
 			items	: [ this.imgs.right[0] ],
 			fn 		: fn, 
+			direct	: "right",
 			scope	: scope
 		};
 		
@@ -465,6 +468,7 @@ var UnitUI = Observable.extend({
 			inter	: SPEED * 2,
 			items	: [ this.imgs.up[0] ],
 			fn 		: fn, 
+			direct	: "up",
 			scope	: scope
 		};
 		
@@ -476,6 +480,7 @@ var UnitUI = Observable.extend({
 			inter	: SPEED * 2,
 			items	: [ this.imgs.down[0] ],
 			fn 		: fn, 
+			direct	: "down",
 			scope	: scope
 		};
 		

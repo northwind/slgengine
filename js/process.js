@@ -93,18 +93,18 @@ var Process = Observable.extend({
 	_loadRoleImg	: function(){
 		ImgMgr = new Manager();
 		var count = 0, _self = this;
-		for( var key in ROLES ){
+		for( var key in FIGURES ){
 			count++;
 		} 		
-		for( var key in ROLES ){
-			var r = new Role( $.extend( {
+		for( var key in FIGURES ){
+			var r = new Figure( $.extend( {
 				id	: key,
 				listeners	: {
 					load	: function( role ){
-						_self.add( 52/ count , role.id + "图片加载完毕..." );
+						_self.add( 51/ count , role.id + "图片加载完毕..." );
 					}
 				}
-			}, ROLES[ key ] ) );
+			}, FIGURES[ key ] ) );
 			
 			ImgMgr.reg( key, r );
 		} 

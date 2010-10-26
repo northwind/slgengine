@@ -587,11 +587,15 @@ var Unit = Observable.extend({
 		
 		return this;
 	},
+	//停止说话300ms后再触发speak事件
 	stopSpeak : function(){
 		if ( this.speaking ){
-			this.speaking = false;
 			this.ui.stopAnimation();
-			this.fireEvent( "speak", this );
+
+			setTimeout( bind(function(){
+				this.fireEvent( "speak", this );
+				this.speaking = false;	
+			}, this ), 300 );			
 		}
 		return this;
 	},

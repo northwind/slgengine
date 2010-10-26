@@ -4,13 +4,13 @@
  * 
  * one : 只执行一次
 */
-var Event = function(obj, name){
+var EventObs = function(obj, name){
     this.name = name;
     this.obj = obj;
     this.listeners = [];
 };
 
-Event.prototype = {
+EventObs.prototype = {
     addListener : function(fn, scope, options){
         scope = scope || this.obj;
         if(!this.isListening(fn, scope)){
@@ -130,7 +130,7 @@ var Observable = Class.extend({
         eventName = (eventName+"").toLowerCase();
         var ce = this.events[eventName] || true;
         if(typeof ce == "boolean"){
-            ce = new Event(this, eventName);
+            ce = new EventObs(this, eventName);
             this.events[eventName] = ce;
         }
         ce.addListener(fn, scope, o);
