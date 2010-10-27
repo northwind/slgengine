@@ -7,6 +7,7 @@ var AITeam = Observable.extend({
 	units	: null,
 	mode	: null, //TODO 每个角色拥有各自的AI逻辑
 	running : false,
+	suspend	: false,	//暂停
 	
 	init	: function(){
 		this._super( arguments[0] );
@@ -18,14 +19,15 @@ var AITeam = Observable.extend({
 		return this;
 	},
 	
-	start	: function( team ){
+	start	: function(){
+		log("aiteam start");
 		this.running = true;
-		this.team = team;
 		this.scanUnits();
 		this.analyze();
 	},
 	
 	onModeEnd	: function( unit ){
+		delete this.unit;
 		for( var key in this.units ){
 			var u = this.units[ key ];
 			if ( u.id == unit.id ){
@@ -38,35 +40,48 @@ var AITeam = Observable.extend({
 	
 	//分析执行顺序
 	analyze	: function(){
-		for( var key in this.units ){
-			this.unit = this.units[ key ];
-			this.mode.start( this.unit );
-			break;
+		if (!this.suspend) {
+			for (var key in this.units) {
+				this.unit = this.units[key];
+				this.mode.start(this.unit);
+				break;
+			}
 		}
 	},
 	
+	stop	: function(){
+		this.running = false;
+		delete this.team;
+	},
+	
 	pause	: function(){
-		if (this.running && this.unit) {
-			this.unit.pause();
+		this.suspend = true;
+		if ( this.running ) {
+			if ( this.unit )
+				this.mode.pause( this.unit );
 		}
 	},
 	
 	goon	: function(){
-		if ( this.running && this.unit ) {
-			this.unit.goon();
+		this.suspend = false;
+		if ( this.running ) {
+			
+			if ( this.unit )
+				this.mode.goon( this.unit );
+			else
+				this.analyze();	//寻找下一个	
+		}else{
+			this.start();	//开始运行
 		}
 	},	
 	
 	//扫描自己人
 	scanUnits	: function(){
-		var units = PANEL.unitsLayer.units;
-		for( var key in units ){
-			var unit = units[ key ];
-			if ( unit.isSibling( this.team.faction, this.team.team ) ){
-				this.units[ key ] = unit;
-			}
-		}
-	}
-		
+		this.units = PANEL.unitsLayer.getTeamMember( this.team.faction, this.team.team );
+	},
+	
+	bind	: function( team ){
+		this.team = team;
+	}	
 }); 
 

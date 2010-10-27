@@ -3,11 +3,12 @@
  * 负责统一调用角色的接口
  * 触发 回合/队伍 事件
  * 支持寻路/攻击/移动的方法
+ * units	: 当前战场中可见的所有角色
+ * items	: 所有角色 包括未上场或已经死亡的角色
  */
 var UnitLayer = Layer.extend({
 	clicked : null,	//已点击
 	overed	 : null,  //滑过的
-	attaColor		: "rgba(255,0,0,0.5)", 
 	
 	teamIndex	: 0,	//当前哪只队伍在行动
 	round		: 0,    //第几回合
@@ -21,15 +22,13 @@ var UnitLayer = Layer.extend({
 		this.addEvents( "loading", "click", "load", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
 		
 		var _self = this;
-		//定时更新
-		PANEL.on("update", this.update, this );
 		//点击画布
-		PANEL.on("click", this.onClick, this);
-		PANEL.on("contextmenu", this.onContextmenu, this);
-		PANEL.on("mousemove", this.onMousemove, this);
-		PANEL.on("keydown", this.onKeydown, this);
-		PANEL.on("keyup", this.onKeyup, this);
-		PANEL.on("paint", this.onPaint, this );
+		PANEL.on("click", this.onClick, this)
+			 .on("contextmenu", this.onContextmenu, this)
+			 .on("mousemove", this.onMousemove, this)
+			 .on("keydown", this.onKeydown, this)
+			 .on("keyup", this.onKeyup, this)
+			 .on("paint", this.onPaint, this ); //定时更新
 		
 		return this;
 	},
@@ -69,13 +68,14 @@ var UnitLayer = Layer.extend({
 	},
 	
 	startTeam	: function( team ){
-		if ( this.getTeamMember( team ) == 0 ){
+		if ( this.getTeamMemberCount( team.faction, team.team ) == 0 ){
 			//没有可行动的角色时 跳过该队伍
 			this.endTeam( team.faction, team.team );
 		}else{
 			//if ( team.faction != FACTION || team.team != TEAM ) 
 				//提示信息消失后再触发
 				PANEL._showTopLine(team.name + " 阶段", function(){
+					log( "teamStart : " + team.name );
 					this.fireEvent("teamStart", team, this.teamIndex);
 				}, this);
 			//else {
@@ -120,14 +120,26 @@ var UnitLayer = Layer.extend({
 		}
 	},
 	
-	getTeamMember	: function( team ){
-		var count = 0, f = team.faction, t = team.team;
+	//返回该队伍所有成员	
+	getTeamMember	: function( f, t ){
+		var list = {};
 		for (var key in this.units) {
 			var unit = this.units[key];
-			if ( unit.faction == f && unit.team == t && !unit.dead ) {
-				count++;
+			if ( unit.isSibling( f, t ) && !unit.dead ) {
+				list[ key ] = unit;
 			}
 		}		
+		return list;	
+	},
+	
+	//返回该队伍拥有多少个成员	
+	getTeamMemberCount	: function( f, t ){
+		var count = 0;
+		
+		for (var key in this.getTeamMember( f, t) ) {
+			count++;
+		}		
+		
 		return count;	
 	},
 	
@@ -157,39 +169,25 @@ var UnitLayer = Layer.extend({
 	},
 		
 	setUnits : function( data ){
-		this.data = data;
-
-		//给每个unit绑定load事件
-		var count = 1, sum = this.data.length;
-		var callback = function( unit ){
+		for (var i = 0; i < data.length; i++) {
+			var item = this._initUnit(  data[i] );
+			this.items.reg( item.id, item );
 			
-			this.fireEvent( "loading", unit, sum, count );
-			
-			if ( count++ >= sum ){
-				this.fireEvent( "load", sum );
+			//添加没有阵亡同时可见的角色
+			if ( !item.dead && item.visiable ){
+				this.units[ getIndex( item.gx, item.gy) ] = item;
 			}
-		};
-		
-		for (var i = 0; i < this.data.length; i++) {
-			var item = this.data[i];
-			//添加监听器
-		    item.listeners = item.listeners || {};
-			item.listeners.load = item.listeners.load || {
-				fn	: callback, scope : this
-			}			
-			this.units[ getIndex( item.gx, item.gy) ] = this._initUnit(item);
 		}			
 		return this;
 	},
 	
-	onPaint	: function( timestamp ){
-		//console.debug( "unit layer" );
+	onPaint	: function(){
 		if (this.units) {
 			//绘制图像
 			for( var key in this.units ){
 				var unit = this.units[ key ];
 				
-				unit.draw( timestamp );
+				unit.draw();
 			}
 			//绘制状态图标
 			for( var key in this.units ){
@@ -199,13 +197,10 @@ var UnitLayer = Layer.extend({
 			for( var key in this.units ){
 				var unit = this.units[ key ];
 				
-				unit.drawTip( timestamp );
+				unit.drawTip();
 			}			
 		}		
 	},
-	
-	update	: function( timestamp ){
-	},	
 	
 	onKeydown	: function( e ){
 		//按ALT时
@@ -531,25 +526,18 @@ var UnitLayer = Layer.extend({
 		
 		return this;
 	},
+	
 	getUnit	: function( key ){
 		return this.units[ key ];
 	},	
+	
 	getUnitById : function( id ){
-		for( var key in this.units ){
-			if (this.units[key].id == id) {
-				return this.units[key];
-			}
-		}
+		return this.items.get( id ); 
 	},		
-	delUnit		: function( id ){
-		if ( this.units ){
-			for( var key in this.units ){
-				if (this.units[key].id == id) {
-					delete this.units[key];
-					break;
-				}
-			}
-		}
+	
+	delUnit		: function( index ){
+		delete this.units[ index ];
+			
 		return this;		
 	},
 	
@@ -588,13 +576,6 @@ var UnitLayer = Layer.extend({
 			this.overTeam( faction, team );
 		}
 	},	
-	//检查失败/胜利条件
-	checkVOF		: function( unit ){
-		if ( unit.symbol == "caocao" ){
-			log( "失败了" );
-		}
-		return false;
-	},
 	
 	_initUnit	: function( config ){
 		config.layer = this;
@@ -638,7 +619,7 @@ var UnitLayer = Layer.extend({
 			this.deleteClicked( unit );
 		}, this )
 		.on( "dead", function( unit ){
-			this.delUnit( unit.id );
+			this.delUnit( unit.cell.index );
 			if ( !PANEL.isScripting() )
 				this.checkTeamOver( unit.faction, unit.team );
 		}, this )

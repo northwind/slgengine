@@ -215,10 +215,18 @@ var Panel = Component.extend({
 		this.fireEvent( "load", this );		
 		//报幕
 		//this._showTopLine( CHAPTER, function(){
+			this.fireEvent("paint", this );
+			
 			log("start" );
-			this.unitsLayer.on( "roundStart", function(){
-				this.fireEvent( "start", this );				
-			}, this ,{ one : true }).start();
+			this.fireEvent( {
+				name	:  "start",
+				fn		:  function(){
+					this.unitsLayer.start();
+				},
+				scope	: this
+			}, this );
+				
+			
 		//}, this );
 	},
 	
@@ -259,11 +267,11 @@ var Panel = Component.extend({
 				fn.call( scope || _self )			
 		} );
 	},
-	showOptions			: function( title, options, fn, scope ){
-		this._showOptions( null, title, options, fn, scope );
+	choose			: function( title, options, fn, scope ){
+		this._choose( null, title, options, fn, scope );
 	},	
 	//显示选择框
-	_showOptions		: function( src, title, options, fn, scope ){
+	_choose		: function( src, title, options, fn, scope ){
 		this.mask();
 		
 		var ct = $("._options").clone(), _self = this, clicked = false;
@@ -483,8 +491,10 @@ var Panel = Component.extend({
 	},
 	
 	delUnit			: function( id ){
-		this.unitsLayer.delUnit( id );
-		
+		var unit = this.getUnit( id );
+		if (unit) {
+			this.unitsLayer.delUnit( unit.cell.index );
+		}
 		return this;		
 	},
 	

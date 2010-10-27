@@ -506,6 +506,16 @@ var UnitUI = Observable.extend({
 		
 		this.pushImg( obj );				
 	},
+	appear		: function( fn, scope ){
+		var obj = {
+			inter	: 2,
+			items	: [ this.imgs[this.direct][0], this.imgs[this.direct][0] ],
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.pushImg( obj );		
+	},
 				
 	invincible	: function( fn , scope ){
 		this.pushTip( {
