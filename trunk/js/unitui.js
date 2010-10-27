@@ -57,7 +57,10 @@ var UnitUI = Observable.extend({
 					//更改角色所处方向
 					if ( a.direct )
 						this.direct = a.direct;
-						
+					//还原宽高	
+					this.w = CELL_WIDTH;
+					this.h = CELL_HEIGHT;
+					
 					if (a.fn) 
 						a.fn.apply(a.scope || this, a.params || [] );
 					
@@ -369,14 +372,28 @@ var UnitUI = Observable.extend({
 		var obj1 = {
 			inter	: ASPEED,
 			//延长攻击第一帧显示时间
-			items	: [ first, first, actions[1] ],
+			items	: [ {
+				img	: first,  w : 64
+			}, {
+				img	: first,  w : 64
+			},{
+				img	: first,  w : 64
+			},{
+				img	: actions[1],  w : 64
+			} ],
 			fn 		: fn, 
 			scope	: scope,
 			direct	: direct
 		}
 		var obj2 = {
 			inter	: ASPEED,
-			items	: [ actions[2], actions[3],  actions[3] ],
+			items	: [ {
+				img	: actions[2],  w : 64
+			}, {
+				img	: actions[3],  w : 64
+			},{
+				img	: actions[3],  w : 64
+			} ],
 			direct	: direct
 		}	
 		this.pushImg( obj1 );

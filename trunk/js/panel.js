@@ -218,6 +218,7 @@ var Panel = Component.extend({
 			this.fireEvent("paint", this );
 			
 			log("start" );
+/*
 			this.fireEvent( {
 				name	:  "start",
 				fn		:  function(){
@@ -225,8 +226,9 @@ var Panel = Component.extend({
 				},
 				scope	: this
 			}, this );
-				
-			
+*/
+			this.fireEvent( "start", this );	
+			this.unitsLayer.start();
 		//}, this );
 	},
 	

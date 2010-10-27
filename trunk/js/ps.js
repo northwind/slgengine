@@ -34,6 +34,19 @@ PS.prototype = {
 		return img;
 	},
 	/**
+	 * 将图片存入在一个canvas中
+	*/
+	putImgToCanvas	: function( img, x,y, w, h ){
+		var ret = document.createElement("canvas"),
+			   c = ret.getContext("2d");
+		
+		try {
+			c.drawImage( img, x, y, w, h, 0, 0, w, h );
+		} catch (e) {}
+
+		return ret;
+	},	
+	/**
 	 * 反转图片并裁剪
 	 * 没有传裁剪信息时返回整张图
 	*/
@@ -62,7 +75,24 @@ PS.prototype = {
 		ret.src = data;
 		return ret;
 	},
-	
+	/**
+	 * 将图片存入在一个canvas中
+	*/
+	putImgToCanvasTurn	: function( img, x,y, w, h ){
+		var ret = document.createElement("canvas"),
+			   c = ret.getContext("2d");
+
+		var matrix  = this.getMatrix( Math.PI, 1, -1 );
+		//变换坐标系
+		c.translate( w, 0 );
+		c.transform( matrix.M11,  matrix.M12, matrix.M21, matrix.M22, 0,0 );
+				
+		//try {
+			c.drawImage( img, x, y, w, h, 0, 0, w, h );
+		//} catch (e) {}
+
+		return ret;
+	},		
 	getMatrix	:    function (radian, x, y) {
         var Cos = Math.cos(radian), Sin = Math.sin(radian);
         return {
