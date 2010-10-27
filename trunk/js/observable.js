@@ -3,6 +3,7 @@
  * 所有对象具有事件响应的能力
  * 
  * one : 只执行一次
+ * sync: 异步执行
 */
 var EventObs = function(obj, name){
     this.name = name;
@@ -98,7 +99,7 @@ var Observable = Class.extend({
 	    }		
 	},	
 	
-    fireEvent : function(){
+    fireEvent : function( config ){
         if(this.eventsSuspended !== true){
             var ce = this.getEvent( arguments[0] );
             if( ce )

@@ -12,6 +12,7 @@ var Unit = Observable.extend({
 	active  : true,			//是否有效
 	overlay	: false,			//是否可以叠加
 	auto	: false,	//是否在自动移动
+	visiable: true,		//是否可见
 	gx		: -1,			//所处行
 	gy		: -1,			//所处列
 	step		: 5,          //行动力
@@ -93,7 +94,7 @@ var Unit = Observable.extend({
 		this.mp = this.mp || this.mpMax;
 		this._calcHpPercent();
 		
-		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
+		this.setCell();
 		
 		this.setUI();
 		this.setMagic();
@@ -101,6 +102,11 @@ var Unit = Observable.extend({
 		this.on( "move", function(){ this.moving = false; }, this );
 		this.on( "speak", function(){ this.speaking = false; }, this );
 		
+		return this;
+	},
+	
+	setCell		: function(){
+		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
 		return this;
 	},
 	
@@ -644,8 +650,21 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
-	showOptions	: function( title, options, fn, scope ){
-		PANEL._showOptions( this.face, title, options, fn, scope );
+	choose	: function( title, options, fn, scope ){
+		PANEL._choose( this.face, title, options, fn, scope );
+	},
+	
+	showAt		: function( x, y, fn, scope ){
+		this.gx = x;
+		this.gy = y;
+		this.setCell();
+		
+		if ( fn )
+			this.on( "appear", fn, scope, { one : true } );
+		
+		this.ui.appear( function(){
+			this.fireEvent( "appear", this );
+		}, this );
 	}
 }); 
 //计算升级所需经验

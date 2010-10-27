@@ -5,6 +5,8 @@
 var AIUnit  = Observable.extend({
 	unit	: null,
 	enemy	: null,
+	running	: false,
+	suspend : false,
 	
 	init	: function(){
 		this._super( arguments[0] );
@@ -21,6 +23,7 @@ var AIUnit  = Observable.extend({
 		}, this,  { one : true } );
 
 */		
+		this.running = true;
 		this.unit.auto = true;
 		this.unit.showMe();
 		this.enemy = this.scanEnemy();
@@ -40,6 +43,7 @@ var AIUnit  = Observable.extend({
 			this.fireEvent( "end", unit, this );
 		}, this,  { one : true } );
 		
+		this.running = false;
 		this.unit.finish();
 	},
 	
@@ -165,6 +169,18 @@ var AIUnit  = Observable.extend({
 		}
 		
 		return neighbor;
+	},
+	
+	pause	: function(){
+		if ( this.running ) {
+			this.suspend = true;
+		}
+	},
+	
+	goon	: function(){
+		if ( this.running ) {
+			this.suspend = false;
+		}
 	}
 		
 }); 
