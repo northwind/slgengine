@@ -14,7 +14,7 @@ var Figure  = Observable.extend({
 		if( UNDERCOVER ){
 			$.extend( config, {
 				imgMove	: "images/move/0.png",
-				imgAtk	: "images/atk/0.png",
+				//imgAtk	: "images/atk/0.png",
 				imgSpc	: "images/spc/0.png",
 				imgFace	: "images/face/0.png"
 			} )
@@ -69,87 +69,72 @@ var Figure  = Observable.extend({
 		
 		//移动		
 		var fn	= function(){
-			
-			ctx.clearRect( 0,0, this.width, this.height );
-			ctx.drawImage( this, 0, 0  );
-			
-			//生成上下左右ImageData 
 			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
 			_self.down = [
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*6, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*0, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
+							PS.putImgToCanvas( this, 0, CELL_HEIGHT*6, CELL_WIDTH, CELL_HEIGHT ),
+							PS.putImgToCanvas( this, 0, CELL_HEIGHT*0, CELL_WIDTH, CELL_HEIGHT ),
+							PS.putImgToCanvas( this, 0, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
 
-			_self.up = [ 	PS.getCanImage( ctx, 0, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT *3, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.up = [ 	PS.putImgToCanvas( this, 0, CELL_HEIGHT*7, CELL_WIDTH, CELL_HEIGHT ), 
+							PS.putImgToCanvas( this, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ),
+							PS.putImgToCanvas( this, 0, CELL_HEIGHT *3, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.left = [	PS.getCanImage( ctx, 0, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.left = [	PS.putImgToCanvas( this, 0, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
+							PS.putImgToCanvas( this, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
+							PS.putImgToCanvas( this, 0, CELL_HEIGHT *5, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.fall = [	PS.getCanImage( ctx, 0, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
+			_self.fall = [	PS.putImgToCanvas( this, 0, CELL_HEIGHT*9, CELL_WIDTH, CELL_HEIGHT ),
+							PS.putImgToCanvas( this, 0, CELL_HEIGHT *10, CELL_WIDTH, CELL_HEIGHT ) ];			
 
-			_self.right = [ PS.getCanImageTurn( this,  0, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
-							PS.getCanImageTurn( this,  0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
-							PS.getCanImageTurn( this,  0, CELL_HEIGHT*5, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.right = [ PS.putImgToCanvasTurn( this,  0, CELL_HEIGHT*8, CELL_WIDTH, CELL_HEIGHT ),  
+							PS.putImgToCanvasTurn( this,  0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT ),
+							PS.putImgToCanvasTurn( this,  0, CELL_HEIGHT*5, CELL_WIDTH, CELL_HEIGHT ) ];
 		}
 		_loadImg( _self.imgMove, fn );	
 		
 		//攻击
 		var fn2	= function(){
-			
-			var w = 48;
-			ctx.clearRect( 0,0, this.width, this.height );
-			ctx.drawImage( this, 0, 0  );
-			
-			//生成上下左右ImageData 
+			var w = 64, h = 64, h2 = 48;
 			//每个方位对应一个数组　第一位为静态站立时的图像，后两位为行动时的动画
 			_self.adown = [
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 0, w, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT      , w, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 2, w, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 3, w, CELL_HEIGHT ) ];
+							PS.putImgToCanvas( this, 0, 8 + h * 0, w, h2 ),
+							PS.putImgToCanvas( this, 0, 8 + h      , w, h2 ) ,
+							PS.putImgToCanvas( this, 0, 8 + h * 2, w, h2 ) ,
+							PS.putImgToCanvas( this, 0, 8 + h * 3, w, h2 ) ];
 							
-			_self.aup =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 4, w, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT   *   5   , w, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 6, w, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT     * 7, w, CELL_HEIGHT ) ];
+			_self.aup =[PS.putImgToCanvas( this, 0, 8 + h * 4, w, h2 ),
+							PS.putImgToCanvas( this, 0, 8 + h   *   5   , w, h2 ) ,
+							PS.putImgToCanvas( this, 0, 8 + h     * 6, w, h2 ) ,
+							PS.putImgToCanvas( this, 0, 8 + h     * 7, w, h2 ) ];
 							
-			_self.aleft =[PS.getCanImage( ctx, 0, CELL_HEIGHT * 8, w, CELL_HEIGHT ),
-							PS.getCanImage( ctx, 0, CELL_HEIGHT    *  9  , w, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 10, w, CELL_HEIGHT ) ,
-							PS.getCanImage( ctx, 0, CELL_HEIGHT * 11, w, CELL_HEIGHT ) ];
+			_self.aleft =[PS.putImgToCanvas( this, 0, 8 + h * 8, w, h2 ),
+							PS.putImgToCanvas( this, 0, 8 + h    *  9  , w, h2 ) ,
+							PS.putImgToCanvas( this, 0, 8 + h * 10, w, h2 ) ,
+							PS.putImgToCanvas( this, 0, 8 + h * 11, w, h2 ) ];
 
-			_self.aright =[	PS.getCanImageTurn( this,  0, CELL_HEIGHT*8,  w, CELL_HEIGHT ),
-							PS.getCanImageTurn( this,  0, CELL_HEIGHT*9,  w, CELL_HEIGHT ) ,
-							PS.getCanImageTurn( this,  0, CELL_HEIGHT*10, w, CELL_HEIGHT ) ,
-							PS.getCanImageTurn( this,  0, CELL_HEIGHT*11, w, CELL_HEIGHT ) ];	
+			_self.aright =[	PS.putImgToCanvasTurn( this,  0, 8 + h*8,  w, h2 ),
+							PS.putImgToCanvasTurn( this,  0, 8 + h*9,  w, h2 ) ,
+							PS.putImgToCanvasTurn( this,  0, 8 + h*10, w, h2 ) ,
+							PS.putImgToCanvasTurn( this,  0, 8 + h*11, w, h2 ) ];	
 			
-			done( _self.imgAtk );
+			//done( _self.imgAtk );
 		}
 		_loadImg( _self.imgAtk, fn2 );	
 		
 		//防御 被击中  致命一击
 		var fn3	= function(){
-			ctx.clearRect( 0,0, this.width, this.height );
-			ctx.drawImage( this, 0, 0  );
-			
-			//生成上下左右ImageData 
-			_self.ddown = [	PS.getCanImage( ctx, 0, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.ddown = [	PS.putImgToCanvas( this, 0, CELL_HEIGHT * 0, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.dup = [ PS.getCanImage( ctx, 0, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.dup = [ PS.putImgToCanvas( this, 0, CELL_HEIGHT*1, CELL_WIDTH, CELL_HEIGHT ) ];
 							
-			_self.dleft = [PS.getCanImage( ctx, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT )];
+			_self.dleft = [PS.putImgToCanvas( this, 0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT )];
 							
-			_self.attacked = [PS.getCanImage( ctx, 0, CELL_HEIGHT*3, CELL_WIDTH, CELL_HEIGHT )];
+			_self.attacked = [PS.putImgToCanvas( this, 0, CELL_HEIGHT*3, CELL_WIDTH, CELL_HEIGHT )];
 			
-			_self.burst = [PS.getCanImage( ctx, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
+			_self.burst = [PS.putImgToCanvas( this, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
 			
-			_self.dright = [PS.getCanImageTurn(  this,  0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ) ];
+			_self.dright = [PS.putImgToCanvasTurn(  this,  0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ) ];
 			
-			done( _self.imgSpc );
 		}
 		_loadImg( _self.imgSpc, fn3 );		
 		

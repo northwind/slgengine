@@ -44,9 +44,6 @@ UNITS	= [{
 			return false;
 		}
 	}		 	
-},{
-	id : "liubei", gx :  12,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "liubei", 
-	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "刘备", level : 1	 	
 },
 
 //敌军
