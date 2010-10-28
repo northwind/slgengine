@@ -1,9 +1,12 @@
 /**
  * 观察者设计模式
  * 所有对象具有事件响应的能力
+ * 事件支持回调函数
  * 
  * one : 只执行一次
- * sync: 异步执行
+ * -sync: 异步执行
+ * fn	: 回调
+ * scope
 */
 var EventObs = function(obj, name){
     this.name = name;
@@ -12,6 +15,10 @@ var EventObs = function(obj, name){
 };
 
 EventObs.prototype = {
+	index	: 0,
+	suspend : false,
+	splice	: false,	//有需要清除的监听器
+	
     addListener : function(fn, scope, options){
         scope = scope || this.obj;
         if(!this.isListening(fn, scope)){
@@ -64,27 +71,94 @@ EventObs.prototype = {
     },
 
     fire : function(){
-        var ls = this.listeners.slice(0), scope, len = ls.length;
-        if(len > 0){
-            this.firing = true;
-            var args = Array.prototype.slice.call(arguments, 0);
-            for(var i = 0; i < len; i++){
-                var l = ls[i];
-				if (l.fireFn) {
-					if (l.fireFn.apply(l.scope || this.obj || window, arguments) === false) {
-						this.firing = false;
-						return false;
-					}
-					//删除单次执行
-					if (l.options.one) {
-						this.listeners.splice(i, 1);
-					}
-				}
-            }
-            this.firing = false;
-        }
+		//复制当前监听器数组的副本
+        this.ls = this.listeners.slice(0);
+        this.firing = true;
+		this.index = 0;		//重置为0
+		this.args = Array.prototype.slice.call(arguments, 0);
+		this.next();
+		
         return true;
-    }
+    },
+	
+	next	: function(){
+		if ( this.suspend )		//暂停时什么都不做
+			return;
+		
+		if (!this.ls) {
+			return this.done();
+		}
+		var len = this.ls.length;
+		if ( this.index == len ) {
+			//指向最后一个
+			return this.done();
+		}
+		else {
+			for (var i=this.index; i<len; i++) {
+				if ( this.name == "start" )
+					log( "this.suspend = " + this.suspend );
+				//停止时跳过
+				if ( !this.suspend ){
+					var l = this.ls[ i ];
+					if (l.fireFn && !l.remove ) {
+						if (l.fireFn.apply(l.scope || this.obj || window, this.args ) === false) {
+							//监听器返回false时强制退出
+							return this.done();
+						}
+						//删除单次执行
+						if (l.options.one) {
+							this.splice = true;
+							l.remove = true;	//标记为待删除
+						}
+					}					
+				}else{
+					this.index = i;		//保存
+					//跳出循环
+					return;
+				}
+			}
+			if ( !this.suspend )
+				//没有block
+				this.done();
+		}		
+	},
+	
+	bind	: function( fn, scope ){
+		this.fn = fn;
+		this.scope = scope;
+	},
+	
+	//事件中所有的监听器均执行完毕
+	done	: function(){
+		delete this.ls;
+		delete this.args;
+		
+		//剔除需要删除的监听器
+		if ( this.splice ){
+			var len = this.listeners.length;
+			for (var i= len - 1; i > 0; i-- ) {
+				var l = this.listeners[ i ];
+				if ( l.remove )
+					this.listeners.splice( i, 1 );
+			}
+		}
+		
+		this.firing = false;
+		
+		if ( this.fn )
+			return this.fn.call( this.scope || this.obj, this.obj );	
+		
+		return true;		
+	},
+	
+	pause	: function(){
+		this.suspend = true;
+	},
+	
+	resume	: function(){
+		this.suspend = false;
+		this.next();	//继续执行下一个监听器
+	}	
 };
 
 var Observable = Class.extend({
@@ -99,11 +173,31 @@ var Observable = Class.extend({
 	    }		
 	},	
 	
+	/**
+	 * this.fireEvent( "name", argumetns[0], ... );
+	 * this.fireEvent( {
+	 * 						name : "name",
+	 * 						fn	 : fn,		//事件执行完毕后回调
+	 * 						scope: scope
+	 * 					}, argumetns[0], ... );
+	*/	
     fireEvent : function( config ){
         if(this.eventsSuspended !== true){
-            var ce = this.getEvent( arguments[0] );
-            if( ce )
-                return ce.fire.apply(ce, Array.prototype.slice.call(arguments, 1));
+			var name, fn, scope, ce;
+			if ( typeof config == "string" ){
+				ce = this.getEvent( config );
+			}else{
+				ce = this.getEvent( config.name );
+				fn = config.fn;
+				scope = config.scope;
+			}
+			
+            if ( ce ) {
+				if ( fn )
+					ce.bind( fn, scope );
+					
+				return ce.fire.apply(ce, Array.prototype.slice.call(arguments, 1));
+			}
         }
         return true;
     },
@@ -112,6 +206,25 @@ var Observable = Class.extend({
 		return this.events[ name.toLowerCase() ]
 	},
 	
+	/**
+	 * 监听单个事件
+	 * this.on( "name", fn, scope, {...} ); 
+	 * 多个事件共享同一配置
+	 * this.on( {
+	 * 				"name" : fn1,
+	 * 				"name2": fn2,
+	 * 				scope  : scope,
+	 *              one	   : true
+	 *           } );
+	 * 监听多个事件，每个监听器配置不相同          
+	 * this.on( {
+	 * 				"name" : {
+	 * 							fn : fn,
+	 * 							scope : scope,
+	 * 							one : true,
+	 * 						  }
+	 *           } );
+	*/
     on : function(eventName, fn, scope, o){
         if(typeof eventName == "object"){
             o = eventName;
@@ -173,7 +286,21 @@ var Observable = Class.extend({
     resumeEvents : function(){
         this.eventsSuspended = false;
     },
-	
+
+    suspendEvent : function( eventName ){
+		log( "suspendEvent function" );
+        var ce = this.getEvent( eventName );
+		if ( ce )
+			ce.pause();
+    },
+
+    resumeEvent : function( eventName ){
+		log( "resumeEvent function" );
+        var ce = this.getEvent( eventName );
+		if ( ce )
+			ce.resume();
+    },
+		
 	destroy		 : function(){
 		this.suspendEvents = true;
 		this.purgeListeners();

@@ -218,17 +218,17 @@ var Panel = Component.extend({
 			this.fireEvent("paint", this );
 			
 			log("start" );
-/*
 			this.fireEvent( {
 				name	:  "start",
 				fn		:  function(){
+					log( "after panel start" );
 					this.unitsLayer.start();
 				},
 				scope	: this
 			}, this );
-*/
-			this.fireEvent( "start", this );	
-			this.unitsLayer.start();
+			
+			//this.fireEvent( "start", this );	
+			//this.unitsLayer.start();
 		//}, this );
 	},
 	

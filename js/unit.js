@@ -390,13 +390,21 @@ var Unit = Observable.extend({
 			
 			//如果死亡，则播放动画后再执行回调函数
 			if (this.hp == 0) {
-				if (this.fireEvent("preDead", this) === false) {
-					//如果不让死
-					if( fn )
-						fn.call( scope || this, this, true, d, unit );					
-				}else{
-					this.die( unit, fn, scope );
-				}
+				
+				this.fireEvent( {
+					name : "preDead",
+					fn	 : function(){
+						if ( this.hp > 0 ){
+							//如果不让死
+							if( fn )
+								fn.call( scope || this, this, true, d, unit );									
+						}else{
+							this.die( unit, fn, scope );
+						}
+					},
+					scope: this
+				}, this);
+				
 			}else{
 				//回调扣血数值
 				if( fn )
