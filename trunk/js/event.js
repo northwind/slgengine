@@ -104,17 +104,21 @@ var Event = Manager.extend({
 	
 	//事件响应后开始执行	
 	start	: function(){
+		log( "event start function" );
+		//block事件
+		this.getObj().suspendEvent( this.name );	
 		PANEL.runScript();
 		this.current = this.get( this.index );
 		this.current.start();
 	},	
 	
 	stop: function(){
+		log( "event stop function" );
 		delete this.current;
+		//block事件
+		this.getObj().resumeEvent( this.name );	
 		PANEL.stopScript();		
 	}
-	
-
 }); 
 //角色动作
 var UnitEvent = Event.extend({
