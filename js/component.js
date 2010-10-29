@@ -6,9 +6,9 @@
 var Component = Observable.extend({
 	hidden	: false,
 	absolute: true,
-	events : "hide,show",
 	
 	init: function( config ){
+		this.addEvents( "hide","show" );
 		this._super( config );
 		
     	if ( !this.el )

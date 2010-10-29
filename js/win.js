@@ -6,10 +6,11 @@
 var Win = Component.extend({
 	cls		: "_win",
 	hidden  : true,
-	events	: "pop,cansel",
 	
 	init: function( config ){
+		this.addEvents( "pop","cansel" );
 		this._super( config );
+		
 		this.layer = PANEL.winLayer;
 		this.el.appendTo( this.ct );
 		

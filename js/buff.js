@@ -10,9 +10,9 @@ var Buff = Observable.extend({
 	unit		: null,
 	w	: 0,
 	h  : 0,
-	events	:  "load,apply",
 	
 	init	: function(){
+		this.addEvents( "load","apply" );
 		this._super( arguments[0] );
 		
 		return this;

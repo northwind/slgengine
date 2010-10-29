@@ -23,14 +23,14 @@ var Panel = Component.extend({
 	
 	lineTimer: 0,
 	
-	events	: "click,runScript,stopScript,globalClick,mouseleave,mousemove,contextmenu,keydown,keyup,paint,load,start,roundStart,roundEnd,teamStart,teamEnd,teamOver",
-		
 	init		: function( config ){
 		config = config || {};
 		PANEL = this;
 		
 		this.el = $( "#panel" );
 		this.ct = $("#wrap").addClass( this.ctCls ).width( MAX_W );
+		
+		this.addEvents( "paint", "click","runScript","stopScript","globalClick","mouseleave","mousemove","contextmenu","keydown","keyup","load","start","roundStart","roundEnd","teamStart","teamEnd","teamOver" );
 		
 		this._super( config );
 		
