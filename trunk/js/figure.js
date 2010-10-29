@@ -6,7 +6,6 @@ var Figure  = Observable.extend({
 	imgAtk	: "",		//攻击
 	imgSpc	: "",		//特殊
 	imgFace	: "",		//头像
-	events		: "load",
 	
 	init	: function( config ){
 		this.grays = {};
@@ -15,11 +14,12 @@ var Figure  = Observable.extend({
 		if( UNDERCOVER ){
 			$.extend( config, {
 				imgMove	: "images/move/0.png",
-				//imgAtk	: "images/atk/0.png",
+				imgAtk	: "images/atk/0.png",
 				imgSpc	: "images/spc/0.png",
 				imgFace	: "images/face/0.png"
 			} )
 		}		
+		this.addEvents( "load" );
 		this._super( config );
 		
 		this._getImageData();

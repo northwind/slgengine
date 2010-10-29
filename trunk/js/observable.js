@@ -20,7 +20,6 @@ EventObs.prototype = {
 	splice	: false,	//有需要清除的监听器
 	
     addListener : function(fn, scope, options){
-        scope = scope || this.obj;
         if(!this.isListening(fn, scope)){
             var l = this.createListener(fn, scope, options);
             if(!this.firing){
@@ -33,7 +32,7 @@ EventObs.prototype = {
     },
 
     createListener : function(fn, scope, o){
-        return {fn: fn, scope: scope || this.obj, options: o || {}, fireFn: fn};
+        return { fn: fn, scope: scope || this.obj, options: o || {} };
     },
 
     findListener : function(fn, scope){
@@ -74,7 +73,7 @@ EventObs.prototype = {
 		//复制当前监听器数组的副本
         this.ls = this.listeners.slice(0);
         this.firing = true;
-		this.index = 0;		//重置为0
+		this.index = 0; //重置为0
 		this.args = Array.prototype.slice.call(arguments, 0);
 		this.next();
 		
@@ -98,17 +97,15 @@ EventObs.prototype = {
 				//停止时跳过
 				if ( !this.suspend ){
 					var l = this.ls[ i ];
-					if (l.fireFn && !l.remove ) {
-						if (l.fireFn.apply(l.scope || this.obj || window, this.args ) === false) {
-							//监听器返回false时强制退出
-							return this.done();
-						}
-						//删除单次执行
-						if (l.options.one) {
-							this.splice = true;
-							l.remove = true;	//标记为待删除
-						}
-					}					
+					if (l.fn.apply(l.scope , this.args ) === false) {
+						//监听器返回false时强制退出
+						return this.done();
+					}
+					//删除单次执行
+					if (l.options.one) {
+						this.splice = true;
+						l.remove = true;	//标记为待删除
+					}
 				}else{
 					this.index = i;		//保存
 					//跳出循环
@@ -145,9 +142,7 @@ EventObs.prototype = {
 		this.firing = false;
 		
 		if ( this.fn )
-			return this.fn.call( this.scope || this.obj, this.obj );	
-		
-		return true;		
+			return this.fn.call( this.scope, this.obj );	
 	},
 	
 	pause	: function(){
@@ -159,18 +154,70 @@ EventObs.prototype = {
 		this.next();	//继续执行下一个监听器
 	}	
 };
+/**
+ * 即时消息
+ * 用于高效循环类的消息
+*/
+var EventImd = function(obj, name){
+    this.name = name;
+    this.obj = obj;
+    this.listeners = [];
+};
+EventImd.prototype = {
+	
+    addListener : function(fn, scope){
+        var l = this.createListener(fn, scope);
+        this.listeners.push(l);
+    },
 
+    createListener : function(fn, scope){
+        return { scope: scope || this.obj, fireFn: fn };
+    },
+
+    findListener : function(fn, scope){
+        scope = scope || this.obj;
+        var ls = this.listeners;
+        for(var i = 0, len = ls.length; i < len; i++){
+            var l = ls[i];
+            if(l.fn == fn && l.scope == scope){
+                return i;
+            }
+        }
+        return -1;
+    },
+
+    removeListener : function(fn, scope){
+        var index;
+        if((index = this.findListener(fn, scope)) != -1){
+            this.listeners.splice(index, 1);
+        }
+    },
+
+    clearListeners : function(){
+        this.listeners.length = 0
+    },
+
+    fire : function(){
+		var ls = this.listeners;
+		for (var i= 0, len = ls.length; i<len; i++ ) {
+			var l = ls[ i ];
+			
+			l.fn.apply( l.scope, arguments )
+		}
+    }
+};
+/**
+ * 观察者模式
+ * 注册与分发消息
+ * 先添加事件再注册
+*/
 var Observable = Class.extend({
 	
 	init: function(){
 		$.extend( this, arguments[0] || {} );
-		
-		var str = this.events;
-		this.events = {};
-		if ( str ){
-			this.addEvents.apply( this, str.split(",") );
-		} 
-		
+		if ( !this.events )
+			this.events = {};
+					
 	    if(this.listeners){
 	        this.on(this.listeners);
 	        delete this.listeners;
@@ -178,33 +225,28 @@ var Observable = Class.extend({
 	},	
 	
 	/**
-	 * this.fireEvent( "name", argumetns[0], ... );
-	 * this.fireEvent( {
-	 * 						name : "name",
-	 * 						fn	 : fn,		//事件执行完毕后回调
-	 * 						scope: scope
-	 * 					}, argumetns[0], ... );
+	 * this.fireEvent( "name", argumetns, ... );
 	*/	
-    fireEvent : function( config ){
+    fireEvent : function( name ){
         if(this.eventsSuspended !== true){
-			var name, fn, scope, ce;
-			if ( typeof config == "string" ){
-				ce = this.getEvent( config );
-			}else{
-				ce = this.getEvent( config.name );
-				fn = config.fn;
-				scope = config.scope;
-			}
-			
+			var ce = this.getEvent( name );
+						
             if ( ce ) {
-				if ( fn )
-					ce.bind( fn, scope );
-					
 				return ce.fire.apply(ce, Array.prototype.slice.call(arguments, 1));
 			}
         }
-        return true;
     },
+	
+	/** 
+	 * 	需要回调的事件先绑定回调函数
+	 */
+	bindEvent	: function( name, fn, scope ){
+		var ce = this.getEvent( name );
+		if ( ce ){
+			ce.bind( fn, scope );
+		}
+		return this;
+	},
 	
 	getEvent : function( name ){
 		return this.events[ name ];
@@ -244,9 +286,12 @@ var Observable = Class.extend({
             return this;
         }
 		
-        var ce = this.events[eventName];
-		if ( ce )
-        	ce.addListener(fn, scope, o);
+		var ce = this.getEvent( eventName );
+		if (!ce) {
+			this.addEvents(eventName);
+			ce = this.getEvent( eventName );
+		}
+       	ce.addListener(fn, scope, o);
 		
 		return this;
     },
@@ -268,9 +313,35 @@ var Observable = Class.extend({
     },
 
     addEvents : function(){
-        for( var i = 0, a = arguments, v; v = a[i]; i++ )
-            if( !this.events[ v ] )
-                this.events[ v ] = new EventObs(this, v);
+		if ( !this.events )
+			this.events = {};
+		
+        for (var i = 0, a = arguments, v; v = a[i]; i++) {
+			var name = v, type = 1;
+			if ( typeof v != "object" ){
+				name = v.name;
+				type = v.type;
+			}
+			
+			if ( !this.events[ name ] ){
+				var obj;
+				if ( type == 1 ){
+					obj = new EventObs(this, name );
+				}else if ( type == 2 )
+					obj = new EventImd( this, name );
+					
+				this.events[v] = obj;
+			} 
+			
+			if ( typeof v == "string" )
+				if (!this.events[v]) 
+					this.events[v] = new EventObs(this, v);
+			else{
+				var name = v.name;
+				if (!this.events[v]) 
+					this.events[v] = new EventObs(this, v);
+			}		
+		}
     },
 
     hasListener : function(eventName){

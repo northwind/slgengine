@@ -203,6 +203,37 @@ ACTIONGROUPS   = [{
 },{
 	desc: "我军阶段1",
 	event: {
+/*
+		type: 2,
+		name: "teamStart",
+		condition : [{
+			index : 1,
+			symbol : "==",
+			compare : "1"
+		}]
+*/
+	},
+	actions: [{
+		type	: 2,
+		action : "moveWinTo",
+		params : [ 0, 1000 ]
+	},{
+		id	: "liubei",
+		action : "appear",
+		params : []
+	}]
+},{
+	desc: "敌军阶段1",
+	event: {
+/*
+		type: 2,
+		name: "teamStart",
+		condition : [{
+			index : 1,
+			symbol : "==",
+			compare : "2"
+		}]
+*/
 		type: 2,
 		name: "teamStart",
 		condition : [{
@@ -214,34 +245,10 @@ ACTIONGROUPS   = [{
 	actions: [{
 		type	: 2,
 		action : "moveWinTo",
-		params : [ 0, 1000 ]
-	},{
-		id	: "foota",
-		action : "attackEmpty"
-	},{
-		id	: "foota",
-		action : "speak",
-		params : ["再坚持一会儿！<br/>让他们知道官军不是好惹的！"],
-		next	: -1
-	}]
-},{
-	desc: "敌军阶段1",
-	event: {
-		type: 2,
-		name: "teamStart",
-		condition : [{
-			index : 1,
-			symbol : "==",
-			compare : "2"
-		}]
-	},
-	actions: [{
-		type	: 2,
-		action : "moveWinTo",
 		params : [ 0, 0 ]
 	},{
 		id	: "liubei",
-		action : "showAt",
+		action : "appear",
 		params : [ 10, 2 ]
 	}]
 }

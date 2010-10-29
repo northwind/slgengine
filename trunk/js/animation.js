@@ -19,9 +19,9 @@ var Animation = Observable.extend({
 	//h  		: 0,
 	fn		: null,
 	scope   : null,
-	events	: "end",
 	
 	init	: function(){
+		this.addEvents( "end" );
 		this._super( arguments[0] );
 		
 		return this;

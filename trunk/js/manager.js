@@ -6,6 +6,7 @@ var Manager = Observable.extend({
 	len	: 0,
 	
 	init	: function(){
+		this.addEvents( "add","remove" );
 		this._super( arguments[0] );
 		
 		this.hash = {};
@@ -16,19 +17,25 @@ var Manager = Observable.extend({
 	//key, value
 	reg		: function( key, value ){
 		if ( key != undefined && value != undefined  ) {
-			if ( !this.has( key ) )
+			if (!this.has(key)) {
 				this.len++;
+				this.hash[key] = value;
 				
-			this.hash[key] = value;
+				this.fireEvent( "add", key, value, this );
+			}else	
+				this.hash[key] = value;
 		}
 		return this;
 	},
 	
 	unreg	: function( key ){
-		if( this.has( key ) != undefined )
+		if ( this.has(key) != undefined ) {
 			this.len--;
-		
-		delete this.hash[ key ];	
+			var value = this.hash[ key ];
+			delete this.hash[ key ];	
+			
+			this.fireEvent( "remove", key, value, this );
+		}
 		
 		return this;
 	},
@@ -41,7 +48,7 @@ var Manager = Observable.extend({
 		return this.hash[ key ] != undefined;
 	},
 	
-	len		: function(){
+	count	: function(){
 		return this.len;
 	},
 	

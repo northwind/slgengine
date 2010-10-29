@@ -75,7 +75,6 @@ var Unit = Observable.extend({
 	//magics	: {}, //会的魔法
 	
 	ui		: null,
-	events : "click,unclick,change,dead,preDead,attack,preAttack,move,walk,speak,defend,show,standby,upgrade",
 	
 	init	: function( config ){
 		this.moves	= {};
@@ -85,6 +84,7 @@ var Unit = Observable.extend({
 		this.magics = {};
 		this.buff = {};
 		
+		this.addEvents( "click","unclick","change","dead","preDead","attack","preAttack","move","walk","speak","defend","show","standby","upgrade" );
 		this._super( config );
 				
 		//如果没有id则自动生成一个
@@ -661,10 +661,12 @@ var Unit = Observable.extend({
 		PANEL._choose( this.face, title, options, fn, scope );
 	},
 	
-	showAt		: function( x, y, fn, scope ){
+	appear		: function( x, y, fn, scope ){
 		this.gx = x;
 		this.gy = y;
 		this.setCell();
+		this.visiable = true;
+		this.layer.showAt( this );
 		
 		if ( fn )
 			this.on( "appear", fn, scope, { one : true } );

@@ -7,9 +7,9 @@ var AIUnit  = Observable.extend({
 	enemy	: null,
 	running	: false,
 	suspend : false,
-	events	: "end",
 	
 	init	: function(){
+		this.addEvents( "end" );
 		this._super( arguments[0] );
 		
 		return this;

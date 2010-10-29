@@ -5,9 +5,9 @@ var PocketWin = Win.extend({
 	cls		: "_win _prop",	
 	unit	: null,
 	selected	: null,
-	events	: "over",
 	
 	init: function( config ){
+		this.addEvents( "over" );
 		this._super( config );
 		
 		this.content.addClass( "_tablect" );

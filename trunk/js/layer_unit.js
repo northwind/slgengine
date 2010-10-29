@@ -14,9 +14,9 @@ var UnitLayer = Layer.extend({
 	round		: 0,    //第几回合
 	hpLineForce : false,	//是否强制显示血条
 	
-	events	: "loading,click,load,roundStart,roundEnd,teamStart,teamEnd,teamOver",
 	
 	init	: function(){
+		this.addEvents( "click","roundStart","roundEnd","teamStart","teamEnd","teamOver" );
 		this._super( arguments[0] );
 		this.units = {};
 		
@@ -534,14 +534,10 @@ var UnitLayer = Layer.extend({
 		}
 	},	
 	
-	showAt				: function( unit, x, y ){
-		unit.gx = x;
-		unit.gy = y;
+	showAt				: function( unit ){
+		unit = this._initUnit( unit );
 		
-		if ( unit.constructor != Unit )
-			unit = this._initUnit( unit );
-		
-		this.units[ getIndex( x, y ) ] = unit; 
+		this.units[ unit.cell.index ] = unit; 
 		
 		return this;
 	},
@@ -600,10 +596,14 @@ var UnitLayer = Layer.extend({
 	},	
 	
 	_initUnit	: function( config ){
-		config.layer = this;
-					
-		var unit = new Unit(config );
 		
+		config.layer = this;
+		if (!config.init) {
+			var unit = new Unit(config);
+		}
+		else 		
+			var unit = config;
+			
 		unit.on( "standby", function( unit ){
 			if (!PANEL.isScripting()) {
 				log(unit.name + " standby");

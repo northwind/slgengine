@@ -5,9 +5,9 @@
 var Process = Observable.extend({
 	count : 0, //当前加载进度
 	msg	: "", //说明文字
-	events : "end",
 		
 	init	: function( config ){
+		this.addEvents( "end" );
 		this._super( config );
 		
 		this.el = $("#loader");

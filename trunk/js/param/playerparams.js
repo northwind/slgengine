@@ -11,13 +11,13 @@ UNITS	= [{
 //友军
 {
 	id: "liubei", gx :  15,  gy : 2, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "liubei",
-	faction : 1, team : 100, mpMax : 10, mp : 10, name : "刘备", level : 1, visiable : false	
+	faction : 1, team : 200, mpMax : 10, mp : 10, name : "刘备", level : 1, visiable : false	
 },{
 	id: "guanyu", gx :  16,  gy : 2, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "guanyu",
-	faction : 1, team : 100, mpMax : 10, mp : 10, name : "关羽", level : 1, visiable : false	
+	faction : 1, team : 200, mpMax : 10, mp : 10, name : "关羽", level : 1, visiable : false	
 },{
 	id: "zhangfei", gx :  16,  gy : 3, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "zhangfei",
-	faction : 1, team : 100, mpMax : 10, mp : 10, name : "张飞", level : 1, visiable : false	
+	faction : 1, team : 200, mpMax : 10, mp : 10, name : "张飞", level : 1, visiable : false	
 },
 {
 	id: "firstDie", gx :  7,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 1, symbol	: "archerYellow", miss : 0,
