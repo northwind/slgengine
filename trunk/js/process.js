@@ -65,18 +65,16 @@ var Process = Observable.extend({
 			(function(){
 				var a = ANIMATIONS[ name ];
 				_loadImg( a.src, function(){
-					ctx.clearRect( 0,0, this.width, this.height );
-					ctx.drawImage( this, 0, 0  );
 					//切割图片
 					var totalH = this.height, n = totalH / a.h, imgs = [];
 					for (var j=0; j<n; j++) {
-						imgs.push( PS.getCanImage( ctx, 0, a.h * j, a.w, a.h ) );
+						imgs.push( PS.putImgToCanvas( this, 0, a.h * j, a.w, a.h ) );
 					}
 					a.imgs = imgs;
 					i++;
 					//全部加载完
 					if ( i >= count ){
-						_self.add( 10, "魔法图片加载完毕..." );
+						_self.add( 20, "魔法图片加载完毕..." );
 					}
 				} );
 			})();
@@ -85,7 +83,7 @@ var Process = Observable.extend({
 	
 	_loadBackgroundImg	: function(){
 		_loadImg( BGIMAGE, bind( function(){
-			this.add( 20, "背景图片加载完毕..." );
+			this.add( 10, "背景图片加载完毕..." );
 		}, this) );
 	},
 
@@ -110,7 +108,6 @@ var Process = Observable.extend({
 	},
 			
 	start	: function(){
-		PANEL.mask();
 		this.el.show();
 		
 		this._loadBuffsImg();
@@ -136,10 +133,8 @@ var Process = Observable.extend({
 	
 	end	: function(){
 		this.el.html("").hide();
-		PANEL.unmask();
 		
 		this.fireEvent("end");
 	}
-	
 });
 

@@ -94,9 +94,9 @@ var Unit = Observable.extend({
 		this._calcHpPercent();
 		
 		this.setCell();
-		
 		this.setUI();
 		this.setMagic();
+		//this.setTeam();
 				
 		this.on( "move", function(){ this.moving = false; }, this );
 		this.on( "speak", function(){ this.speaking = false; }, this );
@@ -131,6 +131,10 @@ var Unit = Observable.extend({
 		this.face = this.face || this.ui.imgs.imgFace;
 			
 		return this;
+	},
+	
+	setTeam	: function( team ){
+		this.teamObj =  team;
 	},
 	
 	//绘制图像
@@ -494,9 +498,13 @@ var Unit = Observable.extend({
 			this.oriCell = this.cell;
 			this.attackFreq = 0;
 			
-			this.ui.standby(function(){
-				this.fireEvent("standby", this);
-			}, this);
+			//TODO 与PANEL松耦合
+			if (!PANEL.isScripting()) {
+				this.ui.standby(function(){
+					log(this.name + " standby");
+					this.fireEvent("standby", this);
+				}, this);
+			}
 		}
 	},
 	

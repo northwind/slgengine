@@ -29,7 +29,7 @@ var Toolbar  = Observable.extend({
 		} );
 		
 		this.on( "endTeam", function(){
-			PANEL.unitsLayer.endTeamUnits( FACTION, TEAM );
+			PANEL.unitsLayer.finishTeam( FACTION, TEAM );
 		}, this );	
 		
 		this.on("condition", function(){

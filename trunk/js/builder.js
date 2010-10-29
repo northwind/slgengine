@@ -5,15 +5,15 @@ $(function(){
 	
 	if ( $.browser.msie )
 		return false;
-		
-	PANEL = new Panel();
 	
-/*
-	PANEL.on( "start", function( panel ){
-		PANEL.moveWinTo( 0,1000 );
-		PANEL.showGrid();
-
-	} );
-*/
+	//初始化进度条
+	var process = new Process();
+	
+	process.on("end", function(){
+		log( "process end" );
+		var p = new Panel();
+	}).start();	
+	
+	
 		
  });
