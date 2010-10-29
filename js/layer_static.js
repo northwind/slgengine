@@ -8,7 +8,6 @@ var StaticLayer = Layer.extend({
 		
 		this.items = new Manager();
 		
-		//PANEL.on("update", this.onUpdate, this );
 		PANEL.on("paint", this.onPaint, this );
 		
 		return this;
@@ -18,10 +17,6 @@ var StaticLayer = Layer.extend({
 		this.items.each( function( i, n ){
 			n.play();		
 		} );
-	},
-	
-	onUpdate				: function(){
-		
 	},
 	
 	_gerateKey	: function( a, b, c){

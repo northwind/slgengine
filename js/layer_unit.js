@@ -14,12 +14,11 @@ var UnitLayer = Layer.extend({
 	round		: 0,    //第几回合
 	hpLineForce : false,	//是否强制显示血条
 	
+	events	: "loading,click,load,roundStart,roundEnd,teamStart,teamEnd,teamOver",
+	
 	init	: function(){
 		this._super( arguments[0] );
 		this.units = {};
-		
-		//加载中时执行该事件
-		this.addEvents( "loading", "click", "load", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
 		
 		var _self = this;
 		//点击画布
@@ -40,9 +39,6 @@ var UnitLayer = Layer.extend({
 	},
 	
 	start		: function(){
-		this.on( "teamStart", this.onTeamStart, this );
-		this.on( "roundStart", this.onRoundStart, this );
-		
 		this.startRound();
 	},
 	
@@ -52,11 +48,19 @@ var UnitLayer = Layer.extend({
 		this.round++;
 		//第一回合不显示动画
 		if (this.round == 1) {
-			this.fireEvent("roundStart", this.round);
+			this.fireEvent( {
+				name	: "roundStart",
+				fn			: this.onRoundStart,
+				scope	: this
+			} , this.round);
 		}
 		else {
 			PANEL._showTopLine("第 " + this.round + " 回合", function(){
-				this.fireEvent("roundStart", this.round);
+				this.fireEvent({
+					name	: "roundStart",
+					fn			: this.onRoundStart,
+					scope	: this
+				}, this.round);
 			}, this);
 		}
 	},
@@ -68,6 +72,7 @@ var UnitLayer = Layer.extend({
 	},
 	
 	startTeam	: function( team ){
+		log( "startTeam : " + team.name );
 		if ( this.getTeamMemberCount( team.faction, team.team ) == 0 ){
 			//没有可行动的角色时 跳过该队伍
 			this.endTeam( team.faction, team.team );
@@ -76,7 +81,11 @@ var UnitLayer = Layer.extend({
 				//提示信息消失后再触发
 				PANEL._showTopLine(team.name + " 阶段", function(){
 					log( "teamStart : " + team.name );
-					this.fireEvent("teamStart", team, this.teamIndex);
+					this.fireEvent({
+						name	: "teamStart",
+						fn			: this.onTeamStart,
+						scope	: this
+					}, team, this.teamIndex);
 				}, this);
 			//else {
 			//	this.fireEvent("teamStart", team, this.teamIndex);
@@ -84,7 +93,8 @@ var UnitLayer = Layer.extend({
 		}		
 	},
 	
-	onTeamStart	: function( team ){
+	onTeamStart	: function(){
+		var team = this.teams[ this.teamIndex ];  
 		for( var key in this.units ){
 			var unit = this.units[ key ];
 			
@@ -96,6 +106,8 @@ var UnitLayer = Layer.extend({
 	},
 	
 	endTeam	: function( f, t ){
+		var team = this.teams[ this.teamIndex ], f = team.faction, t = team.team;
+		log( "endTeam : f = " + f + " t = " + t );
 		//该队伍所有角色取消石像状态
 		for( var key in this.units ){
 			var unit = this.units[ key ];
@@ -105,19 +117,26 @@ var UnitLayer = Layer.extend({
 			}
 		}	
 		
-		this.fireEvent( "teamEnd",  this.teams[ this.teamIndex ], this );	
-		
-		if ( this.teamIndex++ == this.teams.length - 1 ) {
-			//回合结束
-			this.fireEvent("roundEnd", this.round );
-			
-			this.startRound();
-		}else{
-			//继续下一个队伍
-			var team = this.teams[ this.teamIndex ];
-			
-			this.startTeam( team );
-		}
+		this.fireEvent( {
+			name	: "teamEnd",
+			fn			: function(){
+				if ( this.teamIndex++ == this.teams.length - 1 ) {
+					//回合结束
+					this.fireEvent( {
+						name	:  "roundEnd",
+						fn			: this.startRound,
+						scope	: this
+					}, this.round );
+					
+				}else{
+					//继续下一个队伍
+					var team = this.teams[ this.teamIndex ];
+					
+					this.startTeam( team );
+				}				
+			},
+			scope	: this
+		},  this.teams[ this.teamIndex ], this );	
 	},
 	
 	//返回该队伍所有成员	
@@ -548,18 +567,21 @@ var UnitLayer = Layer.extend({
 	},
 	
 	//检查回合结束
-	checkTeamEnd	: function( faction, team ){
-		var flag = true;
-		for (var key in this.units) {
-			var unit = this.units[key];
-			//当同一队伍中有任何一个可以移动时跳出循环
-			if ( unit.faction == faction && unit.team == team && !unit.lock) {
-				flag = false;
-				break;
+	checkTeamEnd	: function( f, t ){
+		var team = this.teams[ this.teamIndex ];
+		if (team.faction == f && team.team == t) {
+			var flag = true;
+			for (var key in this.units) {
+				var unit = this.units[key];
+				//当同一队伍中有任何一个可以移动时跳出循环
+				if (unit.faction == f && unit.team == t && !unit.lock) {
+					flag = false;
+					break;
+				}
 			}
-		}	
-		if ( flag ){
-			this.endTeam( faction, team );
+			if (flag) {
+				this.endTeam(f, t);
+			}
 		}
 	},
 	//检查某队伍是否全军覆没

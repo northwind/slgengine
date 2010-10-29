@@ -8,8 +8,6 @@ var Layer = Observable.extend({
 		this.items = new Manager();
 		
     	this._super( config );
-		//加载完毕后执行init事件
-		this.addEvents( "init" );
 		
 		return this;
   	},

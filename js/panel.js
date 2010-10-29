@@ -22,6 +22,8 @@ var Panel = Component.extend({
 	dps		 :  24, //帧数
 	
 	lineTimer: 0,
+	
+	events	: "click,runScript,stopScript,globalClick,mouseleave,mousemove,contextmenu,keydown,keyup,paint,load,start,roundStart,roundEnd,teamStart,teamEnd,teamOver",
 		
 	init		: function( config ){
 		config = config || {};
@@ -31,8 +33,6 @@ var Panel = Component.extend({
 		this.ct = $("#wrap").addClass( this.ctCls ).width( MAX_W );
 		
 		this._super( config );
-		
-		this.addEvents("click", "runScript", "stopScript", "globalClick","mouseleave","mousemove","contextmenu","keydown","keyup", "paint", "load", "start", "roundStart", "roundEnd", "teamStart", "teamEnd", "teamOver" );
 		
 		LayerMgr.setWrap( this.el );
 		
@@ -138,6 +138,7 @@ var Panel = Component.extend({
 	onKeydown	: function( e ){
 		log( "keydown : " + e.which );
 		if ( this.speaking && ( e.which == 32 || e.which == 27 || e.which == 13 ) ){
+			e.preventDefault();
 			this.stopSpeak();
 		}
 	},	

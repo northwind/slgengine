@@ -28,8 +28,6 @@ var UnitUI = Observable.extend({
 		//初始化方向
 		this.oriDirect = this.direct = this.unit.direct || "down";
 		
-		//this.addEvents( );
-		
 		//获取相同角色的img集合
 		var unit = this.unit;
 		this.imgs = ImgMgr.get( unit.symbol );
@@ -372,9 +370,7 @@ var UnitUI = Observable.extend({
 		var obj1 = {
 			inter	: ASPEED,
 			//延长攻击第一帧显示时间
-			items	: [ {
-				img	: first,  w : 64
-			}, {
+			items	: [{
 				img	: first,  w : 64
 			},{
 				img	: first,  w : 64
@@ -391,9 +387,7 @@ var UnitUI = Observable.extend({
 				img	: actions[2],  w : 64
 			}, {
 				img	: actions[3],  w : 64
-			},{
-				img	: actions[3],  w : 64
-			} ],
+			}],
 			direct	: direct
 		}	
 		this.pushImg( obj1 );

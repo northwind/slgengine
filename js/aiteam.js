@@ -27,6 +27,7 @@ var AITeam = Observable.extend({
 	},
 	
 	onModeEnd	: function( unit ){
+		log( "aiteam : onModeEnd : " + unit.name );
 		delete this.unit;
 		for( var key in this.units ){
 			var u = this.units[ key ];
@@ -44,8 +45,9 @@ var AITeam = Observable.extend({
 			for (var key in this.units) {
 				this.unit = this.units[key];
 				this.mode.start(this.unit);
-				break;
+				return;
 			}
+			log( "aiteam : no next unit " );
 		}
 	},
 	

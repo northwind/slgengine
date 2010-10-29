@@ -95,8 +95,6 @@ EventObs.prototype = {
 		}
 		else {
 			for (var i=this.index; i<len; i++) {
-				if ( this.name == "start" )
-					log( "this.suspend = " + this.suspend );
 				//停止时跳过
 				if ( !this.suspend ){
 					var l = this.ls[ i ];
@@ -135,6 +133,7 @@ EventObs.prototype = {
 		
 		//剔除需要删除的监听器
 		if ( this.splice ){
+			this.splice = false;
 			var len = this.listeners.length;
 			for (var i= len - 1; i > 0; i-- ) {
 				var l = this.listeners[ i ];
@@ -164,8 +163,13 @@ EventObs.prototype = {
 var Observable = Class.extend({
 	
 	init: function(){
-		this.events = {};
 		$.extend( this, arguments[0] || {} );
+		
+		var str = this.events;
+		this.events = {};
+		if ( str ){
+			this.addEvents.apply( this, str.split(",") );
+		} 
 		
 	    if(this.listeners){
 	        this.on(this.listeners);
@@ -203,7 +207,7 @@ var Observable = Class.extend({
     },
 	
 	getEvent : function( name ){
-		return this.events[ name.toLowerCase() ]
+		return this.events[ name ];
 	},
 	
 	/**
@@ -240,14 +244,9 @@ var Observable = Class.extend({
             return this;
         }
 		
-        o = (!o || typeof o == "boolean") ? {} : o;
-        eventName = (eventName+"").toLowerCase();
-        var ce = this.events[eventName] || true;
-        if(typeof ce == "boolean"){
-            ce = new EventObs(this, eventName);
-            this.events[eventName] = ce;
-        }
-        ce.addListener(fn, scope, o);
+        var ce = this.events[eventName];
+		if ( ce )
+        	ce.addListener(fn, scope, o);
 		
 		return this;
     },
@@ -268,10 +267,10 @@ var Observable = Class.extend({
         }
     },
 
-    addEvents : function(o){
+    addEvents : function(){
         for( var i = 0, a = arguments, v; v = a[i]; i++ )
-            if( !this.events[ a[i] ] )
-                o[a[i]] = true;
+            if( !this.events[ v ] )
+                this.events[ v ] = new EventObs(this, v);
     },
 
     hasListener : function(eventName){

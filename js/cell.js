@@ -22,7 +22,8 @@ Cell.prototype = {
 	 * 			-2		-3		-4
 	*/		
 	direct	: function( to ){
-		return (to.y - this.y) * 3 + to.x - this.x;
+		return (to.y > this.y ? 1 : ( to.y == this.y ? 0 : -1 )) * 3 + 
+					(to.x > this.x ? 1 : ( to.x == this.x ? 0 : -1 ));
 	},
 
 	directT : function( to ){

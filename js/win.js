@@ -6,13 +6,12 @@
 var Win = Component.extend({
 	cls		: "_win",
 	hidden  : true,
+	events	: "pop,cansel",
 	
 	init: function( config ){
 		this._super( config );
 		this.layer = PANEL.winLayer;
 		this.el.appendTo( this.ct );
-		
-		this.addEvents( "pop", "cansel" );
 		
 		var _self = this;
 		this.content = $("<div>").appendTo( this.el );

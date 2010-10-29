@@ -14,10 +14,10 @@ var Stuff = Observable.extend({
 	rangeType : 1,      //攻击类型	
 	nounit	: false,	//是否需要选择角色
 	
+	events	: "apply,empty,over",
+	
 	init	: function(){
 		this._super( arguments[0] );
-		
-		this.addEvents( "apply", "empty", "over" );
 		
 		return this;
 	},

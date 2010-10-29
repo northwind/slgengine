@@ -5,13 +5,12 @@
 var Process = Observable.extend({
 	count : 0, //当前加载进度
 	msg	: "", //说明文字
+	events : "end",
 		
 	init	: function( config ){
 		this._super( config );
 		
 		this.el = $("#loader");
-		//加载完毕后执行init事件
-		this.addEvents( "end" );
 		
 		return this;
 	},

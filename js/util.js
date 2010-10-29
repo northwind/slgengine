@@ -6,7 +6,8 @@ if ( window.console == undefined )
 if ( console.debug == undefined )
 	console.debug = function( str ){};
 function log( str ){
-	console.debug( str );
+	if ( DEBUG )
+		console.debug( str );
 }	
 /*
  * 获得index值

@@ -75,6 +75,7 @@ var Unit = Observable.extend({
 	//magics	: {}, //会的魔法
 	
 	ui		: null,
+	events : "click,unclick,change,dead,preDead,attack,preAttack,move,walk,speak,defend,show,standby,upgrade",
 	
 	init	: function( config ){
 		this.moves	= {};
@@ -85,8 +86,6 @@ var Unit = Observable.extend({
 		this.buff = {};
 		
 		this._super( config );
-		//增加角色事件
-		this.addEvents( "click", "unclick", "change", "dead", "preDead","attack", "preAttack","move", "walk", "speak","defend","show","standby", "upgrade" );
 				
 		//如果没有id则自动生成一个
 		this.id = this.id || getTime();
@@ -403,7 +402,7 @@ var Unit = Observable.extend({
 						}
 					},
 					scope: this
-				}, this);
+				}, this, unit, d );
 				
 			}else{
 				//回调扣血数值

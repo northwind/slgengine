@@ -20,8 +20,6 @@ var WinLayer = Component.extend({
 		this._super( config );
 		this.items = [];
 		
-		this.addEvents( "init" );
-		
 		//点击右键时取消菜单
 		PANEL.on("keydown", function( e ){
 			if ( this.hasWindow() && !this.busy ) {
