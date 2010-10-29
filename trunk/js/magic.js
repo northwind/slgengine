@@ -14,13 +14,12 @@ var Magic = Observable.extend({
 	nounit	: false,	//是否需要选择角色
 	needMP	: 0, 
 	animation : null,
+	events	: "apply,over",
 	
 	init	: function(){
 		this._super( arguments[0] );
 		
 		this.animation = Animation.get( this.animation );
-		
-		this.addEvents( "apply", "over" );
 		
 		return this;
 	},

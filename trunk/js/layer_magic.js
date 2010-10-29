@@ -8,7 +8,7 @@ var MagicLayer = Layer.extend({
 	init	: function(){
 		this._super( arguments[0] );
 		this.items = [];
-		//PANEL.on("update", this.onUpdate, this );
+		
 		PANEL.on("paint", this.onPaint, this );
 		
 		return this;
@@ -19,9 +19,6 @@ var MagicLayer = Layer.extend({
 			var item = this.items[0];
 			item.play();
 		}
-	},
-	
-	onUpdate				: function(){
 	},
 	
 	add		: function( a ){

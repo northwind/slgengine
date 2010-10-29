@@ -95,8 +95,8 @@ FIGURES = {
 ACTIONGROUPS   = [{
 	desc	: "开场白",
 	event	: {
-		type	: 2,
-		name	: "start"
+	//	type	: 2,
+	//	name	: "start"
 	},
 	actions	: [{
 		type	: 2,
@@ -203,7 +203,6 @@ ACTIONGROUPS   = [{
 },{
 	desc: "我军阶段1",
 	event: {
-/*
 		type: 2,
 		name: "teamStart",
 		condition : [{
@@ -211,7 +210,6 @@ ACTIONGROUPS   = [{
 			symbol : "==",
 			compare : "1"
 		}]
-*/
 	},
 	actions: [{
 		type	: 2,
@@ -229,7 +227,6 @@ ACTIONGROUPS   = [{
 },{
 	desc: "敌军阶段1",
 	event: {
-/*
 		type: 2,
 		name: "teamStart",
 		condition : [{
@@ -237,7 +234,6 @@ ACTIONGROUPS   = [{
 			symbol : "==",
 			compare : "2"
 		}]
-*/
 	},
 	actions: [{
 		type	: 2,

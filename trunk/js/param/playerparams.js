@@ -23,8 +23,9 @@ UNITS	= [{
 	id: "firstDie", gx :  7,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 1, symbol	: "archerYellow", miss : 0,
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓箭兵", level : 1, face : "images/face/182-1.png",
 	listeners : {
-		preDead	: function( unit ){
-			unit.hp = 1; //不让死
+		preDead	: function( unit, attacker ){
+			if ( attacker.id == "first" )
+				unit.hp = 1; //不让死
 		}
 	}	 	
 },{
@@ -40,8 +41,9 @@ UNITS	= [{
 	id : "secondDie", gx :  12,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 1, symbol	: "enchanterYellow", miss : 0, 
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "术士", level : 1, face : "images/face/182-1.png",
 	listeners : {
-		preDead	: function( unit ){
-			unit.hp = 1; //不让死
+		preDead	: function( unit, attacker  ){
+			if ( attacker.id == "second" )
+				unit.hp = 1; //不让死
 		}
 	}		 	
 },

@@ -6,11 +6,10 @@
 var Component = Observable.extend({
 	hidden	: false,
 	absolute: true,
+	events : "hide,show",
 	
 	init: function( config ){
 		this._super( config );
-		
-		this.addEvents( "hide", "show" );
 		
     	if ( !this.el )
 			this.el = $("<div/>");

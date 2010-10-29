@@ -4,10 +4,10 @@
  */
 var Toolbar  = Observable.extend({
 	active	: false,
+	events	: "endTeam,saveGame,loadGame,condition,restart",
 	
 	init	: function(){
 		this._super( arguments[0] );
-		this.addEvents( "endTeam", "saveGame", "loadGame", "condition", "restart" );
 		
 		return this;
 	},

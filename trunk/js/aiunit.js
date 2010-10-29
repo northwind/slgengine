@@ -7,26 +7,31 @@ var AIUnit  = Observable.extend({
 	enemy	: null,
 	running	: false,
 	suspend : false,
+	events	: "end",
 	
 	init	: function(){
 		this._super( arguments[0] );
-		this.addEvents( "end" );
 		
 		return this;
 	},
 	
 	start	: function( unit ){
+		log( "aiunit start : " + unit.name );
 		this.unit  = unit;
-/*
+		
 		this.unit.on( "standby", function(){
-			this.fireEvent( "end", this.unit, this );
+			var unit = this.unit;
+			delete this.unit;
+			delete this.enemy;
+			log( "aiunit : " + unit.name + " end" );
+			this.fireEvent( "end", unit, this );
 		}, this,  { one : true } );
-
-*/		
+		
 		this.running = true;
 		this.unit.auto = true;
 		this.unit.showMe();
 		this.enemy = this.scanEnemy();
+		
 		if (this.enemy) {
 			this.fight(this.enemy);
 		}else{
@@ -36,13 +41,6 @@ var AIUnit  = Observable.extend({
 	},
 	
 	end	: function(){
-		this.unit.on( "standby", function(){
-			var unit = this.unit;
-			delete this.unit;
-			delete this.enemy;
-			this.fireEvent( "end", unit, this );
-		}, this,  { one : true } );
-		
 		this.running = false;
 		this.unit.finish();
 	},
