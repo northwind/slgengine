@@ -95,8 +95,8 @@ FIGURES = {
 ACTIONGROUPS   = [{
 	desc	: "开场白",
 	event	: {
-	//	type	: 2,
-	//	name	: "start"
+		type	: 2,
+		name	: "battleStart"
 	},
 	actions	: [{
 		type	: 2,

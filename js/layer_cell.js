@@ -12,9 +12,9 @@ var CellLayer = Layer.extend({
 		this.borders = {};
 		this._super( arguments[0] );
 		
-		PANEL.on("mousemove", this.activeCell, this );
-		PANEL.on("paint", this.onPaint, this );
-		PANEL.on("mouseleave", this.unactiveCell, this );
+		PANEL.on("mousemove", this.activeCell, this )
+					 .on("paint", this.onPaint, this )
+					 .on("mouseleave", this.unactiveCell, this );
 		
 		return this;
 	},

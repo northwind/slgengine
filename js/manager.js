@@ -9,7 +9,7 @@ var Manager = Observable.extend({
 		this.addEvents( "add","remove" );
 		this._super( arguments[0] );
 		
-		this.hash = {};
+		this.items = {};
 		
 		return this;
 	},
@@ -19,11 +19,11 @@ var Manager = Observable.extend({
 		if ( key != undefined && value != undefined  ) {
 			if (!this.has(key)) {
 				this.len++;
-				this.hash[key] = value;
+				this.items[key] = value;
 				
 				this.fireEvent( "add", key, value, this );
 			}else	
-				this.hash[key] = value;
+				this.items[key] = value;
 		}
 		return this;
 	},
@@ -31,8 +31,8 @@ var Manager = Observable.extend({
 	unreg	: function( key ){
 		if ( this.has(key) != undefined ) {
 			this.len--;
-			var value = this.hash[ key ];
-			delete this.hash[ key ];	
+			var value = this.items[ key ];
+			delete this.items[ key ];	
 			
 			this.fireEvent( "remove", key, value, this );
 		}
@@ -41,11 +41,11 @@ var Manager = Observable.extend({
 	},
 	
 	get		: function( key ){
-		return this.hash[ key ];
+		return this.items[ key ];
 	},
 	
 	has		: function( key ){
-		return this.hash[ key ] != undefined;
+		return this.items[ key ] != undefined;
 	},
 	
 	count	: function(){
@@ -53,8 +53,8 @@ var Manager = Observable.extend({
 	},
 	
 	each	: function( fn, scope ){
-		for( var key in this.hash ){
-			var item = this.hash[ key ];
+		for( var key in this.items ){
+			var item = this.items[ key ];
 			fn.call( scope || item, key, item );
 		}
 	},

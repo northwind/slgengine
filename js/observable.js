@@ -171,7 +171,7 @@ EventImd.prototype = {
     },
 
     createListener : function(fn, scope){
-        return { scope: scope || this.obj, fireFn: fn };
+        return { scope: scope || this.obj, fn: fn };
     },
 
     findListener : function(fn, scope){
@@ -318,29 +318,20 @@ var Observable = Class.extend({
 		
         for (var i = 0, a = arguments, v; v = a[i]; i++) {
 			var name = v, type = 1;
-			if ( typeof v != "object" ){
+			if ( typeof v == "object" ){
 				name = v.name;
 				type = v.type;
 			}
 			
 			if ( !this.events[ name ] ){
 				var obj;
-				if ( type == 1 ){
-					obj = new EventObs(this, name );
-				}else if ( type == 2 )
-					obj = new EventImd( this, name );
+				if ( type == 2 ){
+					obj = new EventObs( this, name );
+				}else
+					obj = new EventImd(this, name );					
 					
-				this.events[v] = obj;
+				this.events[ name ] = obj;
 			} 
-			
-			if ( typeof v == "string" )
-				if (!this.events[v]) 
-					this.events[v] = new EventObs(this, v);
-			else{
-				var name = v.name;
-				if (!this.events[v]) 
-					this.events[v] = new EventObs(this, v);
-			}		
 		}
     },
 

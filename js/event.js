@@ -138,7 +138,7 @@ var SysEvent = Event.extend({
 
 
 //事件管理器 执行某个事件需从这里接入
-var EventMgr = Manager.extend({
+var ScriptMgr = Manager.extend({
 	current	: null,	
 	
 	//工厂模式生成事件对象
@@ -166,4 +166,4 @@ var EventMgr = Manager.extend({
 	}		
 }); 
 
-EventMgr = new EventMgr();
+ScriptMgr = new ScriptMgr();
