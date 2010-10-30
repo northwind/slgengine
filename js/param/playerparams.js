@@ -4,8 +4,11 @@
 var 
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
-	id: "caocao", gx :  5,  gy : 2, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "caocao",
-	faction : 1, team : 100, mpMax : 10, mp : 10, name : "曹操", level : 1, visiable : false	
+	id: "caocao", gx :  9,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "caocao", exp : 199,
+	faction : 1, team : 100, mpMax : 10, mp : 10, name : "曹操", level : 1, attackFreqMax : 2, visiable : true	
+},{
+	id: "qibing1", gx :  10,  gy : 16, range : 2, rangeType : 2, hpMax : 110, hp : 110, symbol	: "cavalryman",
+	faction : 1, team : 100, mpMax : 10, mp : 10, name : "骑兵", level : 1, attackFreqMax : 1, visiable : true	
 },
 
 //友军

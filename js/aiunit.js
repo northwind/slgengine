@@ -20,16 +20,14 @@ var AIUnit  = Observable.extend({
 		this.unit  = unit;
 		
 		this.unit.on( "standby", function(){
-			var unit = this.unit;
-			delete this.unit;
+			this.fireEvent( "end", this.unit, this );
 			delete this.enemy;
-			log( "aiunit : " + unit.name + " end" );
-			this.fireEvent( "end", unit, this );
+			delete this.unit;
 		}, this,  { one : true } );
 		
 		this.running = true;
 		this.unit.auto = true;
-		this.unit.showMe();
+		this.unit.followMe();
 		this.enemy = this.scanEnemy();
 		
 		if (this.enemy) {

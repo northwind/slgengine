@@ -29,8 +29,8 @@ var AIController = Observable.extend({
 	},
 	
 	onTeamStart	: function( team ){
-		if ( !this.running && (team.faction != FACTION || team.team != TEAM) ){
-			log( "ai start : faction = " + team.faction + " team = " + team.team + " suspend = " + this.suspend );
+		if ( !this.running && !team.equal( FACTION ,TEAM) ){
+			log( "ai start : team = " + team.name + " suspend = " + this.suspend );
 			this.running = true;
 			this.team = team;
 			this.getAITeam().bind( team );
@@ -41,8 +41,8 @@ var AIController = Observable.extend({
 	},
 	
 	onTeamEnd	: function( team ){
-		if ( this.running && (team.faction == this.team.faction  && team.team == this.team.team ) ){
-			log( "ai end : faction = " + team.faction + " team = " + team.team );
+		if ( this.running && this.team.equal( team.faction ,team.team ) ){
+			log( "ai end : team = " + team.name );
 			this.running = false;
 			this.getAITeam().stop( team );
 			delete this.team;

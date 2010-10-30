@@ -17,14 +17,14 @@ var UnitLayer = Layer.extend({
 		this.addEvents( "click");
 		this.addEvents( { name : "roundStart", type : 2 }, { name : "roundEnd", type : 2 }, 
 									{ name : "teamStart", type : 2 }, { name :"teamEnd", type : 2 },
-									{ name : "teamOver", type : 2 });
+									{ name : "teamOver", type : 2 }, { name : "enter", type : 2 });
 									 
 		this._super( arguments[0] );
 		
-		this.units = {};
 		this.teams = [];
+		this.units = {};
 		
-		this.setTeams( TEAM );
+		this.setTeams( TEAMS );
 		this.setUnits( UNITS );
 				
 		//点击画布
@@ -39,14 +39,15 @@ var UnitLayer = Layer.extend({
 			   .bindEvent( "roundEnd", this.onRoundEnd, this )
 			   //.bindEvent( "teamStart", this.onTeamStart, this )	//AI自动接手
 			   .bindEvent( "teamEnd", this.onTeamEnd, this )
-			   .bindEvent( "teamOver", this.onTeamOver, this );
+			   .bindEvent( "teamOver", this.onTeamOver, this )
+			   .bindEvent( "enter", this.onEnter, this );
 		
 		return this;
 	},
 	
 	setTeams : function( data ){
 		for (var i=0; i<data.length; i++) {
-			this.addTeam[ data[i] ];
+			this.addTeam( data[i] );
 		}
 		return this;
 	},
@@ -59,7 +60,7 @@ var UnitLayer = Layer.extend({
 	},
 	
 	findTeam	: function( f, t ){
-		for (var i=0; i<this.teams; i++) {
+		for (var i=0; i<this.teams.length; i++) {
 			var team = this.teams[ i ];
 			if ( team.equal( f, t ) )
 				return team;
@@ -119,16 +120,10 @@ var UnitLayer = Layer.extend({
 		log( "startTeam : " + team.name );
 		if ( team.count() == 0 ){
 			//没有可行动的角色时 跳过该队伍
-			this.endTeam( team );
+			this.onTeamEnd();
 		}else{
-			//if ( team.faction != FACTION || team.team != TEAM ) 
-				//提示信息消失后再触发
-				PANEL._showTopLine(team.name + " 阶段", function(){
-					team.start();
-				}, this);
-			//else {
-			//	this.fireEvent("teamStart", team, this.teamIndex);
-			//}				
+			PANEL._showTopLine(team.name + " 阶段" );
+			team.start();
 		}		
 	},
 	
@@ -143,7 +138,8 @@ var UnitLayer = Layer.extend({
 		}else{
 			//继续下一个队伍
 			var team = this.getCurrentTeam();
-			this.startTeam( team );
+			if ( team )
+				this.startTeam( team );
 		}			
 	},
 	
@@ -152,7 +148,7 @@ var UnitLayer = Layer.extend({
 	},
 	
 	finishTeam : function( f, t ){
-		this.getCurrentTeam().finish();
+		this.findTeam( f, t ).finish();
 	},
 	
 	setUnits : function( data ){
@@ -166,6 +162,12 @@ var UnitLayer = Layer.extend({
 			}
 		}			
 		return this;
+	},
+	
+	//角色进入某一个单元格
+	//判断获得物品
+	onEnter	: function( unit, cell ){
+		unit.afterMove();
 	},
 		
 	onPaint	: function(){
@@ -240,9 +242,9 @@ var UnitLayer = Layer.extend({
 				if ( unit && this.clicked.canAttack(cell)) {
 					this._removeCells();
 					
-					this.clicked.attack( unit , function(){
-						//this.finish();
-					}, this );
+					this.clicked.attack( unit, function(){
+						log( "after unit attack" );
+					}, this, { one : true } );
 				}
 				else 
 					//如果可以移动
@@ -533,7 +535,7 @@ var UnitLayer = Layer.extend({
 			
 		unit.on( "standby", this.deleteClicked, this )
 			.on( "move", function( unit ){
-				log( "unit.auto = "  + unit.auto);
+				log( "move event : unit.auto = "  + unit.auto);
 				//运行脚本时不弹框
 				if ( !PANEL.isScripting() && !unit.auto )
 					PANEL.popActionMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
