@@ -64,6 +64,7 @@ var Unit = Observable.extend({
 	attackFreq		: 0,		//本回合攻击几次了
 	attacking		: false, //是否正在攻击
 	missing		: false, //闪避中
+	gainExp	: 0,		//单次攻击累计获得经验数
 	
 	faction		: 0, //阵营  不同阵营既是敌人，可攻击  -1即是中立 任何人都不能攻击
 	team	: 1,		//所处队伍 同一阵营下同一队伍为我军，不同队伍为友军
@@ -84,11 +85,13 @@ var Unit = Observable.extend({
 		this.magics = {};
 		this.buff = {};
 		
-		this.addEvents( "click","unclick","change","dead","preDead","attack","preAttack","move","walk","speak","defend","show","standby","upgrade" );
+		this.addEvents( "click","unclick","change", "afterAttack", "walk","speak", "appear","standby", "move" );
+		this.addEvents( { name : "preDead", type : 2 },	{ name : "preAttack", type : 2 }, { name : "upgrade", type : 2 },
+									{ name : "attack", type : 2 }, { name : "defend", type : 2 } , { name : "dead", type : 2 } );
 		this._super( config );
 				
 		//如果没有id则自动生成一个
-		this.id = this.id || getTime();
+		this.id = this.id || Unit.ID();
 		this.hp = this.hp || this.hpMax;
 		this.mp = this.mp || this.mpMax;
 		this._calcHpPercent();
@@ -97,9 +100,9 @@ var Unit = Observable.extend({
 		this.setUI();
 		this.setMagic();
 		//this.setTeam();
-				
-		this.on( "move", function(){ this.moving = false; }, this );
-		this.on( "speak", function(){ this.speaking = false; }, this );
+		
+		//绑定事件回调函数
+		this.bindEvent( "attack", this.onAttack, this );
 		
 		return this;
 	},
@@ -193,7 +196,7 @@ var Unit = Observable.extend({
 		PANEL.cellLayer.paintCells( ATTACKCOLOR, {} );
 	},
 	//窗口移动到可以显示该角色
-	showMe		: function(){
+	followMe		: function(){
 		PANEL.moveToCell( this.cell );
 		return this;
 	},	
@@ -239,6 +242,7 @@ var Unit = Observable.extend({
 	throughway		: function( way ){
 		this.moving = true;
 		this.lock = true;
+		delete this.moves;
 		
 		this.oriCell = this.cell;
 					
@@ -262,100 +266,106 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
+	//先触发全局enter事件，之后触发unit.move事件
+	onMove	: function( cell ){
+		this.moving = false;
+		this.layer.fireEvent("enter", this, this.cell );
+	},
+	
+	afterMove		: function(){
+		this.fireEvent( "move", this, this.cell );
+	},
+	
 	attack			: function( unit, fn, scope ){
 		if (typeof unit == "string")
 			unit = PANEL.getUnit( unit );
-		//预备攻击返回false则取消执行
-		if (this.fireEvent("preAttack", this) !== false) {
-			this.attacking = true;
-			this.on("attack", fn, scope, { one : true });
-			//判断暴击
-			var bursting = false;
-			if ( (1 + Math.random() * 99) <= this.burst ){
-				bursting = true;
-			}	
-			var hit = this._genHitValue( bursting );
-					
-			this.ui.attack( unit.cell, bursting, hit, function(){
-				log( this.name + "attack over" );
-				//this.fireEvent("attack", this);
-				this.attacking = false;
-				
-				//通知被攻击者
-				unit.attacked( this, hit, function( defender, miss, v ){
-					//绑定防御事件 被攻击的unit受到伤害后反馈
-					this.attackFreq++;
-					if ( this.attackFreq >= this.attackFreqMax || defender.dead ){
-						this.fireEvent("attack", this, unit, hit );
-						if (!PANEL.isScripting()) {
-							//TODO 逻辑有问题
-							var n = hit;
-							this.addExp(n, function(){
-								log(this.name + " addExp end");
-								//结束本回合
-								this.finish();
-							}, this);
-						}
-					}else{
-						//继续攻击同一目标
-						this.attack( unit );
-					}
-				}, this );
-				
-			}, this);
-		}else if ( fn )
-			fn.call( scope || this, this, unit, -1 );
 		
+		if ( unit ){
+			delete this.attacks;
+			this.gainExp = 0;
+			if ( fn )
+				this.on( "afterAttack", fn, scope, { one : true } );
+						
+			log( this.name + "  preAttack" );
+			this.bindEvent( "preAttack", function(){
+						this.attacking = true;
+						this.fire( unit );
+					}, this )
+				  .fireEvent("preAttack", this, unit );
+		}
+			
 		return this;
 	},
 	
-	attackEmpty		: function( fn, scope ){
-		this.attacking = true;
-		this.on("attack", fn, scope, { one : true });
+	//真正攻击时调用的函数
+	fire			: function( unit ){
+		//判断暴击
+		var bursting = false;
+		if ( (1 + Math.random() * 99) <= this.burst ){
+			bursting = true;
+		}	
+		var hit = this._genHitValue( bursting );
+					
+		this.ui.attack( unit.cell, bursting, hit, function(){
+			log( this.name + "attack over : freq : " + this.attackFreq );
+			
+			//通知被攻击者
+			unit.attacked( this, hit, function( defender, self, v ){
+				log( "unit attacked callback " + defender.name + " v = " + v);
+				//计算一回可攻击的次数，不足继续攻击
+				this.attackFreq++;
+				this.gainExp += Unit.getExpByBlood( this, unit, v );
+				
+				if ( this.attackFreq == this.attackFreqMax || defender.dead ){
+					this.fireEvent("attack", this, unit, hit );
+				}else{
+					//继续攻击同一目标
+					this.fire( unit );
+				}
+			}, this );
+			
+		}, this);
 		
-		this.ui.attack( null, false, 0, function(){
-			this.fireEvent("attack", this);
-			this.attacking = false;
-		}, this);		
 	},
-	
-	//产生伤害
-	hurt			: function( unit, v ){
-		unit.onDecrease( v, this, function( defender, hit, num ){
-			var n = hit == true ? num : 0;
-			this.addExp( n, function(){
-				//结束本回合
-				this.finish();
-			}, this );			
+	//攻击完成后
+	onAttack				: function( self, unit, hit ){
+		log( "unit onAttack" );
+		this.attackFreq = 0;
+		this.attacking = false;
+		
+		//增加经验
+		this.addExp( this.gainExp, function(){
+			this.fireEvent( "afterAttack", this, unit );
+			//攻击后自动待机
+			this.finish();
 		}, this );
 	},
- 	
+	
+	//挥击武器 只播放动画
+	swing		: function( fn, scope ){
+		this.ui.attack( null, false, 0, fn, scope );		
+	},
+	
 	//被攻击
 	attacked		: function( unit, v, fn, scope ){
+		if ( fn )
+			this.on( "defend", fn, scope, { one : true } );
 		//判断是否可攻击
 		if (this.invincible) {
 			this.ui.invincible(function(){
-				if (fn) 
-					fn.call(scope || this, this, false);
+				this.fireEvent( "defend", this, unit, 0 );
 			}, this);
 		}
 		else {
 			//判断反击
 			if ( unit && (1 + Math.random() * 99) <= this.revenge ) {
-/*
-				var oldFn = fn, oldScope = scope;
-				fn = function(){
-					this.attack( unit );
-				};
-				scope = this;
-*/
+				
 			}
 			
 			//判断闪避
 			if ((1 + Math.random() * 99) <= this.miss) {
 				this.ui.miss(function(){
-					if (fn) 
-						fn.call(scope || this, this, false);
+					this.fireEvent( "defend", this, unit, 0 );
 				}, this);
 			}
 			else //判断抵抗
@@ -363,7 +373,7 @@ var Unit = Observable.extend({
 			{
 				//伤害值
 				var decrease = this._genDamageValue(v);
-				this.getHurt(decrease, unit, fn, scope);
+				this.getHurt(decrease, unit );
 			}
 		}
 	},
@@ -377,43 +387,39 @@ var Unit = Observable.extend({
 	},
 	//受到伤害
 	getHurt	: function( d, unit, fn, scope ){
+		log( "unit getHurt : " +  this.name );
+		if ( isNaN( d) )		
+			d = 0;
+		if ( fn )
+			this.on( "defend", fn, scope, { one : true } );
+			
 		this.ui.attacked( d, function(){
-			this.onDecrease( d, unit, fn, scope );
+			this.onDecrease( d, unit );
 		}, this );		
 	},
 	
 	//扣血
-	onDecrease	: function( d, unit, fn, scope ){
-		if ( !isNaN(d) ) {
-			
-			this.hp = Math.max(0, this.hp - d );
-			this._calcHpPercent();
-			
-			this.fireEvent( "change", this );
-			
-			//如果死亡，则播放动画后再执行回调函数
-			if (this.hp == 0) {
-				
-				this.fireEvent( {
-					name : "preDead",
-					fn	 : function(){
+	onDecrease	: function( d, unit ){
+		d = this.hp > d ? d : this.hp;		//计算实际伤血值
+		this.hp = Math.max(0, this.hp - d );
+		this._calcHpPercent();
+		
+		this.fireEvent( "change", this );
+		
+		//如果死亡，则播放动画后再执行回调函数
+		if (this.hp == 0) {
+			this.bindEvent( "preDead", function(){
 						if ( this.hp > 0 ){
 							//如果不让死
-							if( fn )
-								fn.call( scope || this, this, true, d, unit );									
+							this.fireEvent( "defend", this, unit, d );						
 						}else{
-							this.die( unit, fn, scope );
-						}
-					},
-					scope: this
-				}, this, unit, d );
-				
-			}else{
-				//回调扣血数值
-				if( fn )
-					fn.call( scope || this, this, true, d, unit );
-			}
-		}	
+							this.die( unit, d );
+						}				
+					}, this )
+				   .fireEvent( "preDead", this, unit, d );
+		}else{
+			this.fireEvent( "defend", this, unit, d );
+		}
 	},
 	
 	//加血
@@ -433,25 +439,28 @@ var Unit = Observable.extend({
 		}
 	},	
 	
-	die		: function( unit, fn, scope ){
-		log( this.name + " dead" );
+	die		: function( unit, d, fn, scope ){
+		log( this.name + " die" );
+		if ( fn )
+			this.on( "defend", fn, scope, { one : true } );
+					
 		this.ui.dead( function(){
 			this.dead = true;
 			
-			//先反馈攻击者，再触发dead事件
-			if ( fn )
-				fn.call( scope || this, this, true, 0, unit );
-				
-			this.onDead( unit );
-			//死了也要触发standby事件
-			this.fireEvent( "standby", this );
+			this.bindEvent( "defend", this.onDead, this )
+				   .fireEvent( "defend", this, unit, d );
 		}, this );		
 	},
 	
-	onDead		: function( unit ){
+	onDead		: function( self, unit, d ){
 		//死亡时锁定角色
 		this.lock = true;
-		this.fireEvent( "dead", this, unit );
+		
+		this.bindEvent( "dead", function(){
+					//死了也要触发standby事件
+					//this.fireEvent( "standby", this );			
+				}, this )
+			   .fireEvent( "dead", this, unit, d );
 	},
 	
 	//计算攻击值 攻击上限与攻击下限间随机取值 最小为0
@@ -498,13 +507,10 @@ var Unit = Observable.extend({
 			this.oriCell = this.cell;
 			this.attackFreq = 0;
 			
-			//TODO 与PANEL松耦合
-			if (!PANEL.isScripting()) {
-				this.ui.standby(function(){
-					log(this.name + " standby");
-					this.fireEvent("standby", this);
-				}, this);
-			}
+			this.ui.standby(function(){
+				log(this.name + " standby");
+				this.fireEvent("standby", this);
+			}, this);
 		}
 	},
 	
@@ -563,15 +569,24 @@ var Unit = Observable.extend({
 		
 		//升级后再调用change事件
 		this.ui.upgrade( function(){
-			
-			this.fireEvent( "upgrade", this );
-			//继续升级
-			if ( this.exp >= this.nextExp() )
-				this.onUpgrade( fn, scope );
-			else{
-				if ( fn )
-					fn.call( scope ||  this, this );
-			} 	
+			log( this.name + "upgrade"  );
+			this.bindEvent( "upgrade", function(){
+						var callback = function(){
+							//继续升级
+							if ( this.exp >= this.nextExp() )
+								this.onUpgrade( fn, scope );
+							else{
+								if ( fn )
+									fn.call( scope ||  this, this );
+							} 
+						};
+						if ( this.auto )
+							callback.call( this );
+						else	
+							this.speak(  "我升级了",  callback, this  );  
+				   }, this )
+				   .fireEvent( "upgrade", this );
+				   
 		}, this );		
 	},
 	
@@ -684,10 +699,26 @@ var Unit = Observable.extend({
 		}, this );
 	}
 }); 
-//计算升级所需经验
-//每升一级需额外50点 起始值100
-Unit.calcExp = function( level ){
-	return (level -1) * 50 + 100;
-}
 
+$.extend( Unit, {
+	//计算升级所需经验
+	//每升一级需额外50点 起始值100
+	calcExp 				:	function( level ){
+		return (level -1) * 50 + 100;
+	},
+	//通过伤敌血量获得经验值
+	//没3级一格档次,共五档
+	//120% 110% 100% 70% 50%
+	addition				: [ 0.5, 0.7, 1 , 1 ,1.1 ,1.2],
+	getExpByBlood	: function( attacker, casualty, v ){
+		var diff = Math.ceil( ( casualty.level - attacker.level ) / 3 ) + 2,
+				index = Math.max( Math.min( diff, 5 ) , 0 );
+		return  parseInt( Unit.addition[ index ] * v );
+	},
+	//自增长ID
+	count :  0,
+	ID 						: function(){
+		return ++Unit.count;
+	}
+} );
 

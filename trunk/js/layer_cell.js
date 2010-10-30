@@ -50,7 +50,7 @@ var CellLayer = Layer.extend({
 	
 	onPaint					: function(){
 		//画格子
-		if ( this.lines ){
+		if ( this.lines || DEBUG ){
 			ctx.save();
 			
 			ctx.fillStyle  = "rgba(255,255,255, 1)";

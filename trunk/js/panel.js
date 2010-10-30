@@ -29,7 +29,7 @@ var Panel = Component.extend({
 		this.ct = $("#wrap").width( MAX_W );
 		
 		this.addEvents( "paint", "click","runScript","stopScript","globalClick","mouseleave","mousemove","contextmenu","keydown","keyup" );
-		this.addEvents( { name : "battleStart", type : 2 }, { name : "battleOver", type : 2 } );
+		this.addEvents( { name : "battleStart", type : 2 }, { name : "battleOver", type : 2 }  , { name : "paint", type : 3 } );
 		
 		this._super( config );
 		
@@ -142,7 +142,7 @@ var Panel = Component.extend({
 	//overload
 	//与回合相关的事件交给unitsLayer处理
 	on				: function( name ){
-		if ( /roundStart|roundEnd|teamStart|teamEnd|teamOver/.test(name) ){
+		if ( /roundStart|roundEnd|teamStart|teamEnd|teamOver|enter/.test(name) ){
 			this.unitsLayer.on.apply( this.unitsLayer, arguments );
 			return this;
 		}else
@@ -225,9 +225,11 @@ var Panel = Component.extend({
 			clearTimeout( this.lineTimer );
 		
 		$("#maskUp").html( str ).css({
-				height  : 200,
+				height  : 100,
 				width	: MAX_W,
-				top		: (WINDOW_HEIGHT -200)/2
+				background : "",
+				//top		: (WINDOW_HEIGHT -200)/2
+				top		: 25
 		}).show();
 		
 		var _self = this;
@@ -240,10 +242,10 @@ var Panel = Component.extend({
 	showGoal		: function( fn, scope ){
 			this._showTopLine(  "" , fn, scope );
 			$("#maskUp").html( GOAL ).css({
+				background : "",
 				width	: MAX_W,
 				height  : WINDOW_HEIGHT,
-				top		:  23,
-				lineHeight : "100px"
+				top		:  23
 			});
 	},
 	_hideTopLine		: function( fn, scope ){
@@ -357,7 +359,7 @@ var Panel = Component.extend({
 		$("#rolename").text( unit.name );
 		$("#rolelevel").text( unit.level );
 		$("#roleexp").attr( "title", unit.exp + "/" + unit.nextExp() );
-		$("#roleexpline").width( 236 * unit.exp / unit.nextExp() );
+		$("#roleexpline").width( 236 * Math.min( 1, unit.exp / unit.nextExp() ) );
 		
 		$("#roleatknum").text( unit.atknumMin + " - " + unit.atknumMax );
 		$("#rolestrength").text( unit.strength );
@@ -390,7 +392,8 @@ var Panel = Component.extend({
 	speak			: function( unit, text ){
 		if (this.speaking)
 			this.clearSpeak();
-			
+		
+		this.hideUnitAttr();	
 		this.speaking = true;
 		this.speakUnit = unit;
 			

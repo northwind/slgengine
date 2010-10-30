@@ -95,8 +95,8 @@ FIGURES = {
 ACTIONGROUPS   = [{
 	desc	: "开场白",
 	event	: {
-		type	: 2,
-		name	: "battleStart"
+		//type	: 2,
+		//name	: "battleStart"
 	},
 	actions	: [{
 		type	: 2,
@@ -234,6 +234,7 @@ ACTIONGROUPS   = [{
 			compare : "2"
 		}]
 */
+/*
 		type: 2,
 		name: "teamStart",
 		condition : [{
@@ -241,6 +242,7 @@ ACTIONGROUPS   = [{
 			symbol : "==",
 			compare : "1"
 		}]
+*/
 	},
 	actions: [{
 		type	: 2,

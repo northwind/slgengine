@@ -84,7 +84,7 @@ var MagicBox = Win.extend({
 	},
 	
 	//覆盖父类 
-	onCansel	: function( e ){
+	cansel	: function( e ){
 		this._super(e);
 		this.layer.unreg( this );
 		delete this.selected;

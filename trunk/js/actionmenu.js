@@ -52,13 +52,6 @@ var ActionMenu = Win.extend({
 		this.layer.concealWin();
 		this.hide();
 		this.unit.showAttack();
-		
-		this.preAttack =  function(){
-			this.layer.lock();
-			this.unit.on( "standby", this.disappear, this, { one : true } );
-		};
-		//角色攻击前触发事件
-		this.unit.on( "preAttack", this.preAttack, this ,{ one : true });
 	},
 	
 	onMagic	: function( e ){
@@ -90,32 +83,31 @@ var ActionMenu = Win.extend({
 	},
 	
 	onStandBy	: function(){
-		this.disappear();
-				
+		this.hide();
 		this.unit.finish();
-		delete this.unit;
 	},
 	
 	disappear	: function(){
-		//取消角色攻击前触发事件
-		this.unit.un( "preAttack", this.preAttack, this );
 		this.hide();
 		this.layer.unreg( this );
 		this.layer.unlock();		
 	},
 	
 	//覆盖父类 增加角色回退功能
-	onCansel	: function( e ){
-		//取消角色攻击前触发事件
-		this.unit.un( "preAttack", this.preAttack, this );
+	cansel	: function( e ){
+		if (this.unit) {
+			this.unit.un("standby", this.cansel);
+			this.unit.unClick();
+			delete this.unit;
+		}
 		this._super(e);
-		this.unit.unClick();
 		this.layer.unreg( this );
-		delete this.unit;
 	},
 	
 	bind	: function( unit ){
 		this.unit = unit;
+		this.unit.un("standby", this.cansel);
+		this.unit.on( "standby", this.cansel, this, { one : true } );
 		return this;
 	}
 	

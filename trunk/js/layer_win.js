@@ -52,7 +52,7 @@ var WinLayer = Component.extend({
 			this.items[0].show();
 		}
 		else 
-			this.items[0].onCansel();		
+			this.items[0].cansel();		
 	},
 	
 	popActionMenu		: function( unit, x, y ){

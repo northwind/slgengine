@@ -17,13 +17,15 @@ var Team = Manager.extend({
 	},
 	
 	//交给unitsLayer处理
-	fireEvent	: function(){
-		this.layer.fireEvent.apply( this.layer, arguments );
+	fireEvent	: function( name ){
+		if ( /teamStart|teamEnd|teamOver/.test( name ) )
+			this.layer.fireEvent.apply( this.layer, arguments );
 	},
 	
 	add		: function( unit ){
 		unit.on( "standby", this.checkEnd, this )
 			.on( "dead", function( unit ){
+				this.remove( unit );
 				if ( !PANEL.isScripting() )
 					this.checkOver( unit );
 			 }, this );
@@ -33,8 +35,8 @@ var Team = Manager.extend({
 
 	checkEnd	: function(){
 		var flag = true;
-		for ( var key in this.hash ) {
-			var unit = this.hash[key];
+		for ( var key in this.items ) {
+			var unit = this.items[key];
 			//当同一队伍中有任何一个可以移动时跳出循环
 			if ( !unit.lock ) {
 				flag = false;
@@ -48,8 +50,8 @@ var Team = Manager.extend({
 	
 	checkOver	: function(){
 		var flag = true;
-		for ( var key in this.hash ) {
-			var unit = this.hash[key];
+		for ( var key in this.items ) {
+			var unit = this.items[key];
 			//当同一队伍中有任何一个可以移动时跳出循环
 			if ( !unit.dead ) {
 				flag = false;
@@ -63,13 +65,15 @@ var Team = Manager.extend({
 	
 	start			: function(){
 		log( "team : start : " + this.name );
+		this.each( function(){
+			this.unLock();
+		} );			
 		this.fireEvent( "teamStart", this );
 	},
 	
 	end			: function(){
 		log( "team : end : " + this.name );
 		this.each( function(){
-			this.unLock();
 			this.restore();			
 		} );				
 		this.fireEvent( "teamEnd", this );
@@ -96,11 +100,12 @@ var Team = Manager.extend({
 	},
 	
 	remove	: function( unit ){
+		log( "team : " + this.name + " remove unit : " + unit.id ); 
 		this.unreg( unit.id );
 	},
 	
 	members	: function(){
-		return this.hash;
+		return this.items;
 	},
 	
 	destroy	: function(){

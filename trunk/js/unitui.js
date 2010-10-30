@@ -287,7 +287,7 @@ var UnitUI = Observable.extend({
 	moveTo	: function( way ){
 		if (way.length == 0) {
 			//原地
-			this.unit.fireEvent( "move", this.unit );
+			this.unit.onMove( this.unit.cell );
 		}
 		else {
 			this.oriDirect = this.direct;
@@ -309,7 +309,7 @@ var UnitUI = Observable.extend({
 						this.cell = cell;
 						//移动到最后一个位置时触发move事件
 						if ( cell == way[ way.length-1 ] )
-							this.fireEvent( "move", this );
+							this.onMove( cell );
 					}, 
 					params	: [ to ],
 					direct  : direct,
