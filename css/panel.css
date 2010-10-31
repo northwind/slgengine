@@ -1,4 +1,4 @@
-._wrap{ margin:0 auto; }
+._wrap{ margin:0 auto; position:relative; }
 ._panel{	margin:auto;	position:relative;	z-index:1;	overflow:hidden;	-moz-user-select:none;}
 ._panel canvas{ 	position : absolute;}
 ._panel img, .unselect{	-moz-user-select:none;	border:none;	outline:none;background-repeat:no-repeat;}
@@ -45,7 +45,7 @@
 
 ._bboard{ display:none; position:absolute; z-index:-1; top:-999px; left:-999px; background:#fff; }
 
-._masklayer{ position:absolute; z-index:100000; display:none; background:#eee; opacity : 0.5;}
+._masklayer{ position:absolute; z-index:100000; display:none; background:#eee; opacity : 0.4; top:23px; left:0px; }
 ._masklayerUp{ cursor:default; position:absolute; z-index:100001; background:#262626; height: 100px; line-height:100px; font-size:70px; color:#fff; text-align:center; display:none; opacity : 0.9; }
 
 ._loader{ margin:auto; line-height:100px; margin:0 auto; height:100px; width:400px; color:#ff8040; font-size:16px; display:none; position:absolute; z-index:100002; }

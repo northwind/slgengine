@@ -19,10 +19,10 @@ var AIUnit  = Observable.extend({
 		log( "aiunit start : " + unit.name );
 		this.unit  = unit;
 		
-		this.unit.on( "standby", function(){
-			this.fireEvent( "end", this.unit, this );
+		this.unit.on( "standby", function( unit ){
 			delete this.enemy;
-			delete this.unit;
+			delete this.unit;			
+			this.fireEvent( "end", unit, this );
 		}, this,  { one : true } );
 		
 		this.running = true;

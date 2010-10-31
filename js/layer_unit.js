@@ -148,7 +148,9 @@ var UnitLayer = Layer.extend({
 	},
 	
 	finishTeam : function( f, t ){
-		this.findTeam( f, t ).finish();
+		var team = this.findTeam( f, t );
+		if ( team )
+			team.finish();
 	},
 	
 	setUnits : function( data ){
@@ -239,12 +241,13 @@ var UnitLayer = Layer.extend({
 			
 			if (this.clicked) {
 				//如果可以攻击
-				if ( unit && this.clicked.canAttack(cell)) {
+				if ( unit && this.clicked.canAttack(cell, unit ) ) {
 					this._removeCells();
 					
 					this.clicked.attack( unit, function(){
 						log( "after unit attack" );
-					}, this, { one : true } );
+						this.finish();
+					}, this.clicked, { one : true } );
 				}
 				else 
 					//如果可以移动
@@ -259,6 +262,7 @@ var UnitLayer = Layer.extend({
 					unit.click(e);
 				//没有锁定同时具有移动性
 				if ( unit && !unit.lock && unit.moveable && unit.isSibling( FACTION, TEAM) ) {
+				//if ( unit && !unit.lock && unit.moveable ) {
 					unit.showMoves();
 					
 					this.clicked = unit;
