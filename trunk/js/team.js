@@ -23,8 +23,8 @@ var Team = Manager.extend({
 	},
 	
 	add		: function( unit ){
-		unit.on( "standby", this.checkEnd, this )
-			.on( "dead", function( unit ){
+		unit.bindEvent( "standby", this.checkEnd, this )
+			  .on( "dead", function( unit ){
 				this.remove( unit );
 				if ( !PANEL.isScripting() )
 					this.checkOver( unit );
@@ -81,10 +81,7 @@ var Team = Manager.extend({
 	
 	finish		: function(){
 		log( "team : finish :" + this.name  );
-		this.each( function(){
-			if (!this.standby)
-				this.finish();
-		} );			
+		this.end();		
 	},
 	
 	over		: function(){

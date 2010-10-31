@@ -83,7 +83,7 @@ UNITS	= [{
 	gx :  10,  gy : 14, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
 	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军"
 },{
-	gx :  9,  gy : 15, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	gx :  9,  gy : 15, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun", exp : 99,
 	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军"
 },{
 	gx :  10,  gy : 15, range : 2, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",

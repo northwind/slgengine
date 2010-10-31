@@ -15,6 +15,7 @@ var AIController = Observable.extend({
 	},
 	
 	start	: function(){
+		//return;
 		PANEL.on( "teamStart", this.onTeamStart, this )
 					 .on( "teamEnd", this.onTeamEnd, this )
 					 .on( "runScript", this.pause, this )

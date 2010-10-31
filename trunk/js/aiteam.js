@@ -28,6 +28,7 @@ var AITeam = Observable.extend({
 	
 	onModeEnd	: function( unit ){
 		log( "aiunit : end : " + unit.name );
+		delete this.units[ unit.id ];
 		delete this.unit;
 		this.analyze();
 	},
@@ -37,11 +38,9 @@ var AITeam = Observable.extend({
 		if (!this.suspend) {
 			for (var key in this.units) {
 				var unit = this.units[key];
-				if (!unit.standby) {
-					this.unit = unit;
-					this.mode.start(this.unit);
-					return;
-				}
+				this.unit = unit;
+				this.mode.start(this.unit);
+				return;
 			}
 			log( "aiteam : no next unit " );
 		}
@@ -50,7 +49,7 @@ var AITeam = Observable.extend({
 	stop	: function(){
 		this.running = false;
 		delete this.team;
-		delete this.units;
+		//delete this.units;	//不删除units aiunit.end事件 迟到反馈
 	},
 	
 	pause	: function(){
@@ -76,7 +75,10 @@ var AITeam = Observable.extend({
 	
 	//扫描自己人
 	scanUnits	: function(){
-		this.units = this.team.members();
+		var units = this.team.members();
+		this.units = {};
+		for( var key in units )
+			this.units[ key ] = units[ key ];  
 	},
 	
 	bind	: function( team ){

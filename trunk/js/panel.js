@@ -43,10 +43,10 @@ var Panel = Component.extend({
 			ctx = canvas.getContext("2d");
 		
 		//mask layer
-		this.masklayer = $("#_masklayer").addClass("_masklayer")
+		this.masklayer = $("#masklayer").addClass("_masklayer")
 									.css( {
-										width	: $(document).width(),
-										height	: $(document).height()
+										width	: WINDOW_WIDTH,
+										height	: WINDOW_HEIGHT
 									} );
 		
 		//绑定事件
@@ -219,7 +219,7 @@ var Panel = Component.extend({
 	
 	//战场中间显示提示信息
 	_showTopLine		: function( str, fn, scope ){
-		this.mask();
+		//this.mask();
 		
 		if ( this.lineTimer )
 			clearTimeout( this.lineTimer );
@@ -251,7 +251,7 @@ var Panel = Component.extend({
 	_hideTopLine		: function( fn, scope ){
 		var _self = this;
 		$("#maskUp").fadeOut( 800, function(){
-			_self.unmask();
+			//_self.unmask();
 			if ( fn )
 				fn.call( scope || _self )			
 		} );
