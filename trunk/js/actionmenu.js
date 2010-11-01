@@ -59,7 +59,7 @@ var ActionMenu = Win.extend({
 			this.magicBox = new MagicBox({
 				ct	: this.ct
 			});
-			this.magicBox.on( "over", this.disappear, this );
+			this.magicBox.on( "over", this.onStandBy, this );
 		}
 		var x = this.el.position().left;
 		var y = this.el.position().top;
@@ -73,7 +73,7 @@ var ActionMenu = Win.extend({
 			this.pocketWin = new PocketWin({
 				ct	: this.ct
 			});
-			this.pocketWin.on( "over", this.disappear, this );
+			this.pocketWin.on( "over", this.onStandBy, this );
 		}
 		var x = this.el.position().left;
 		var y = this.el.position().top;

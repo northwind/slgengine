@@ -137,13 +137,11 @@ var UnitUI = Observable.extend({
 	},
 	
 	drawBuff	: function(){
-		var unit = this.unit, buffs = this.unit.buff, cell = this.unit.cell, w = 12, h = 12, count = 0;
+		var unit = this.unit;
 		if ( unit.moving || unit.attacking )
 			return;
 		
-		if ( this.unit.newBuff ){
-			delete this.unit.newBuff;
-		}
+		var buffs = this.unit.buffs, cell = this.unit.cell, w = 12, h = 12, count = 0;
 		for( var key in buffs ){
 			var buff = buffs[ key ];
 			try {
@@ -164,13 +162,6 @@ var UnitUI = Observable.extend({
 			
 		//当角色位于两边时调证坐标系
 		ctx.save();
-/*
-		if ( dx == 0 ){
-			//ctx.translate( 0, 0 )
-		}else if ( cell.x == CELL_XNUM-1 ){
-			//ctx.translate( 0, 0 )
-		}
-*/
 		
 		//绘制血条
 		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
@@ -261,7 +252,7 @@ var UnitUI = Observable.extend({
 		for (var i=0; i<arguments.length; i++) {
 			var a = arguments[ i ];
 			a.index = a.index || 0;
-			a.count = a.count || 0;
+			a.count = a.count || 0;	//内部变量
 			
 			this.imgStack.push( a );
 		}
@@ -272,7 +263,7 @@ var UnitUI = Observable.extend({
 			var a = arguments[ i ];
 			var cell = this.unit.cell, dx = cell.dx, dy = cell.dy;
 			
-			a.count = a.count || 0;
+			a.count = a.count || 0;	//内部变量
 			a.inter = a.inter || TIPSPEED;
 			a.color	= a.color || "rgba(255,255,0,1)";
 			a.font = a.font || "15px";
@@ -574,14 +565,47 @@ var UnitUI = Observable.extend({
 		}
 		
 		var a = new Animation({
-			inter : 1,
+			inter : 2,
 			imgs  : imgs,
 			fn	: fn,
 			scope : scope			
 		});
 		
+		this.pushTip( {
+			text	: "获得" + stuff.name, color : "rgb(255,255,255)",
+			from	: [ this.unit.cell.dx, this.unit.cell.dy - 5],	increment : [ 0, 0 ]
+		} );
+		
 		PANEL.playAnimation( a );
 		
 		return this;
+	},
+	
+	addBuff		: function( buff, fn, scope ){
+		//在角色上方画圆
+		var dx = this.unit.cell.dx, dy = Math.max( 0, this.unit.cell.dy - 8 ), imgs = [],
+			diffx = (CELL_WIDTH - 12 )/ 5, diffy = 9,
+			path = [ [ dx, dy ], [ dx + diffx, dy + diffy ], [ dx + diffx*2, dy + diffy*2 ],[ dx + diffx *3, dy + diffy ],[ dx + diffx *4, dy ],
+					 [ dx + diffx * 3, dy- diffy ], [ dx + diffx*2, dy - diffy*2 ], [ dx + diffx, dy - diffy ],[ dx, dy ] ];
+					 
+		for (var i=0; i< path.length; i++) {
+			imgs.push({
+				dx	: path[i][0],
+				dy	: path[i][1],
+				w	: 12,
+				h	: 12,
+				img : buff.img
+			})
+		}
+		imgs.push( null );
+		
+		var a = new Animation({
+			inter : 2,
+			imgs  : imgs,
+			fn	: fn,
+			scope : scope			
+		});
+		
+		PANEL.playAnimation( a );		
 	}	
 }); 

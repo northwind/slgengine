@@ -43,11 +43,8 @@ var Panel = Component.extend({
 			ctx = canvas.getContext("2d");
 		
 		//mask layer
-		this.masklayer = $("#masklayer").addClass("_masklayer")
-									.css( {
-										width	: WINDOW_WIDTH,
-										height	: WINDOW_HEIGHT
-									} );
+		this.masklayer = $("#masklayer").addClass("_masklayer");
+		this.display = $("._display");
 		
 		//绑定事件
 		var x, y, drag = false, el=this.el, _self = this;
@@ -113,6 +110,11 @@ var Panel = Component.extend({
 			_self.fireEvent( "globalClick", e );	
 		});
 		
+		//依旧窗口大小更改战场场景大小
+		$( window ).resize( function(){
+			_self.onResize();
+		} ).resize();
+		
 		//触发器
 		var mem = 0, inter = 1000 / this.dps;
 		this.timer = setInterval( function(){
@@ -147,6 +149,16 @@ var Panel = Component.extend({
 			return this;
 		}else
 			return this._super.apply( this, arguments );
+	},
+	
+	onResize	: function( e ){
+		WINDOW_HEIGHT = Math.max( $(window).height() - 160 - 23, 250 );
+		WINDOW_WIDTH = Math.min( $(window).width(), 960 );
+		
+		this.ct.width( WINDOW_WIDTH );
+		this.el.css( { width	: WINDOW_WIDTH, height	: WINDOW_HEIGHT	} );
+		this.masklayer.css( { width	: WINDOW_WIDTH, height	: WINDOW_HEIGHT	} );
+		this.display.width( WINDOW_WIDTH );
 	},
 
 	onKeydown	: function( e ){
@@ -204,17 +216,17 @@ var Panel = Component.extend({
 		$( canvas ).show();
 
 		//显示控制面板
-		this.display = $("._display").width( MAX_W ).css( "visibility", "visible" );
+		this.display.css( "visibility", "visible" );
 		this.setBgImage( BGIMAGE );
 		this.board = $( "._board" );
 		//开始绘制战场
 		this.suspend = false;		
 		//报幕
-		this._showTopLine( CHAPTER, function(){
+		//this._showTopLine( CHAPTER, function(){
 			log("start" );
 			this.bindEvent( "battleStart", this.unitsLayer.start, this.unitsLayer )
 					.fireEvent( "battleStart", this );
-		}, this );
+		//}, this );
 	},
 	
 	//战场中间显示提示信息
@@ -448,10 +460,14 @@ var Panel = Component.extend({
 		return CellMgr.get( p.x, p.y );
 	},
 	
-	getUnit			: function( id ){
-		return this.unitsLayer.getUnitById( id );
+	getUnitByIndex			: function( index ){
+		return this.unitsLayer.getUnitByIndex( index );
 	},
 	
+	getUnitById	: function( id ){
+		return this.unitsLayer.getUnitById( id );
+	},
+		
 	popActionMenu		: function( unit, x, y ){
 		this.winLayer.popActionMenu( unit, x, y );
 		return this;
@@ -495,6 +511,14 @@ var Panel = Component.extend({
 			if ( fn )
 				fn.call( scope || this );
 		}, 2000 );
+	},
+	gainStuffOnCell	: function( x, y, stuff, num, fn, scope ){
+		log( "panel gainStuffOnCell : x = " + x + " y = " + y + " stuff = " + stuff );
+		var cell = this.getCell( x, y ), unit;
+		if ( cell && (unit = this.getUnitByIndex( cell.index )) ){
+			unit.gainStuff( stuff, num, fn, scope ) 
+		}else if ( fn )
+			fn.call( scope || this );
 	}
 });
 

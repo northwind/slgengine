@@ -127,7 +127,7 @@ var AIUnit  = Observable.extend({
 			   min = 10000, near = null, origin = enemy.cell;
 		for( var index in walkCells ){
 			var cell = walkCells[ index ], d = origin.distance( cell ), 
-					unit = PANEL.unitsLayer.getUnit( cell.index );
+					unit = PANEL.unitsLayer.getUnitByIndex( cell.index );
 			//排除已站人的单元格		
 			if ( (!unit || ( unit && unit.overlay ) ) && d < min ){
 				min = d;

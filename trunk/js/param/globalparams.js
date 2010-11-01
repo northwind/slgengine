@@ -61,7 +61,6 @@ GOODS = {
 			listeners : {
 				apply	: function( unit, fireman ){
 					unit.onIncrease( 50 );
-					fireman.finish();
 				}
 			}
 		}, 
@@ -76,7 +75,7 @@ GOODS = {
 			src		: "images/item/87-1.png",
 			listeners : {
 				apply	: function( unit ){
-					unit.finish();
+					
 				}
 			}
 		},
@@ -96,7 +95,7 @@ GOODS = {
 			},
 			listeners : {
 				apply	: function( unit, fireman ){
-					fireman.hurt( unit, 20 );
+					unit.getHurt( 20, fireman );
 				}
 			}			
 		}, 
@@ -115,7 +114,6 @@ GOODS = {
 			listeners : {
 				apply	: function( unit, fireman ){
 					unit.onIncreaseMP( 50 );
-					fireman.finish();
 				}
 			}
 		}
@@ -183,7 +181,7 @@ GOODS = {
 				effect	: 7,	
 				listeners : {
 					apply	: function( unit, fireman ){
-						fireman.hurt( unit, 100 );
+						unit.getHurt( 50, fireman );
 					},
 					over	: function( magic, fireman ){
 						//fireman.finish();
@@ -194,8 +192,8 @@ GOODS = {
 		
 // 全局变量
 var canvas, ctx;
-//阵营 队伍
-var FACTION = 1, TEAM = 100;
+//阵营 队伍 及快捷方式
+var FACTION = 1, TEAM = 100, MYTEAM, FRIENDS, ENEMY;
 
 		
 		

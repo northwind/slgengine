@@ -58,12 +58,7 @@ var PocketWin = Win.extend({
 			if ( this.selected.canAttack( cell, unit ) ){
 				this.layer.lock();
 				
-				this.unit.on( "standby", function(){
-					this.layer.unreg( this );
-					this.layer.unlock();
-					this.fireEvent( "over", this );
-				}, this, { one : true } );
-				
+				this.selected.on( "over", this.onOver, this, { one : true} );
 				//使用
 				this.selected.apply( unit );
 				delete this.selected;
@@ -73,7 +68,12 @@ var PocketWin = Win.extend({
 	},
 	
 	onOver		: function(){
-		this.layer.unlock();
+		if (true) {
+			this.layer.unreg(this);
+			this.layer.unlock();
+			this.fireEvent("over", this);
+			delete this.unit;
+		}
 	},
 	
 	//覆盖父类 

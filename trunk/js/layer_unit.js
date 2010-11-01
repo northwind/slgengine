@@ -39,8 +39,7 @@ var UnitLayer = Layer.extend({
 			   .bindEvent( "roundEnd", this.onRoundEnd, this )
 			   //.bindEvent( "teamStart", this.onTeamStart, this )	//AI自动接手
 			   .bindEvent( "teamEnd", this.onTeamEnd, this )
-			   .bindEvent( "teamOver", this.onTeamOver, this )
-			   .bindEvent( "enter", this.onEnter, this );
+			   .bindEvent( "teamOver", this.onTeamOver, this );
 		
 		return this;
 	},
@@ -55,6 +54,14 @@ var UnitLayer = Layer.extend({
 	addTeam	: function( team ){
 		team.layer = this;
 		var t = new Team( team );
+		
+		//设置全局变量
+		if ( t.equal( FACTION, TEAM ) )
+			MYTEAM = t;
+		else if ( t.faction != FACTION )
+			ENEMY = t;
+		else
+			FRIENDS = t;		
 		
 		this.teams.push( t );
 	},
@@ -168,8 +175,12 @@ var UnitLayer = Layer.extend({
 	
 	//角色进入某一个单元格
 	//判断获得物品
-	onEnter	: function( unit, cell ){
-		unit.afterMove();
+	onEnter	: function( unit ){
+		unit.suspendEvent( "standby" );
+		this.bindEvent( "enter", function( unit ){
+				unit.resumeEvent( "standby" );
+			 }, this )
+			 .fireEvent("enter", unit, unit.cell.x, unit.cell.y );
 	},
 		
 	onPaint	: function(){
@@ -213,7 +224,7 @@ var UnitLayer = Layer.extend({
 	onMousemove	: function( e ){
 		var  cell = PANEL.getCell( e );
 		if (cell) {
-			var unit = this.getUnit( cell.index );
+			var unit = this.getUnitByIndex( cell.index );
 			//已经存在则隐藏
 			if (this.overed && unit != this.overed) {
 				this.overed.hideMajor();
@@ -233,11 +244,10 @@ var UnitLayer = Layer.extend({
 		//有弹出菜单时不触发click
 		if ( this.canClick() ) {
 			var cell = PANEL.getCell(e),
-				unit = this.getUnit( cell.index );
+				unit = this.getUnitByIndex( cell.index );
 			
 			//注册的事件返回false时不继续执行
-			//if (this.fireEvent("click", cell, unit, this) === false) 
-			//	return;
+			this.fireEvent("click", cell, unit, this); 
 			
 			if (this.clicked) {
 				//如果可以攻击
@@ -515,7 +525,7 @@ var UnitLayer = Layer.extend({
 		return this;
 	},
 	
-	getUnit	: function( key ){
+	getUnitByIndex	: function( key ){
 		return this.units[ key ];
 	},	
 	
@@ -538,6 +548,7 @@ var UnitLayer = Layer.extend({
 		var unit = new Unit( config );
 			
 		unit.on( "standby", this.deleteClicked, this )
+			//.on( "standby", this.onEnter, this )
 			.on( "move", function( unit ){
 				log( "move event : unit.auto = "  + unit.auto);
 				//运行脚本时不弹框
