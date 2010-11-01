@@ -443,7 +443,7 @@ var UnitUI = Observable.extend({
 	
 	turnLeft	: function( fn, scope ){
 		var obj = {
-			inter	: SPEED * 2,
+			inter	: SPEED ,
 			items	: [ this.imgs.left[0] ],
 			fn 		: fn, 
 			direct	: "left",
@@ -455,7 +455,7 @@ var UnitUI = Observable.extend({
 	
 	turnRight	: function( fn, scope ){
 		var obj = {
-			inter	: SPEED * 2,
+			inter	: SPEED ,
 			items	: [ this.imgs.right[0] ],
 			fn 		: fn, 
 			direct	: "right",
@@ -467,7 +467,7 @@ var UnitUI = Observable.extend({
 	
 	turnUp	: function( fn, scope ){
 		var obj = {
-			inter	: SPEED * 2,
+			inter	: SPEED ,
 			items	: [ this.imgs.up[0] ],
 			fn 		: fn, 
 			direct	: "up",
@@ -479,7 +479,7 @@ var UnitUI = Observable.extend({
 	
 	turnDown	: function( fn, scope ){
 		var obj = {
-			inter	: SPEED * 2,
+			inter	: SPEED,
 			items	: [ this.imgs.down[0] ],
 			fn 		: fn, 
 			direct	: "down",

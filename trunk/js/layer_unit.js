@@ -62,6 +62,14 @@ var UnitLayer = Layer.extend({
 			ENEMY = t;
 		else
 			FRIENDS = t;		
+		//处理team相关的事件 增加回合参数
+		t.on( "teamStart", function( team ){
+			this.fireEvent( "teamStart", team, this.round );
+		}, this ).on( "teamEnd", function( team ){
+			this.fireEvent( "teamEnd", team, this.round );
+		}, this ).on( "teamOver", function( team ){
+			this.fireEvent( "teamOver", team, this.round );
+		}, this )
 		
 		this.teams.push( t );
 	},
@@ -515,6 +523,7 @@ var UnitLayer = Layer.extend({
 		}
 	},	
 	
+	//在战场上新出现的角色
 	showAt				: function( unit ){
 		this.units[ unit.cell.index ] = unit; 
 		

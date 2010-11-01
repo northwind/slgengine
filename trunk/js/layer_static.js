@@ -23,14 +23,18 @@ var StaticLayer = Layer.extend({
 		return a + b + c;
 	},
 	
-	add		: function( name, dx, dy ){
+	add		: function( name, dx, dy, fn, scope ){
 		var a = Animation.get( name, { dx : dx, dy : dy } );
 		
 		this.items.reg( this._gerateKey(name + dy + dy) , a );
+		if ( fn )
+			fn.call( scope || this, this );
 	},
 	
-	remove	: function( name, dx, dy ){
+	remove	: function( name, dx, dy , fn, scope ){
 		this.items.unreg( this._gerateKey(name + dy + dy) );
+		if ( fn )
+			fn.call( scope || this, this );		
 	}
 				
 }); 

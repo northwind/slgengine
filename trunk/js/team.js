@@ -16,12 +16,6 @@ var Team = Manager.extend({
 		return this;
 	},
 	
-	//交给unitsLayer处理
-	fireEvent	: function( name ){
-		if ( /teamStart|teamEnd|teamOver/.test( name ) )
-			this.layer.fireEvent.apply( this.layer, arguments );
-	},
-	
 	add		: function( unit ){
 		unit.bindEvent( "standby", this.checkEnd, this )
 			  .on( "dead", function( unit ){
