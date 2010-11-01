@@ -227,7 +227,9 @@ var Unit = Observable.extend({
 	//直接走到某个单元格
 	go	: function( to, fn, scope ){
 		if (!this.moving) {
-
+			if ( !(to instanceof Cell) )
+				to = CellMgr.get( to.x, to.y );
+			
 			var way = this.layer.findWay( this, this.cell, to );
 			
 			if ( fn )
@@ -473,6 +475,11 @@ var Unit = Observable.extend({
 	},	
 	
 	die		: function( unit, d, fn, scope ){
+		//省略unit,d
+		if ($.isFunction(unit)) {
+			fn = unit;		
+			scope = d;
+		}
 		log( this.name + " die" );
 		if ( fn )
 			this.on( "defend", fn, scope, { one : true } );
@@ -759,9 +766,17 @@ var Unit = Observable.extend({
 		PANEL._choose( this.face, title, options, fn, scope );
 	},
 	
+	//后出现在战场上
+	//可传x,y 也可省略
 	appear		: function( x, y, fn, scope ){
-		this.gx = x;
-		this.gy = y;
+		if ( $.isFunction( x ) ){
+			fn = x;
+			scope = y;
+		}else{
+			this.gx = x;
+			this.gy = y;
+		}
+
 		this.setCell();
 		this.visiable = true;
 		this.layer.showAt( this );

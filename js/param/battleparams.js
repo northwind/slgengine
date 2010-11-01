@@ -101,8 +101,7 @@ ACTIONGROUPS   = [{
 	actions	: [{
 		type	: 2,
 		action : "moveWinTo",
-		params : [ 0, 1000 ],
-		next	: -1
+		params : [ 0, 1000 ]
 	},{
 		id		: "first",
 		action : "speak",
@@ -117,8 +116,7 @@ ACTIONGROUPS   = [{
 		params : [ "可、可恨……" ]
 	},{
 		id		: "firstDie",
-		action : "die",
-		params : [ null ]
+		action : "die"
 	},{
 		id		: "second",
 		action : "speak",
@@ -133,8 +131,7 @@ ACTIONGROUPS   = [{
 		params : [ "啊……" ]
 	},{
 		id		: "secondDie",
-		action : "die",
-		params : [ null ]
+		action : "die"
 	},{
 		id		: "thirdDie",
 		action : "fall"
@@ -186,6 +183,10 @@ ACTIONGROUPS   = [{
 		action : "speak",
 		params : [ "快、快点来吧！" ]
 	},{
+		type	: 2,
+		action : "moveWinTo",
+		params : [ 0, 300 ]
+	},{
 		id		: "zhangbao",
 		action : "turnRight"
 	},{
@@ -202,59 +203,165 @@ ACTIONGROUPS   = [{
 		next	: -1
 	}]
 },{
-	desc: "我军阶段1",
+	desc: "友军阶段1",
 	event: {
-/*
 		type: 2,
 		name: "teamStart",
 		condition : [{
-			index : 1,
+			index : 0,
 			symbol : "==",
-			compare : "1"
+			compare : "FRIENDS"
 		}]
-*/
 	},
 	actions: [{
 		type	: 2,
 		action : "moveWinTo",
 		params : [ 0, 1000 ]
 	},{
-		id	: "liubei",
-		action : "appear",
-		params : []
+		id	: "foota",
+		action : "swing"
+	},{
+		id	: "foota",
+		action : "speak",
+		params : ["再坚持一会儿！<br/>让他们知道官军不是好惹的！"],
+		next	: -1
 	}]
 },{
 	desc: "敌军阶段1",
 	event: {
-/*
+		active : true,
 		type: 2,
 		name: "teamStart",
 		condition : [{
-			index : 1,
+			index : 0,
 			symbol : "==",
-			compare : "2"
-		}]
-*/
-/*
-		type: 2,
-		name: "teamStart",
-		condition : [{
+			compare : "ENEMY"
+		},{
 			index : 1,
 			symbol : "==",
 			compare : "1"
 		}]
-*/
 	},
 	actions: [{
 		type	: 2,
 		action : "moveWinTo",
-		params : [ 0, 0 ]
+		params : [ 400, 0 ]
+	},{
+		id			: "liubei",
+		action : "appear"
+	},{
+		id			: "guanyu",
+		action : "appear"
+	},{
+		id			: "zhangfei",
+		action : "appear"
 	},{
 		id	: "liubei",
-		action : "appear",
-		params : [ 10, 2 ]
+		action : "speak",
+		params : ["看起来好像赶上了。不过在这种寡不敌众的情况下，此地的官军好像也陷入了苦战。"]
+	},{
+		id	: "guanyu",
+		action : "turnRight"
+	},{
+		id	: "guanyu",
+		action : "speak",
+		params : ["咱们应该里外夹攻，不过我军兵力还是少了些。"]
+	},{
+		id	: "zhangfei",
+		action : "turnRight"
+	},{
+		id	: "zhangfei",
+		action : "speak",
+		params : ["二哥就会穷担心，我一个人就可以应付他们了。"]
+	},{
+		id	: "liubei",
+		action : "speak",
+		params : ["咱们可不能丢下官军不管，从背后抄过去直捣鹿岩吧。<br/>冲啊！"]
+	},{
+		id	: "liubei",
+		action : "go",
+		params : [ { x : 11, y : 5 } ]
+	},{
+		id	: "guanyu",
+		action : "go",
+		params : [ { x : 10, y : 5 } ]
+	},{
+		id	: "zhangfei",
+		action : "go",
+		params : [ { x : 12, y : 5 } ]
 	}]
-	
+},{
+	desc: "友军弓兵阵亡1",
+	event:{
+		type: 1,
+		id		: "thirdDie",
+		name: "preDead"
+	},
+	actions : [{
+		id		: "thirdDie",
+		action : "speak",
+		params : [ "唔，援军……援军还不来吗……？" ],
+		next	: -1		
+	}]
+},{
+	desc: "友军阶段2",
+	event:{
+		active : true,
+		type: 2,
+		name: "teamStart",
+		condition : [{
+			index : 0,
+			symbol : "==",
+			compare : "ENEMY"
+		},{
+			index : 1,
+			symbol : "==",
+			compare : "2"
+		}]
+	},
+	actions : [{
+		id		: "liubei",
+		action : "speak",
+		params : [ "二弟、三弟，等一等，这样下去前面的官军会被歼灭，在这里放火吧。" ]
+	},{
+		id		: "guanyu",
+		action : "speak",
+		params : [ "对！把他们的注意力引到这里……说不定敌人也会因此动摇的。" ]
+	},{
+		id		: "zhangfei",
+		action : "speak",
+		params : [ "那我去放火。" ]
+	},{
+		id		: "liubei",
+		action : "speak",
+		params : [ "我可不想双方有太多人无辜丧命，你可要把握好分寸。" ]
+	},{
+		id		: "zhangfei",
+		action : "swing"
+	},{
+		type : 2,	
+		action : "addStatic",
+		params : [ "fire", 12, 5 ] 
+	},{
+		id		   : "guanyu",
+		action : "go",
+		params : [ { x : 8, y : 5 } ] 
+	},{
+		id		   : "guanyu",
+		action : "speak",
+		params : [ "这里也点上" ] 
+	},{
+		id		   : "guanyu",
+		action : "swing"
+	},{
+		type : 2,	
+		action : "addStatic",
+		params : [ "fire", 7, 5 ] 
+	},{
+		type : 2,	
+		action : "addStatic",
+		params : [ "fire", 6, 4 ] 
+	}]
 },{
 	desc: "获得物品1",
 	event:{

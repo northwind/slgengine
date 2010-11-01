@@ -150,7 +150,14 @@ var Panel = Component.extend({
 		}else
 			return this._super.apply( this, arguments );
 	},
-	
+	un				: function( name ){
+		if ( /roundStart|roundEnd|teamStart|teamEnd|teamOver|enter/.test(name) ){
+			this.unitsLayer.un.apply( this.unitsLayer, arguments );
+			return this;
+		}else
+			return this._super.apply( this, arguments );
+	},
+		
 	onResize	: function( e ){
 		WINDOW_HEIGHT = Math.max( $(window).height() - 160 - 23, 250 );
 		WINDOW_WIDTH = Math.min( $(window).width(), 960 );

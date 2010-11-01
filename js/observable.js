@@ -151,6 +151,7 @@ EventObs.prototype = {
 	
 	resume	: function(){
 		this.suspend = false;
+		this.index++;
 		this.next();	//继续执行下一个监听器
 	}	
 };
@@ -213,8 +214,15 @@ EventNormal.prototype = {
     removeListener : function(fn, scope){
         var index;
         if((index = this.findListener(fn, scope)) != -1){
-            this.listeners.splice(index, 1);
+            if(!this.firing){
+                this.listeners.splice(index, 1);
+            }else{
+                this.listeners = this.listeners.slice(0);
+                this.listeners.splice(index, 1);
+            }
+            return true;
         }
+        return false;
     },
 
     clearListeners : function(){
@@ -331,8 +339,8 @@ var Observable = Class.extend({
     },
 
     un : function(eventName, fn, scope){
-        var ce = this.events[eventName.toLowerCase()];
-        if(typeof ce == "object"){
+        var ce = this.events[eventName];
+        if(typeof ce == "object" && ce.removeListener){
             ce.removeListener(fn, scope);
         }
 		return this;

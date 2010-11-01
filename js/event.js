@@ -19,7 +19,7 @@ var Event = Manager.extend({
 	init	: function( config ){
 		this._super( arguments[0] );
 		
-		this.options = this.options || { one : true };
+		this.options = this.options;
 		
 		return this;
 	},
@@ -54,7 +54,7 @@ var Event = Manager.extend({
 				this.reg( i, a );					
 			}
 			//注册事件
-			obj.on( this.name, this.check, this, this.options );
+			obj.on( this.name, this.check, this );
 		}
 	},
 	
@@ -70,9 +70,9 @@ var Event = Manager.extend({
 		if ( this.condition && this.condition.length > 0 ){
 			for (var i=0; i<this.condition.length; i++) {
 				var c = this.condition[i];
-				var l = arguments[ c.index || 0 ];
+				var l = c.index || 0;
 				try {
-					eval("flag=flag && (" + l + (c.symbol || "==") + c.compare + ")");
+					eval("flag=flag && ( arguments[ " + l + " ] " + (c.symbol || "==") + c.compare + ")");
 				} 
 				catch (e) {
 					flag = true;
@@ -80,6 +80,8 @@ var Event = Manager.extend({
 			}
 		}
 		if ( flag ){
+			//取消注册
+			this.getObj().un( this.name, this.check, this );
 			this.start();
 		}
 	},
@@ -87,12 +89,13 @@ var Event = Manager.extend({
 	next	: function(){
 		var b = this.current.getNext.apply( this.current, arguments );
 		log( "next = " + b );
-		if ( b )
-			this.process( b );
-		else if ( b == -1 ){
+		if ( b == -1 ){
 			// no next
 			this.stop();
-		}	
+		}	else if ( b != undefined || b != null )
+			this.process( b );
+		else
+			this.stop();	
 	},
 	
 	//继续执行
@@ -120,6 +123,7 @@ var Event = Manager.extend({
 	stop: function(){
 		log( "event stop function : " + this.name );
 		delete this.current;
+		this.active = false;
 		//block事件
 		this.getObj().resumeEvent( this.name );	
 		PANEL.stopScript();		
@@ -151,7 +155,7 @@ var ScriptMgr = Manager.extend({
 		for (var i=0; i<ACTIONGROUPS.length; i++) {
 			var g = ACTIONGROUPS[i];
 			
-			if ( g.event ){
+			if ( g.event && g.event.active === true ){
 				var e, econfig = $.extend( {
 					actions	: g.actions
 				} ,g.event );
