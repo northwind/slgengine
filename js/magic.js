@@ -44,7 +44,7 @@ var Magic = Observable.extend({
 				}			
 				//TODO 每个unit执行动画后触发over
 				this.fireEvent( "over", this, this.unit );
-				this.unit.finish();	
+				//this.unit.finish();	
 			}, this );
 			
 		PANEL.playAnimation( this.animation );

@@ -35,7 +35,9 @@ var Event = Manager.extend({
 			for (var i=0; i<actions.length; i++) {
 				var a, config = $.extend( {
 					index	: i,
-					type		: 1,
+					type	: 1,
+					mgr		: this,
+					actions	: this.actions,
 					fn	: this.next,
 					scope : this
 				}, actions[ i ] );
@@ -43,7 +45,9 @@ var Event = Manager.extend({
 				if ( config.type == 1 )
 					a = new UnitAction( config );
 				else if ( config.type == 2 )
-					a= new SysAction( config );
+					a = new SysAction( config );
+				else if ( config.type == 3 )
+					a = new GroupAction( config );
 				else
 					a = new Action( config );	
 					
@@ -61,6 +65,7 @@ var Event = Manager.extend({
 	 * compare	 :  待对比项
 	 */
 	check	: function(){
+		log( "event check : " + this.name );
 		var flag = true;
 		if ( this.condition && this.condition.length > 0 ){
 			for (var i=0; i<this.condition.length; i++) {
@@ -81,7 +86,7 @@ var Event = Manager.extend({
 	
 	next	: function(){
 		var b = this.current.getNext.apply( this.current, arguments );
-		log( "b=" + b );
+		log( "next = " + b );
 		if ( b )
 			this.process( b );
 		else if ( b == -1 ){
@@ -104,7 +109,7 @@ var Event = Manager.extend({
 	
 	//事件响应后开始执行	
 	start	: function(){
-		log( "event start function" );
+		log( "event start function : " + this.name );
 		//block事件
 		this.getObj().suspendEvent( this.name );	
 		PANEL.runScript();
@@ -113,7 +118,7 @@ var Event = Manager.extend({
 	},	
 	
 	stop: function(){
-		log( "event stop function" );
+		log( "event stop function : " + this.name );
 		delete this.current;
 		//block事件
 		this.getObj().resumeEvent( this.name );	
@@ -125,7 +130,7 @@ var UnitEvent = Event.extend({
 	id		: "",  //角色ID
 	
 	getObj	: 	function(){
-		return PANEL.getUnit( this.id );
+		return PANEL.getUnitById( this.id );
 	}
 }); 
 //系统动作

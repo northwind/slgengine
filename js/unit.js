@@ -71,7 +71,7 @@ var Unit = Observable.extend({
 	
 	standby	: false,	//待机
 	
-	//buff	: {},	//增益buff
+	//buffs	: {},	//增益buff
 	newBuff	: null,
 	//magics	: {}, //会的魔法
 	
@@ -83,12 +83,12 @@ var Unit = Observable.extend({
 		this.way = [];
 		this.magicNames = [];
 		this.magics = {};
-		this.buff = {};
+		this.buffs = {};
 		
 		this.addEvents( "click","unclick","change", "afterAttack", "walk","speak", "appear", "move" );
 		this.addEvents( { name : "preDead", type : 2 },	{ name : "preAttack", type : 2 }, { name : "upgrade", type : 2 },
-									{ name : "attack", type : 2 }, { name : "defend", type : 2 } , { name : "dead", type : 2 }, 
-									{ name : "standby", type : 2 });
+						{ name : "attack", type : 2 }, { name : "defend", type : 2 } , { name : "dead", type : 2 }, 
+						{ name : "standby", type : 2 });
 		this._super( config );
 				
 		//如果没有id则自动生成一个
@@ -267,19 +267,14 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
-	//先触发全局enter事件，之后触发unit.move事件
 	onMove	: function( cell ){
 		this.moving = false;
-		this.layer.fireEvent("enter", this, this.cell );
-	},
-	
-	afterMove		: function(){
 		this.fireEvent( "move", this, this.cell );
 	},
 	
 	attack			: function( unit, fn, scope ){
 		if (typeof unit == "string")
-			unit = PANEL.getUnit( unit );
+			unit = PANEL.getUnitById( unit );
 		
 		if ( unit ){
 			delete this.attacks;
@@ -416,6 +411,13 @@ var Unit = Observable.extend({
 			this.debility = true;
 		}
 	},
+	//使他人受到伤害
+	hurt	: function( d, unit, fn, scope ){
+		log( "unit hurt : " +  unit.name );
+		if ( isNaN( d) )		
+			d = 0;
+		// ...
+	},	
 	//受到伤害
 	getHurt	: function( d, unit, fn, scope ){
 		log( "unit getHurt : " +  this.name );
@@ -538,6 +540,8 @@ var Unit = Observable.extend({
 			this.lock = true;
 			this.oriCell = this.cell;
 			this.attackFreq = 0;
+			this.clearAttack();
+			this.clearMoves();
 			
 			if (this.dead) {
 				//如果已经阵亡， 则直接触发standby事件
@@ -545,10 +549,13 @@ var Unit = Observable.extend({
 				this.fireEvent("standby", this);
 			}
 			else {
-				this.ui.standby(function(){
-					log(this.name + " standby");
-					this.fireEvent("standby", this);
-				}, this);
+				this.layer.bindEvent( "enter", function(){
+					this.ui.standby(function(){
+						log(this.name + " standby");
+						this.fireEvent("standby", this);
+					}, this);					
+				}, this )
+				.fireEvent( "enter", this, this.cell.x, this.cell.y );
 			}
 		}
 	},
@@ -697,17 +704,25 @@ var Unit = Observable.extend({
 		}, this );
 	},
 	
-	addBuff	: function( name ){
+	//增加角色状态
+	addBuff	: function( name, fn, scope ){
 		var config = $.extend( BUFFS[ name ],  { id : name } );
-		this.newBuff = new Stuff( config );
-		this.buff[ name ] = this.newBuff;
+		var buff = new Stuff( config );
+		
+		this.ui.addBuff( buff, function(){
+			this.buffs[ name ] = buff;
+			
+			if ( fn )
+				fn.call( scope || this, this, buff );
+			
+		}, this );
 		
 		return this;
 	},
 	
 	delBuff	: function( name ){
-		this.buff[ name ] = null;
-		delete this.buff[ name ];
+		this.buffs[ name ] = null;
+		delete this.buffs[ name ];
 		
 		return this;	
 	},
@@ -724,8 +739,16 @@ var Unit = Observable.extend({
 		return count > 0; 
 	},
 	
-	gainStuff	: function( stuff, fn, scope ){
+	//获得物品
+	gainStuff	: function( stuff, num, fn, scope ){
+		if ( !(stuff instanceof Stuff) )
+			stuff = Pocket.get( stuff );
+			
 		this.ui.gainStuff( stuff, function(){
+			stuff.count += num;
+			
+			if ( fn )
+				fn.call( scope || this, this, stuff );
 			
 		}, this );
 

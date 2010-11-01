@@ -66,7 +66,8 @@ var MagicBox = Win.extend({
 			if ( this.selected.canAttack( cell, unit ) ){
 				this.layer.lock();
 				
-				this.unit.on( "standby", this.onOver, this, { one : true} );
+				//this.unit.on( "standby", this.onOver, this, { one : true} );
+				this.selected.on( "over", this.onOver, this, { one : true} );
 				//使用
 				this.selected.apply( cell, unit );
 				
@@ -77,10 +78,13 @@ var MagicBox = Win.extend({
 	},
 	
 	onOver		: function(){
-		this.layer.unreg( this );
-		this.layer.unlock();
-		this.fireEvent( "over", this );	
-		delete this.unit;	
+		//判断施放魔法后是否还可以继续行动
+		if (true) {
+			this.layer.unreg(this);
+			this.layer.unlock();
+			this.fireEvent("over", this);
+			delete this.unit;
+		}
 	},
 	
 	//覆盖父类 

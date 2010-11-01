@@ -30,7 +30,7 @@ var Action = Observable.extend({
 		return this.obj;
 	},
 	
-	start	: function( team ){
+	start	: function(){
 		var obj = this.getObj();
 		if ( obj )
 			obj[ this.action ].apply( obj, this.params );
@@ -60,24 +60,59 @@ var Action = Observable.extend({
 var UnitAction = Action.extend({
 	id		: "",
 	
-	init	: function(){
-		this._super( arguments[0] );
-		return this;
-	},
-	
 	getObj	: 	function(){
-		return PANEL.getUnit( this.id );
+		return PANEL.getUnitById( this.id );
 	}
 }); 
 //系统动作
 var SysAction = Action.extend({
 	
-	init	: function(){
-		this._super( arguments[0] );
-		return this;
-	},
-	
 	getObj	: 	function(){
 		return PANEL;
 	}
+}); 
+//群体动作
+var GroupAction = Action.extend({
+	group		: null,
+	actions		: null,
+	
+	getObj	: 	function(){
+		return eval( this.group + ".members()" );
+	},
+	
+	start	: function(){
+		var obj = this.getObj();
+		if (obj) {
+			
+			var oriNext = this.next, index = this.mgr.count(), newNext = this.mgr.count(),
+				params = this.params.slice( 0, this.params.length -2 );
+			//在动作数组后批次增加每个角色的动作
+			for( var key in obj ){
+				var unit = obj[ key ];
+				var a = new UnitAction ({
+					index	: index,
+					id	: unit.id,
+					action : this.action,
+					params : Array.prototype.slice.call( params, 0 ),
+					fn	   : this.fn,
+					scope  : this.scope
+				});
+				
+				this.mgr.reg( index++, a );
+			}
+			//设置下一个执行索引
+			this.next = newNext;
+			//全部执行完毕后回跳到原来该执行的动作
+			this.actions[ this.actions.length -1 ].next = oriNext;
+			
+			//没有执行主体
+			if (this.fn) 
+				this.fn.call(this.scope || this);			
+		}
+		else {
+			//没有执行主体
+			if (this.fn) 
+				this.fn.call(this.scope || this);
+		}	
+	}	
 }); 

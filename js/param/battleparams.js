@@ -95,13 +95,14 @@ FIGURES = {
 ACTIONGROUPS   = [{
 	desc	: "开场白",
 	event	: {
-		//type	: 2,
-		//name	: "battleStart"
+	//	type	: 2,
+	//	name	: "battleStart"
 	},
 	actions	: [{
 		type	: 2,
 		action : "moveWinTo",
-		params : [ 0, 1000 ]
+		params : [ 0, 1000 ],
+		next	: -1
 	},{
 		id		: "first",
 		action : "speak",
@@ -252,6 +253,52 @@ ACTIONGROUPS   = [{
 		id	: "liubei",
 		action : "appear",
 		params : [ 10, 2 ]
+	}]
+	
+},{
+	desc: "获得物品1",
+	event:{
+		type: 2,
+		name: "enter",	//unit cell.x cell.y
+		condition : [{
+			index : 1,
+			symbol : "==",
+			compare : "7"
+		},{
+			index : 2,
+			symbol : "==",
+			compare : "16"
+		}]		
+	},
+	actions : [{
+		type: 2,
+		action : "gainStuffOnCell",
+		params : [ 7, 16, 1, 5 ],
+		next	: -1		
+	}]
+},{
+	desc: "设置状态1",
+	event:{
+//		type: 2,
+//		name: "teamStart"
+/*
+		condition : [{
+			index : 1,
+			symbol : "==",
+			compare : "MYTEAM"
+		}]	
+*/
+	},
+	actions : [{
+		type	: 2,
+		action : "moveWinTo",
+		params : [ 0, 1000 ]
+	},{
+		type	: 3,
+		group	: "ENEMY",	
+		action : "addBuff",
+		params : [ "confuse" ],
+		next	: -1		
 	}]
 }
 ],

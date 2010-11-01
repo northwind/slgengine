@@ -11,6 +11,7 @@ var Cell = function( config ){
 	
 	this.dx = this.x * CELL_WIDTH;
 	this.dy = this.y * CELL_HEIGHT;
+	this.index = Cell.getIndex( this.x, this.y );
 };
 
 Cell.prototype = {
@@ -63,20 +64,26 @@ Cell.prototype = {
 		return Math.abs( this.x - cell.x ) +  Math.abs( this.y - cell.y );
 	}			
 };
+/**
+ * 获得index值
+*/
+Cell.getIndex = function( x, y){
+	return x * CELL_YNUM + y;
+}
 
 CellMgr	= new function(){
 	var cells = {};
 	
 	return {
 		get		: function( x, y ){
-			var index = x * CELL_YNUM + y;
+			var index =  Cell.getIndex( x, y );
 			if ( cells[ index ] )
 				return cells[ index ];
 			else if ( x < 0 || y < 0 || x >= CELL_XNUM || y >= CELL_YNUM ){
 				return null; //超出边界
 			} else {
 				var cell = new Cell( {
-					x 	:	x, y : y,  index : index
+					x 	:	x, y : y
 				} );
 				cells[ index ] = cell;
 				return cell;
