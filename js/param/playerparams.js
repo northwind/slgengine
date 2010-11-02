@@ -4,12 +4,18 @@
 var 
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
-	id: "caocao", gx :  9,  gy : 16, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "caocao", exp : 199,
-	magicNames	: [ "light", "storm" ],
+	id: "caocao", gx :  7,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "caocao", exp : 199,
+	magicNames	: [ "light", "storm" ], face : "right",
 	faction : 1, team : 100, mpMax : 100, mp : 100, name : "曹操", level : 1, attackFreqMax : 2, visiable : false	
 },{
-	id: "qibing1", gx :  10,  gy : 16, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "cavalryman",
-	faction : 1, team : 100, mpMax : 10, mp : 10, name : "骑兵", level : 1, attackFreqMax : 1, visiable : false	
+	id: "qibing1", gx :  6,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "cavalryman", face : "right",
+	faction : 1, team : 200, mpMax : 10, mp : 10, name : "骑兵", level : 1, attackFreqMax : 1, visiable : false	
+},{
+	id: "qibing2", gx :  5,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "cavalryman", face : "right",
+	faction : 1, team : 200, mpMax : 10, mp : 10, name : "骑兵", level : 1, attackFreqMax : 1, visiable : false	
+},{
+	id: "xuzijiang", gx :  9,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "xuzijiang",
+	faction : 1, team : 200, mpMax : 10, mp : 10, name : "许子将", level : 1, visiable : false	
 },
 
 //友军
@@ -55,13 +61,13 @@ UNITS	= [{
 	gx :  5,  gy : 11, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
 	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
 },{
-	gx :  8,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	id : "fluster2", gx :  8,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
 	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
 },{
 	gx :  7,  gy : 11, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
 	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
 },{
-	gx :  12,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	id : "fluster", gx :  12,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
 	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
 },{
 	gx :  12,  gy : 12, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",

@@ -290,7 +290,9 @@ ACTIONGROUPS   = [{
 		action : "go",
 		params : [ { x : 12, y : 5 } ]
 	}]
-},{
+},
+		// ---------------------------------------------角色阵亡-----------------------------------------
+{
 	desc: "友军弓兵firstDie阵亡1",
 	event:{
 		active	: true,
@@ -333,17 +335,39 @@ ACTIONGROUPS   = [{
 		next	: -1		
 	}]
 },{
-	desc: "敌军阶段2",
+	desc: "张宝阵亡1",
+	event:{
+		active	: true,
+		id		: "zhangbao",
+		name	: "preDead"
+	},
+	actions : [{
+		id		: "zhangbao",
+		action : "speak",
+		params : [ "难道我真的要死在这里？唔……" ],
+		next	: -1		
+	}]
+},{
+	desc: "张梁阵亡1",
+	event:{
+		active	: true,
+		id		: "zhangliang",
+		name	: "preDead"
+	},
+	actions : [{
+		id		: "zhangliang",
+		action : "speak",
+		params : [ "可恨，竟然败在这帮家伙手上……" ],
+		next	: -1		
+	}]
+},{
+	desc: "第二回合开始",
 	event:{
 		active : true,
 		type: 2,
-		name: "teamStart",
+		name: "roundStart",
 		condition : [{
 			index : 0,
-			symbol : "==",
-			compare : "ENEMY"
-		},{
-			index : 1,
 			symbol : "==",
 			compare : "2"
 		}]
@@ -370,7 +394,7 @@ ACTIONGROUPS   = [{
 	},{
 		type : 2,	
 		action : "addStatic",
-		params : [ "fire", 12, 5 ] 
+		params : [ "fire", 13, 5 ] 
 	},{
 		id		   : "guanyu",
 		action : "go",
@@ -385,59 +409,379 @@ ACTIONGROUPS   = [{
 	},{
 		type : 2,	
 		action : "addStatic",
-		params : [ "fire", 7, 5 ] 
+		params : [ [{ name : "fire", x : 7, y : 5 }, { name : "fire", x : 6, y : 4 }]  ] 
+	},{
+		type : 2,	
+		action : "sleep",
+		params : [ 500 ] 
+	},{
+		id		   : "zhangfei",
+		action : "turnRight"
+	},{
+		id		   : "zhangfei",
+		action : "turnLeft"
+	},{
+		id		   : "zhangfei",
+		action : "turnDown"
+	},{
+		id		   : "zhangfei",
+		action : "swing"
+	},{
+		id		   : "zhangfei",
+		action : "speak",
+		params : [ "不行、不行啊，火势太小了，根本烧不到鹿岩！" ]
+	},{
+		id		   : "xuzijiang",
+		action : "speak",
+		params : [ "呵、呵、呵，那么这样呢？" ]
+	},{
+		id		   : "guanyu",
+		action : "turnRight"
+	},{
+		id		   : "guanyu",
+		action : "speak",
+		params : [ "咦？" ]
+	},{
+		id		   : "zhangfei",
+		action : "tuanLeft"
+	},{
+		id		   : "zhangfei",
+		action : "speak",
+		params : [ "谁？！" ]
+	},{
+		type	   : 2,
+		action : "playAnimation",
+		params : [ "zhuque", 240, 360 ]
 	},{
 		type : 2,	
 		action : "addStatic",
-		params : [ "fire", 6, 4 ] 
-	}]
-},{
+		params : [ [{ name : "fire", x : 15, y : 5 }, { name : "fire", x : 15, y : 6 } , { name : "fire", x : 15, y : 7 },
+						   { name : "fire", x : 14, y : 4 }, { name : "fire", x : 14, y : 5 } , { name : "fire", x : 14, y : 6 },  { name : "fire", x : 14, y : 7 } , { name : "fire", x : 14, y : 8 },
+						   { name : "fire", x : 13, y : 6 }, { name : "fire", x : 13, y : 7 } , { name : "fire", x : 13, y : 8 },  { name : "fire", x : 13, y : 9 },
+						   { name : "fire", x : 12, y : 6 }, { name : "fire", x : 12, y : 7 } ,
+						   { name : "fire", x : 7, y : 6 }, { name : "fire", x : 7, y : 7 } , 
+						   { name : "fire", x : 6, y : 5 }, { name : "fire", x : 6, y : 6 } , { name : "fire", x : 6, y : 7 }, { name : "fire", x : 6, y : 8 } , { name : "fire", x : 6, y : 9 },
+						   { name : "fire", x : 5, y : 6 }, { name : "fire", x : 5, y : 7 } , { name : "fire", x : 5, y : 8 }]  ] 
+	},{
+		id		: "fluster",
+		action : "turnUp"
+	},{
+		id		: "fluster",
+		action : "turnRight"
+	},{
+		id		: "fluster",
+		action : "turnLeft"
+	},{
+		id		: "fluster",
+		action : "turnUp"
+	},{
+		id		: "fluster",
+		action : "turnDown"
+	},{
+		id		: "fluster",
+		action : "speak",
+		params : [ "火！火！" ]
+	},{
+		id		: "fluster",
+		action : "turnUp"
+	},{
+		id		: "fluster",
+		action : "speak",
+		params : [ "敌人从后面包抄过来了！" ]
+	},{
+		id	: "zhangliang",
+		action : "turnUp"
+	},{
+		id		: "zhangliang",
+		action : "speak",
+		params : [ "什么？你说有人偷袭……" ]
+	},{
+		id	: "zhangbao",
+		action : "turnUp"
+	},{
+		id		: "zhangbao",
+		action : "speak",
+		params : [ "是官军的援兵吗？" ]
+	},{
+		id	: "zhangbao",
+		action : "turnDown"
+	},{
+		id		: "zhangbao",
+		action : "swing"
+	},{
+		id		: "zhangbao",
+		action : "speak",
+		params : ["派人对付后面的敌人！"]
+	},{
+		id		: "zhangbao",
+		action : "fall"
+	},{
+		id		: "zhangbao",
+		action : "speak",
+		params : ["糟了……全部都不听使唤……"]
+	},{
+		type	: 3,
+		group	: "ENEMY",	
+		action : "addBuff",
+		params : [ "confuse" ]
+	},{
+		type	: 2,
+		action : "moveWinTo",
+		params : [ 100, 0 ]
+	},{
+		id		: "guanyu",
+		action : "speak",
+		params : [ "啊！" ]
+	},{
+		id		: "zhangfei",
+		action : "turnDown"
+	},{
+		id		: "zhangfei",
+		action : "speak",
+		params : [ "这是怎么回事？！" ]
+	},{
+		id		: "liubei",
+		action : "speak",
+		params : [ "不知道，现在管不了那么多了，眼前才是最重要的！" ]
+	},{
+		id		: "liubei",
+		action : "swing"
+	},{
+		id		: "liubei",
+		action : "speak",
+		params : [ "如今敌人一片混乱，正是取胜的好机会！目标是敌军主将张宝、张梁。" ]
+	},{
+		id		: "liubei",
+		action : "speak",
+		params : [ "冲吧。" ]
+	}, 
+	// ---------------------------------------------曹操登场-----------------------------------------
+	{		
+		id		: "qibing1",
+		action : "appear"
+	}, {		
+		id		: "qibing2",
+		action : "appear"
+	}, {		
+		id		: "caocao",
+		action : "appear"
+	}, {		
+		id		: "caocao",
+		action : "go",
+		params : [  { x : 8, y : 2 }  ]
+	}, {		
+		id		: "qibing1",
+		action : "go",
+		params : [  { x : 7, y : 2 }  ]
+	}, {		
+		id		: "qibing2",
+		action : "go",
+		params : [  { x : 8, y : 1 }  ]
+	} ,{		
+		id		: "caocao",
+		action : "speak",
+		params : [  "听说这边的官军正在苦战，这火势是……？！"  ]
+	},{		
+		id		: "qibing2",
+		action : "turnRight"
+	}, {		
+		id		: "qibing2",
+		action : "speak",
+		params : [  "队长，好像是那边的人放的火，不过不像是官军……"  ]
+	},{		
+		id		: "caocao",
+		action : "turnRight"
+	},{		
+		id		: "caocao",
+		action : "speak",
+		params : [  "恩，好像是义军。"  ]
+	},{		
+		id		: "caocao",
+		action : "turnUp"
+	},{		
+		id		: "caocao",
+		action : "speak",
+		params : [  "你们先去鹿岩，我到义军那边看看！"  ]
+	}, {		
+		id		: "qibing2",
+		action : "speak",
+		params : [  "是"  ]
+	}, {		
+		id		: "qibing1",
+		action : "speak",
+		params : [  "是"  ]
+	}, {		
+		id		: "qibing2",
+		action : "go",
+		params : [  { x : 9,  y : 7 }  ]
+	}, {		
+		id		: "qibing1",
+		action : "go",
+		params : [  { x : 10,  y : 7 }  ]
+	}, {		
+		id		: "caocao",
+		action : "go",
+		params : [  { x : 11,  y : 4 }  ]
+	}, {		
+		id		: "caocao",
+		action : "speak",
+		params : [ "我是官军骑兵队长，姓曹名操字孟德。奉朝廷之命讨伐黄巾军，请问阁下尊姓大名。"  ]
+	}, {		
+		id		: "liubei",
+		action : "turnUp"
+	}, {		
+		id		: "liubei",
+		action : "speak",
+		params : [ "我是刘备刘玄德，虽然只是农民出身，但看到当今天下大乱，为了拯救百姓，才率领义兵讨伐的。"  ]
+	}, {		
+		id		: "liubei",
+		action : "speak",
+		params : [ "希望让我与两位兄弟增援官军，一切还请曹大人差遣。"  ]
+	},{		
+		id		: "caocao",
+		action : "speak",
+		params : [ "多亏了玄德兄，黄巾军已经陷入混乱，我也没必要下达什么指示了。"  ]
+	},{		
+		id		: "caocao",
+		action : "speak",
+		params : [ "只要击毙鹿岩中的两人便可，你们还是自行奋战吧，那么后会有期。"  ]
+	},{		
+		id		: "caocao",
+		action : "go",
+		params : [ { x : 10, y : 6 }  ]
+	},{		
+		id		: "liubei",
+		action : "go",
+		params : [ { x : 9, y : 6 }  ]
+	},{		
+		type	: 2,
+		action : "showGoal"
+	},{		
+		type	: 2,
+		action : "lightenCell",
+		params : [ { x : 9, y : 11 }]
+	},{		
+		type	: 2,
+		action : "lightenCell",
+		params : [ { x : 10, y : 11 }]
+	},
+	// ---------------------------------------------许子将登场-----------------------------------------
+	{		
+		id			: "xuzijiang",
+		action : "appear"
+	},	{		
+		id			: "xuzijiang",
+		action : "speak",
+		params : [ "终于要开战了，曹大人。" ]
+	},{		
+		id			: "caocao",
+		action : "turnUp"
+	},{		
+		id			: "caocao",
+		action : "speak",
+		params	: [ "哦？你是刚才那位给我看相的老人家，为何会到战场来？" ]
+	},{		
+		id			: "xuzijiang",
+		action : "speak",
+		params	: [ "因为我听人家说，这是曹大人第一次上阵，所以就赶来了。" ]
+	},{		
+		id			: "xuzijiang",
+		action : "speak",
+		params	: [ "我来主要是想告诉你一些……战场上应该注意的基本要点。曹大人，不知您意下如何？" ]
+	},{		
+		type		: 2,
+		action : "choose",
+		params	: [ "请选择", [{ t : "真是求之不得", v : ">" }, { t : "没有这个必要", v : ">" }] ]
+	},{		
+		id			: "caocao",
+		action : "speak",
+		params	: [ "老人家的好意我心领了。曹某毕竟也是通晓兵法之人，我看就不用劳烦赐教了。" ]
+	},{		
+		id			: "xuzijiang",
+		action : "speak",
+		params	: [ "原来如此，真不愧是曹大人。您就当这是老头子的多虑，请别放在心上。" ]
+	},{		
+		id			: "xuzijiang",
+		action : "speak",
+		params	: [ "那小老儿告辞了。<br/>呵、呵、呵、呵。" ]
+	},{		
+		id			: "xuzijiang",
+		action : "disappear"
+	},{		
+		id			: "caocao",
+		action : "turnDown"
+	},{		
+		type		: 2,
+		action : "showWhole",
+		params	: [ "开始作战" ]
+	}
+	]
+},
+			// ---------------------------------------------获得物品-----------------------------------------
+{
 	desc: "获得物品1",
 	event:{
-		active : false,
+		active : true,
 		type: 2,
 		name: "enter",	//unit cell.x cell.y
 		condition : [{
 			index : 1,
 			symbol : "==",
-			compare : "7"
+			compare : "13"
 		},{
 			index : 2,
 			symbol : "==",
-			compare : "16"
+			compare : "12"
 		}]		
 	},
 	actions : [{
 		type: 2,
 		action : "gainStuffOnCell",
-		params : [ 7, 16, 1, 5 ],
+		params : [ 13, 12, 1, 1 ],
 		next	: -1		
 	}]
 },{
-	desc: "设置状态1",
+	desc: "获得物品2",
 	event:{
-		active : false,
+		active : true,
 		type: 2,
-		name: "teamStart",
+		name: "enter",	//unit cell.x cell.y
 		condition : [{
-			index : 0,
-			symbol : "==",
-			compare : "MYTEAM"
-		},{
 			index : 1,
 			symbol : "==",
-			compare : "2"
-		}]	
+			compare : "13"
+		},{
+			index : 2,
+			symbol : "==",
+			compare : "13"
+		}]		
 	},
 	actions : [{
-		type	: 2,
-		action : "moveWinTo",
-		params : [ 0, 1000 ]
-	},{
-		type	: 3,
-		group	: "ENEMY",	
-		action : "addBuff",
-		params : [ "confuse" ],
+		type: 2,
+		action : "gainStuffOnCell",
+		params : [ 13, 13, 1, 1 ],
+		next	: -1		
+	}]
+},{
+	desc: "获得物品3",
+	event:{
+		active : true,
+		type: 2,
+		name: "enter",	//unit cell.x cell.y
+		condition : [{
+			index : 1,
+			symbol : "==",
+			compare : "9"
+		},{
+			index : 2,
+			symbol : "==",
+			compare : "11"
+		}]		
+	},
+	actions : [{
+		type: 2,
+		action : "gainStuffOnCell",
+		params : [ 9, 11, 1, 1 ],
 		next	: -1		
 	}]
 }

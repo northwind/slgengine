@@ -492,8 +492,8 @@ var UnitUI = Observable.extend({
 		var ret = [];
 		for (var i=0; i<=n; i++) {
 			ret.push( {
-				img	: this.imgs.down[0],
-				h		: i * this.imgs.down[0].height / n
+				img	: this.imgs.ddown[0],
+				h		: i * this.imgs.ddown[0].height / n
 			}  )
 		}
 		return ret.reverse();
