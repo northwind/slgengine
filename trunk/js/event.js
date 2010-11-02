@@ -65,7 +65,7 @@ var Event = Manager.extend({
 	 * compare	 :  待对比项
 	 */
 	check	: function(){
-		log( "event check : " + this.name );
+		//log( "event check : " + this.name );
 		var flag = true;
 		if ( this.condition && this.condition.length > 0 ){
 			for (var i=0; i<this.condition.length; i++) {
@@ -117,7 +117,10 @@ var Event = Manager.extend({
 		this.getObj().suspendEvent( this.name );	
 		PANEL.runScript();
 		this.current = this.get( this.index );
-		this.current.start();
+		if ( this.current ) 
+			this.current.start();
+		else
+			this.stop();	
 	},	
 	
 	stop: function(){

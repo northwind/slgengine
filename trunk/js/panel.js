@@ -199,6 +199,13 @@ var Panel = Component.extend({
 			this.staticLayer.remove();
 		
 		this.staticLayer = LayerMgr.reg( 300, MAX_W, MAX_H, StaticLayer );
+		//更改地图属性
+		this.staticLayer.on( "add", function( x, y, a ){
+			//TODO 根据动画属性判断是否增加
+			MAP[ y ][ x ]++;
+		}, this ).on( "remove", function( x,y,a ){
+			MAP[ y ][ x ] = Math.max( 0, --MAP[ y ][ x ] );
+		}, this );
 	},	
 	_createWinLayer	: function(){
 		if ( this.winLayer )
@@ -505,7 +512,11 @@ var Panel = Component.extend({
 		this.staticLayer.add.apply( this.staticLayer, arguments );
 		return this;
 	},
-	playAnimation	: function( a ){
+	playAnimation	: function( a, dx, dy, fn, scope ){
+		if ( typeof a == "string" ){
+			a = Animation.get( a, { dx : dx, dy : dy, fn : fn, scope : scope } );
+		}
+		
 		this.magicLayer.add( a );
 	},
 	lightenCell	: function( cell, fn, scope ){

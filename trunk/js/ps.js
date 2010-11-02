@@ -39,6 +39,8 @@ PS.prototype = {
 	putImgToCanvas	: function( img, x,y, w, h ){
 		var ret = document.createElement("canvas"),
 			   c = ret.getContext("2d");
+		ret.width = w;
+		ret.height = h;
 		
 		try {
 			c.drawImage( img, x, y, w, h, 0, 0, w, h );
@@ -82,14 +84,17 @@ PS.prototype = {
 		var ret = document.createElement("canvas"),
 			   c = ret.getContext("2d");
 
+		ret.width = w;
+		ret.height = h;
+		
 		var matrix  = this.getMatrix( Math.PI, 1, -1 );
 		//变换坐标系
 		c.translate( w, 0 );
 		c.transform( matrix.M11,  matrix.M12, matrix.M21, matrix.M22, 0,0 );
 				
-		//try {
+		try {
 			c.drawImage( img, x, y, w, h, 0, 0, w, h );
-		//} catch (e) {}
+		} catch (e) {}
 
 		return ret;
 	},		

@@ -132,10 +132,10 @@ GOODS = {
 		
 		ANIMATIONS = {
 			fire	: {
-				src	   : "images/magic/1-1.png",
-				w		: 64,
-				h		: 64,
-				inter   : 1
+				src	   : "images/magic/fire.png",
+				w		: 48,
+				h		: 48,
+				inter   : 3
 			},
 			redStar	: {
 				src	   : "images/magic/35-1.png",
@@ -148,7 +148,13 @@ GOODS = {
 				w		: 75,
 				h		: 90,
 				inter   : 2
-			}
+			},
+			zhuque	: {
+				src	   : "images/magic/zhuque.png",
+				w		: 300,
+				h		: 300,
+				inter   : 3
+			}			
 		},
 		
 		MAGICS = {

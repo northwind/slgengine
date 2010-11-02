@@ -30,7 +30,7 @@ var Animation = Observable.extend({
 	onPaint	: function(){
 		var item = this.imgs[ this.index ];
 		
-		if ( item && typeof item == "object" ) {
+		if ( item && item.constructor == Object ) {
 			//修正坐标信息
 			if ( item.dx )  this.dx = item.dx;
 			if ( item.dy )  this.dy = item.dy;

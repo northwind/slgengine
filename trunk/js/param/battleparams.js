@@ -93,10 +93,23 @@ FIGURES = {
 },
 
 ACTIONGROUPS   = [{
+	desc: "测试",
+	event:{
+		active	: true,
+		type	: 2,
+		name	: "battleStart"
+	},	
+	actions	: [{
+		type	: 2,
+		action  : "playAnimation",
+		params  : [ "zhuque", 100, 100 ]
+	}]
+},{
 	desc	: "开场白",
 	event	: {
-	//	type	: 2,
-	//	name	: "battleStart"
+		active	: false,
+		type	: 2,
+		name	: "battleStart"
 	},
 	actions	: [{
 		type	: 2,
@@ -111,13 +124,6 @@ ACTIONGROUPS   = [{
 		action : "attack",
 		params : [ "firstDie" ]
 	},{
-		id		: "firstDie",
-		action : "speak",
-		params : [ "可、可恨……" ]
-	},{
-		id		: "firstDie",
-		action : "die"
-	},{
 		id		: "second",
 		action : "speak",
 		params : [ "啊" ]
@@ -125,13 +131,6 @@ ACTIONGROUPS   = [{
 		id		: "second",
 		action : "attack",
 		params : [ "secondDie" ]
-	},{
-		id		: "secondDie",
-		action : "speak",
-		params : [ "啊……" ]
-	},{
-		id		: "secondDie",
-		action : "die"
 	},{
 		id		: "thirdDie",
 		action : "fall"
@@ -205,6 +204,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军阶段1",
 	event: {
+		active : false,
 		type: 2,
 		name: "teamStart",
 		condition : [{
@@ -229,7 +229,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "敌军阶段1",
 	event: {
-		active : true,
+		active : false,
 		type: 2,
 		name: "teamStart",
 		condition : [{
@@ -291,11 +291,40 @@ ACTIONGROUPS   = [{
 		params : [ { x : 12, y : 5 } ]
 	}]
 },{
-	desc: "友军弓兵阵亡1",
+	desc: "友军弓兵firstDie阵亡1",
 	event:{
-		type: 1,
+		active	: true,
+		type	: 1,
+		id		: "firstDie",
+		name	: "preDead"
+	},
+	actions : [{
+		id		: "firstDie",
+		action : "speak",
+		params : [ "可，可恨……" ],
+		next	: -1		
+	}]
+},{
+	desc: "友军术士secondDie阵亡1",
+	event:{
+		active	: true,
+		type	: 1,
+		id		: "secondDie",
+		name	: "preDead"
+	},
+	actions : [{
+		id		: "secondDie",
+		action : "speak",
+		params : [ "啊……" ],
+		next	: -1		
+	}]
+},{
+	desc: "友军弓兵thirdDie阵亡1",
+	event:{
+		active	: false,
+		type	: 1,
 		id		: "thirdDie",
-		name: "preDead"
+		name	: "preDead"
 	},
 	actions : [{
 		id		: "thirdDie",
@@ -304,9 +333,9 @@ ACTIONGROUPS   = [{
 		next	: -1		
 	}]
 },{
-	desc: "友军阶段2",
+	desc: "敌军阶段2",
 	event:{
-		active : true,
+		active : false,
 		type: 2,
 		name: "teamStart",
 		condition : [{
@@ -365,6 +394,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "获得物品1",
 	event:{
+		active : false,
 		type: 2,
 		name: "enter",	//unit cell.x cell.y
 		condition : [{
@@ -386,15 +416,18 @@ ACTIONGROUPS   = [{
 },{
 	desc: "设置状态1",
 	event:{
-//		type: 2,
-//		name: "teamStart"
-/*
+		active : false,
+		type: 2,
+		name: "teamStart",
 		condition : [{
-			index : 1,
+			index : 0,
 			symbol : "==",
 			compare : "MYTEAM"
+		},{
+			index : 1,
+			symbol : "==",
+			compare : "2"
 		}]	
-*/
 	},
 	actions : [{
 		type	: 2,
