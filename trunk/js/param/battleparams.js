@@ -95,7 +95,7 @@ FIGURES = {
 ACTIONGROUPS   = [{
 	desc: "测试",
 	event:{
-		active	: true,
+		active	: false,
 		type	: 2,
 		name	: "battleStart"
 	},	
@@ -107,7 +107,7 @@ ACTIONGROUPS   = [{
 },{
 	desc	: "开场白",
 	event	: {
-		active	: false,
+		active	: true,
 		type	: 2,
 		name	: "battleStart"
 	},
@@ -204,7 +204,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军阶段1",
 	event: {
-		active : false,
+		active : true,
 		type: 2,
 		name: "teamStart",
 		condition : [{
@@ -229,7 +229,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "敌军阶段1",
 	event: {
-		active : false,
+		active : true,
 		type: 2,
 		name: "teamStart",
 		condition : [{
@@ -321,7 +321,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军弓兵thirdDie阵亡1",
 	event:{
-		active	: false,
+		active	: true,
 		type	: 1,
 		id		: "thirdDie",
 		name	: "preDead"
@@ -335,7 +335,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "敌军阶段2",
 	event:{
-		active : false,
+		active : true,
 		type: 2,
 		name: "teamStart",
 		condition : [{
