@@ -4,6 +4,7 @@
 var StaticLayer = Layer.extend({
 	
 	init	: function(){
+		this.addEvents( "add", "remove" );
 		this._super( arguments[0] );
 		
 		this.items = new Manager();
@@ -20,19 +21,25 @@ var StaticLayer = Layer.extend({
 	},
 	
 	_gerateKey	: function( a, b, c){
-		return a + b + c;
+		return "" + a + b + "" + c;
 	},
 	
-	add		: function( name, dx, dy, fn, scope ){
+	add		: function( name, x, y, fn, scope ){
+		var dx = x * CELL_WIDTH, dy = y * CELL_HEIGHT; 
 		var a = Animation.get( name, { dx : dx, dy : dy } );
 		
-		this.items.reg( this._gerateKey(name + dy + dy) , a );
+		this.items.reg( this._gerateKey(name , dx , dy) , a );
+		this.fireEvent("add", x, y, a, this );
 		if ( fn )
 			fn.call( scope || this, this );
 	},
 	
-	remove	: function( name, dx, dy , fn, scope ){
-		this.items.unreg( this._gerateKey(name + dy + dy) );
+	remove	: function( name, x, y , fn, scope ){
+		var dx = x * CELL_WIDTH, dy = y * CELL_HEIGHT, key = this._gerateKey(name , dx , dy),
+			a = this.items.get( key ); 
+		
+		this.items.unreg( key );
+		this.fireEvent("remove", x, y, a, this );
 		if ( fn )
 			fn.call( scope || this, this );		
 	}

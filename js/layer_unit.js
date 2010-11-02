@@ -103,9 +103,9 @@ var UnitLayer = Layer.extend({
 	},
 	
 	startRound	: function(){
-		log( "startRound : " + this.round );
 		//先播放动画再触发事件			
 		this.round++;
+		log( "startRound : " + this.round );
 		//第一回合不显示动画
 		if (this.round == 1) {
 			this.fireEvent( "roundStart", this.round );
@@ -132,11 +132,11 @@ var UnitLayer = Layer.extend({
 	},
 	
 	startTeam	: function( team ){
-		log( "startTeam : " + team.name );
 		if ( team.count() == 0 ){
 			//没有可行动的角色时 跳过该队伍
 			this.onTeamEnd();
 		}else{
+			log( "startTeam : " + team.name );
 			PANEL._showTopLine(team.name + " 阶段" );
 			team.start();
 		}		

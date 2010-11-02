@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+		<title>拼图</title>
+		<script src="../lib/jquery/jquery-1.4.2.min.js" ></script>
+		<script src="../js/ps.js" ></script>
+	</head>
+	<body>
+		
+		<canvas id="canvas"></canvas>
+		
+		<script>
+			function	_loadImg( src, onload, onerror ){
+				var img = new Image();
+				img.onload = onload || function(){};
+				img.onerror = onerror || function(){};
+				img.src = src;
+			}
+			
+			var canvas = document.getElementById("canvas"),
+				ctx = canvas.getContext("2d");
+			
+			var src = "images/5/",	count = 32, suffix = "-1.png";
+			var w = 300, h = 300;
+			
+			canvas.height = h * parseInt( count / 2 - 1);
+			canvas.width = w;
+			
+			var j  = 0;
+			for (var i=1; i<= count; i += 2 ) {
+				
+				(function(){
+					var n = j++;
+					_loadImg( src + i + suffix, function(){
+						
+						ctx.drawImage( this, 0, h * (n-1), w, h );
+						
+					} );
+					
+				})();
+				
+			};	
+			
+			setTimeout( function(){
+				
+				var data = PS.removeColor( ctx, ctx.getImageData( 0, 0, canvas.width, canvas.height ), 247, 0, 255 );
+				
+				ctx.putImageData( data, 0, 0 );
+				
+			}, 1000 );
+			
+			
+		</script>
+	</body>
+</html>

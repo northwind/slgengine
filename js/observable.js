@@ -75,46 +75,38 @@ EventObs.prototype = {
         this.firing = true;
 		this.index = 0; //重置为0
 		this.args = Array.prototype.slice.call(arguments, 0);
+		
 		this.next();
 		
         return true;
     },
 	
 	next	: function(){
-		if ( this.suspend )		//暂停时什么都不做
+		if ( this.suspend || !this.ls )		//暂停时什么都不做
 			return;
 		
-		if (!this.ls) {
-			return this.done();
-		}
 		var len = this.ls.length;
 		if ( this.index == len ) {
 			//指向最后一个
-			return this.done();
+			this.done();
+			return;
 		}
 		else {
-			for (var i=this.index; i<len; i++) {
-				//停止时跳过
-				if ( !this.suspend ){
-					var l = this.ls[ i ];
-					if (l.fn.apply(l.scope , this.args ) === false) {
-						//监听器返回false时强制退出
-						return this.done();
-					}
-					//删除单次执行
-					if (l.options.one) {
-						this.splice = true;
-						l.remove = true;	//标记为待删除
-					}
-				}else{
-					this.index = i;		//保存
-					//跳出循环
-					return;
-				}
-			}
-			if ( !this.suspend )
-				//没有block
-				this.done();
+			
+			var l = this.ls[ this.index ];
+			//执行
+			l.fn.apply(l.scope , this.args );
+			
+			//删除单次执行
+			if (l.options.one) {
+				this.splice = true;
+				l.remove = true;	//标记为待删除
+			}			
+			
+			if (!this.suspend) {
+				this.index++; //递增
+				this.next();
+			}	
 		}		
 	},
 	
@@ -151,7 +143,7 @@ EventObs.prototype = {
 	
 	resume	: function(){
 		this.suspend = false;
-		this.index++;
+		this.index++; //递增
 		this.next();	//继续执行下一个监听器
 	}	
 };

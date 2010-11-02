@@ -26,12 +26,7 @@ UNITS	= [{
 {
 	id: "firstDie", gx :  7,  gy : 16, range : 2, rangeType : 3, hpMax : 110, hp : 1, symbol	: "archerYellow", miss : 0,
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓箭兵", level : 1, face : "images/face/182-1.png",
-	listeners : {
-		preDead	: function( unit, attacker ){
-			if ( attacker.id == "first" )
-				unit.hp = 1; //不让死
-		}
-	}	, visiable : false	 	
+	visiable : true	 	
 },{
 	id : "thirdDie", direct:"up", gx :  12,  gy : 17, range : 2, rangeType : 2, hpMax : 110, hp : 20, symbol	: "archerYellow",
 	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓兵", level : 1, face : "images/face/182-1.png"	, visiable : true	
@@ -43,13 +38,7 @@ UNITS	= [{
 	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "步兵", level : 1, face : "images/face/182-1.png"	, visiable : false	
 },{
 	id : "secondDie", gx :  12,  gy : 16, range : 1, rangeType : 2, hpMax : 110, hp : 1, symbol	: "enchanterYellow", miss : 0, 
-	faction : 1, team : 200, mpMax : 10, mp : 10, name : "术士", level : 1, face : "images/face/182-1.png", visiable : false, 	
-	listeners : {
-		preDead	: function( unit, attacker  ){
-			if ( attacker.id == "second" )
-				unit.hp = 1; //不让死
-		}
-	}		 	
+	faction : 1, team : 200, mpMax : 10, mp : 10, name : "术士", level : 1, face : "images/face/182-1.png", visiable : true	 	
 },
 
 //敌军
@@ -90,7 +79,7 @@ UNITS	= [{
 	gx :  10,  gy : 15, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
 	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
-	id : "second", gx :  12,  gy : 15, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	id : "second", gx :  12,  gy : 15, range : 1, rangeType : 2, hpMax : 90, hp : 9, symbol	: "huangjinjun",
 	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军"
 },{
 	id : "first", gx :  6,  gy : 16, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
