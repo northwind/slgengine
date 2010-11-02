@@ -24,14 +24,28 @@ var StaticLayer = Layer.extend({
 		return "" + a + b + "" + c;
 	},
 	
+	/**
+	 * 	[{ name : "name", x : x, y : y  }, {...}, ... ], fn, scope
+	 * TODO 改为只接收config
+	*/
 	add		: function( name, x, y, fn, scope ){
-		var dx = x * CELL_WIDTH, dy = y * CELL_HEIGHT; 
-		var a = Animation.get( name, { dx : dx, dy : dy } );
-		
-		this.items.reg( this._gerateKey(name , dx , dy) , a );
-		this.fireEvent("add", x, y, a, this );
+		if ($.isArray(name)) {
+			fn = x;
+			scope = y;
+			for (var i = 0; i < name.length; i++) {
+				var config = name[i];
+				this.add(config.name, config.x, config.y);
+			}
+		}
+		else {
+			var dx = x * CELL_WIDTH, dy = y * CELL_HEIGHT;
+			var a = Animation.get(name, { dx: dx, dy: dy });
+			
+			this.items.reg(this._gerateKey(name, dx, dy), a);
+			this.fireEvent("add", x, y, a, this);
+		}
 		if ( fn )
-			fn.call( scope || this, this );
+			setTimeout( bind( fn, scope||this ), 100 );
 	},
 	
 	remove	: function( name, x, y , fn, scope ){

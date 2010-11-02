@@ -245,7 +245,7 @@ var Panel = Component.extend({
 	
 	//战场中间显示提示信息
 	_showTopLine		: function( str, fn, scope ){
-		//this.mask();
+		this.mask();
 		
 		if ( this.lineTimer )
 			clearTimeout( this.lineTimer );
@@ -264,24 +264,29 @@ var Panel = Component.extend({
 			_self.lineTimer=0;
 		}, 1500 );			
 	},
-	//整个战场显示提示信息
+	//显示胜利/失败条件
 	showGoal		: function( fn, scope ){
-			this._showTopLine(  "" , fn, scope );
-			$("#maskUp").html( GOAL ).css({
-				background : "",
-				width	: MAX_W,
-				height  : WINDOW_HEIGHT,
-				top		:  23
-			});
+		this.showWhole( GOAL, fn, scope ); 
 	},
+	//整个战场显示提示信息
+	showWhole		: function( text, fn, scope ){
+		this._showTopLine(  "" , fn, scope );
+		$("#maskUp").html( text ).css({
+			background : "",
+			width	: MAX_W,
+			height  : WINDOW_HEIGHT,
+			top		:  23
+		});
+	},	
 	_hideTopLine		: function( fn, scope ){
 		var _self = this;
 		$("#maskUp").fadeOut( 800, function(){
-			//_self.unmask();
+			_self.unmask();
 			if ( fn )
 				fn.call( scope || _self )			
 		} );
 	},
+	//  options : [ { v : 返回值, t : 显示文字 }, { ... }, ... ] 
 	choose			: function( title, options, fn, scope ){
 		this._choose( null, title, options, fn, scope );
 	},	
@@ -512,6 +517,14 @@ var Panel = Component.extend({
 		this.staticLayer.add.apply( this.staticLayer, arguments );
 		return this;
 	},
+	//延迟多少毫秒
+	sleep		: function( ms, fn, scope ){
+		setTimeout( function(){
+			if ( fn )
+				fn.call( scope || this, this );
+		}, ms );
+	},	
+		
 	playAnimation	: function( a, dx, dy, fn, scope ){
 		if ( typeof a == "string" ){
 			a = Animation.get( a, { dx : dx, dy : dy, fn : fn, scope : scope } );
@@ -520,6 +533,9 @@ var Panel = Component.extend({
 		this.magicLayer.add( a );
 	},
 	lightenCell	: function( cell, fn, scope ){
+		if ( !( cell instanceof Cell ) ){
+			cell = CellMgr.get( cell.x, cell.y );
+		}
 		this.cellLayer.paintCells( ATTACKCOLOR, cell );
 		
 		//2s后回调
