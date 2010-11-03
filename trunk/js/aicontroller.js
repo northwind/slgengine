@@ -19,10 +19,11 @@ var AIController = Observable.extend({
 		if ( !this.active )
 			return;
 			
-		PANEL.on( "teamStart", this.onTeamStart, this )
-					 .on( "teamEnd", this.onTeamEnd, this )
-					 .on( "runScript", this.pause, this )
-					 .on( "stopScript", this.goon, this );
+		PANEL.on( "runScript", this.pause, this )
+			 .on( "stopScript", this.goon, this );
+		
+		PANEL.unitsLayer.on( "teamStart", this.onTeamStart, this )
+					    .on( "teamEnd", this.onTeamEnd, this );	 
 	},
 	
 	getAITeam	: function(){

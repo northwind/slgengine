@@ -121,8 +121,14 @@ GOODS = {
 		//状态
 		BUFFS = {
 			confuse : {
+				last	: 2,
 				src	   : "images/magic/49-1.png",
-				desc  : "迷糊中"
+				desc  : "迷糊中",
+				listeners : {
+					apply	: function( unit ){
+						unit.lock = true;	//锁定用户
+					}
+				}					
 			},
 			stop		   : {
 				src	   : "images/magic/51-1.png",
@@ -199,7 +205,7 @@ GOODS = {
 // 全局变量
 var canvas, ctx;
 //阵营 队伍 及快捷方式
-var FACTION = 1, TEAM = 100, MYTEAM, FRIENDS, ENEMY;
+var FACTION = 1, TEAM = 100, MYTEAM, FRIENDS, ENEMY, VictoryN = 0, FailedN = 0;
 
 		
 		

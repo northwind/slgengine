@@ -96,7 +96,7 @@ ACTIONGROUPS   = [{
 	desc: "测试",
 	event:{
 		active	: false,
-		type	: 2,
+		type	: 3,
 		name	: "battleStart"
 	},	
 	actions	: [{
@@ -107,8 +107,8 @@ ACTIONGROUPS   = [{
 },{
 	desc	: "开场白",
 	event	: {
-		active	: true,
-		type	: 2,
+		active	: false,
+		type	: 3,
 		name	: "battleStart"
 	},
 	actions	: [{
@@ -204,8 +204,8 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军阶段1",
 	event: {
-		active : true,
-		type: 2,
+		active : false,
+		type: 3,
 		name: "teamStart",
 		condition : [{
 			index : 0,
@@ -230,7 +230,7 @@ ACTIONGROUPS   = [{
 	desc: "敌军阶段1",
 	event: {
 		active : true,
-		type: 2,
+		type: 3,
 		name: "teamStart",
 		condition : [{
 			index : 0,
@@ -295,7 +295,7 @@ ACTIONGROUPS   = [{
 {
 	desc: "友军弓兵firstDie阵亡1",
 	event:{
-		active	: true,
+		active	: false,
 		type	: 1,
 		id		: "firstDie",
 		name	: "preDead"
@@ -309,7 +309,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军术士secondDie阵亡1",
 	event:{
-		active	: true,
+		active	: false,
 		type	: 1,
 		id		: "secondDie",
 		name	: "preDead"
@@ -323,7 +323,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军弓兵thirdDie阵亡1",
 	event:{
-		active	: true,
+		active	: false,
 		type	: 1,
 		id		: "thirdDie",
 		name	: "preDead"
@@ -338,6 +338,7 @@ ACTIONGROUPS   = [{
 	desc: "张宝阵亡1",
 	event:{
 		active	: true,
+		type	: 1,
 		id		: "zhangbao",
 		name	: "preDead"
 	},
@@ -351,6 +352,7 @@ ACTIONGROUPS   = [{
 	desc: "张梁阵亡1",
 	event:{
 		active	: true,
+		type	: 1,
 		id		: "zhangliang",
 		name	: "preDead"
 	},
@@ -364,7 +366,7 @@ ACTIONGROUPS   = [{
 	desc: "第二回合开始",
 	event:{
 		active : true,
-		type: 2,
+		type: 3,
 		name: "roundStart",
 		condition : [{
 			index : 0,
@@ -373,6 +375,10 @@ ACTIONGROUPS   = [{
 		}]
 	},
 	actions : [{
+		id		: "liubei",
+		action : "followMe",
+		next	: 50
+	},{
 		id		: "liubei",
 		action : "speak",
 		params : [ "二弟、三弟，等一等，这样下去前面的官军会被歼灭，在这里放火吧。" ]
@@ -443,7 +449,7 @@ ACTIONGROUPS   = [{
 		params : [ "咦？" ]
 	},{
 		id		   : "zhangfei",
-		action : "tuanLeft"
+		action : "turnLeft"
 	},{
 		id		   : "zhangfei",
 		action : "speak",
@@ -451,7 +457,7 @@ ACTIONGROUPS   = [{
 	},{
 		type	   : 2,
 		action : "playAnimation",
-		params : [ "zhuque", 240, 360 ]
+		params : [ "zhuque", 240, 160 ]
 	},{
 		type : 2,	
 		action : "addStatic",
@@ -462,6 +468,9 @@ ACTIONGROUPS   = [{
 						   { name : "fire", x : 7, y : 6 }, { name : "fire", x : 7, y : 7 } , 
 						   { name : "fire", x : 6, y : 5 }, { name : "fire", x : 6, y : 6 } , { name : "fire", x : 6, y : 7 }, { name : "fire", x : 6, y : 8 } , { name : "fire", x : 6, y : 9 },
 						   { name : "fire", x : 5, y : 6 }, { name : "fire", x : 5, y : 7 } , { name : "fire", x : 5, y : 8 }]  ] 
+	},{
+		id		: "fluster",
+		action : "followMe"
 	},{
 		id		: "fluster",
 		action : "turnUp"
@@ -488,6 +497,9 @@ ACTIONGROUPS   = [{
 		id		: "fluster",
 		action : "speak",
 		params : [ "敌人从后面包抄过来了！" ]
+	},{
+		id		: "zhangliang",
+		action : "followMe"
 	},{
 		id	: "zhangliang",
 		action : "turnUp"
@@ -722,7 +734,7 @@ ACTIONGROUPS   = [{
 	desc: "获得物品1",
 	event:{
 		active : true,
-		type: 2,
+		type: 3,
 		name: "enter",	//unit cell.x cell.y
 		condition : [{
 			index : 1,
@@ -744,7 +756,7 @@ ACTIONGROUPS   = [{
 	desc: "获得物品2",
 	event:{
 		active : true,
-		type: 2,
+		type: 3,
 		name: "enter",	//unit cell.x cell.y
 		condition : [{
 			index : 1,
@@ -766,7 +778,7 @@ ACTIONGROUPS   = [{
 	desc: "获得物品3",
 	event:{
 		active : true,
-		type: 2,
+		type: 3,
 		name: "enter",	//unit cell.x cell.y
 		condition : [{
 			index : 1,
@@ -784,12 +796,69 @@ ACTIONGROUPS   = [{
 		params : [ 9, 11, 1, 1 ],
 		next	: -1		
 	}]
+},
+			// ---------------------------------------------检查胜利/失败-----------------------------------------
+{
+	desc: "检查胜利1",
+	event:{
+		active : true,
+		type	: 1,
+		id	   : "zhangbao",
+		name   : "dead"		
+	},
+	actions : [{
+		type: 2,
+		action : "checkGoal"
+	}]
+},{
+	desc: "检查胜利2",
+	event:{
+		active : true,
+		type	: 1,
+		id	   : "zhangliang",
+		name   : "dead"		
+	},
+	actions : [{
+		type: 2,
+		action : "checkGoal"
+	}]
+},{
+	desc: "检查失败1",
+	event:{
+		active : true,
+		type	: 1,
+		id	   : "caocao",
+		name   : "dead"		
+	},
+	actions : [{
+		type: 2,
+		action : "checkFail"
+	}]
+},{
+	desc: "检查失败2",
+	event:{
+		active : true,
+		type	: 3,
+		name   : "roundEnd",
+		condition : [{
+			index : 0,
+			symbol : ">=",
+			compare : "10"
+		}]		
+	},
+	actions : [{
+		type: 2,
+		action : "checkFail"
+	}]
 }
+
 ],
 
 CHAPTER = "颍川之战",
 BGIMAGE	= "images/bigmap/1-1.jpg",
-GOAL = "胜利条件<br/>&nbsp;&nbsp;击毙张宝和张良!<br/>限制回合数&nbsp;20",
+GOAL = "胜利条件<br/>&nbsp;&nbsp;击毙张宝和张良!<br/>限制回合数&nbsp;10",
+VICTORYN = 2,	//已达成胜利的条件数  当达到一定数量后获得胜利
+FAILEDN = 1, 	//已失败的条件数   达到一定数量后失败
 /*
 	0  可以行走
 	1  不可行走

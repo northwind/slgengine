@@ -8,7 +8,7 @@ var Panel = Component.extend({
 	cls   : "_panel",
 	suspend	: true,  //停止更新
 	drawable: true,   //可以绘画
-	scripting : false, //是否正在执行脚本
+	scripting : 0, //是否正在执行脚本
 	
 	scrollLeft : 0,	//窗口左移的像素
 	scrollTop : 0,  //窗口上移的像素
@@ -28,8 +28,8 @@ var Panel = Component.extend({
 		this.el = $( "#panel" );
 		this.ct = $("#wrap").width( MAX_W );
 		
-		this.addEvents( "paint", "click","runScript","stopScript","globalClick","mouseleave","mousemove","contextmenu","keydown","keyup" );
-		this.addEvents( { name : "battleStart", type : 2 }, { name : "battleOver", type : 2 }  , { name : "paint", type : 3 } );
+		this.addEvents( "paint", "battleWin", "battleFail", "click","runScript","stopScript","globalClick","mouseleave","mousemove","contextmenu","keydown","keyup" );
+		this.addEvents( { name : "paint", type : 3 } );
 		
 		this._super( config );
 		
@@ -141,23 +141,6 @@ var Panel = Component.extend({
 		return this;		
 	},
 	
-	//overload
-	//与回合相关的事件交给unitsLayer处理
-	on				: function( name ){
-		if ( /roundStart|roundEnd|teamStart|teamEnd|teamOver|enter/.test(name) ){
-			this.unitsLayer.on.apply( this.unitsLayer, arguments );
-			return this;
-		}else
-			return this._super.apply( this, arguments );
-	},
-	un				: function( name ){
-		if ( /roundStart|roundEnd|teamStart|teamEnd|teamOver|enter/.test(name) ){
-			this.unitsLayer.un.apply( this.unitsLayer, arguments );
-			return this;
-		}else
-			return this._super.apply( this, arguments );
-	},
-		
 	onResize	: function( e ){
 		WINDOW_HEIGHT = Math.max( $(window).height() - 160 - 23, 250 );
 		WINDOW_WIDTH = Math.min( $(window).width(), 960 );
@@ -238,8 +221,7 @@ var Panel = Component.extend({
 		//报幕
 		//this._showTopLine( CHAPTER, function(){
 			log("start" );
-			this.bindEvent( "battleStart", this.unitsLayer.start, this.unitsLayer )
-					.fireEvent( "battleStart", this );
+			this.unitsLayer.start();
 		//}, this );
 	},
 	
@@ -268,6 +250,36 @@ var Panel = Component.extend({
 	showGoal		: function( fn, scope ){
 		this.showWhole( GOAL, fn, scope ); 
 	},
+	checkGoal		: function(fn, scope){
+		VictoryN++;
+		if ( VictoryN >= VICTORYN ){
+			this.victory();
+		}else
+			if ( fn )
+				fn.call( scope || this );
+	},
+	checkFail		: function(fn, scope){
+		FailedN++;
+		if ( FailedN >= FAILEDN ){
+			this.failed();
+		}else
+			if ( fn )
+				fn.call( scope || this );
+	},
+	//TODO 胜利画面
+	victory			: function(){
+		this.showWhole( "胜利！", function(){
+			this.fireEvent( "battleWin" );
+			window.location.reload();
+		}, this );
+	},
+	failed			: function(){
+		this.showWhole( "失败！", function(){
+			this.fireEvent( "battleFail" );
+			window.location.reload();
+		}, this );
+	},
+			
 	//整个战场显示提示信息
 	showWhole		: function( text, fn, scope ){
 		this._showTopLine(  "" , fn, scope );
@@ -280,7 +292,7 @@ var Panel = Component.extend({
 	},	
 	_hideTopLine		: function( fn, scope ){
 		var _self = this;
-		$("#maskUp").fadeOut( 800, function(){
+		$("#maskUp").fadeOut( 300, function(){
 			_self.unmask();
 			if ( fn )
 				fn.call( scope || _self )			
@@ -364,11 +376,11 @@ var Panel = Component.extend({
 		return this;
 	},
 	
-	moveToCell	: function( cell ){
+	moveToCell	: function( cell, fn, scope ){
 		var cx = WINDOW_WIDTH /2, cy = WINDOW_HEIGHT /2,
 			dx = Math.max(cell.dx - cx, 0), dy = Math.max( cell.dy - cy, 0 );
 		
-		this.moveWinTo( dx, dy );
+		this.moveWinTo( dx, dy, fn, scope );
 	},
 	
 	//设置背景图片
@@ -502,16 +514,18 @@ var Panel = Component.extend({
 		return this;	
 	},
 	
+	//script 采取计数器方式 当减到0时触发停止执行
 	runScript		: function(){
-		this.scripting = true;
+		this.scripting++;
 		this.fireEvent( "runScript", this );
 	},
 	stopScript	: function(){
-		this.scripting = false;
-		this.fireEvent( "stopScript", this );
+		this.scripting--;
+		if ( !this.isScripting() )
+			this.fireEvent( "stopScript", this );
 	},
 	isScripting	: function(){
-		return this.scripting;
+		return this.scripting > 0;
 	},
 	addStatic	: function(){
 		this.staticLayer.add.apply( this.staticLayer, arguments );

@@ -132,7 +132,7 @@ var Event = Manager.extend({
 		PANEL.stopScript();		
 	}
 }); 
-//角色动作
+//角色事件
 var UnitEvent = Event.extend({
 	id		: "",  //角色ID
 	
@@ -140,11 +140,18 @@ var UnitEvent = Event.extend({
 		return PANEL.getUnitById( this.id );
 	}
 }); 
-//系统动作
+//系统事件
 var SysEvent = Event.extend({
 	
 	getObj	: 	function(){
 		return PANEL;
+	}
+}); 
+//战场事件
+var BattleEvent = Event.extend({
+	
+	getObj	: 	function(){
+		return PANEL.unitsLayer;
 	}
 }); 
 
@@ -167,6 +174,8 @@ var ScriptMgr = Manager.extend({
 					e = new UnitEvent( econfig );
 				else if ( econfig.type == 2 )
 					e= new SysEvent( econfig );
+				else if ( econfig.type == 3 )
+					e= new BattleEvent( econfig );	
 				else
 					e = new Event( econfig );
 				

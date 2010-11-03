@@ -72,7 +72,6 @@ var Unit = Observable.extend({
 	standby	: false,	//待机
 	
 	//buffs	: {},	//增益buff
-	newBuff	: null,
 	//magics	: {}, //会的魔法
 	
 	ui		: null,
@@ -83,9 +82,9 @@ var Unit = Observable.extend({
 		this.way = [];
 		this.magicNames = [];
 		this.magics = {};
-		this.buffs = {};
+		this.buffs = this.buffs || {};
 		
-		this.addEvents( "click","unclick","change", "afterAttack", "walk","speak", "appear", "move" );
+		this.addEvents( "click", "start", "unclick","change", "afterAttack", "walk","speak", "appear", "move" );
 		this.addEvents( { name : "preDead", type : 2 },	{ name : "preAttack", type : 2 }, { name : "upgrade", type : 2 },
 						{ name : "attack", type : 2 }, { name : "defend", type : 2 } , { name : "dead", type : 2 }, 
 						{ name : "standby", type : 2 });
@@ -106,6 +105,24 @@ var Unit = Observable.extend({
 		this.bindEvent( "attack", this.onAttack, this );
 		
 		return this;
+	},
+	
+	//每回合开始时被调起
+	start		: function( fn, scope ){
+		this.invokeBuff();
+		
+		this.fireEvent( "start", this );
+		if ( fn )
+			fn.call( scope || this, this );
+	},
+	
+	//调用绑定的状态
+	invokeBuff	: function( fn, scope ){
+		for( var key in  this.buffs ){
+			var buff = this.buffs[ key ];
+			
+			buff.apply( this );
+		}
 	},
 	
 	setCell		: function(){
@@ -197,8 +214,8 @@ var Unit = Observable.extend({
 		PANEL.cellLayer.paintCells( ATTACKCOLOR, {} );
 	},
 	//窗口移动到可以显示该角色
-	followMe		: function(){
-		PANEL.moveToCell( this.cell );
+	followMe		: function( fn, scope ){
+		PANEL.moveToCell( this.cell, fn, scope );
 		return this;
 	},	
 			
@@ -694,10 +711,10 @@ var Unit = Observable.extend({
 	stopSpeak : function(){
 		if ( this.speaking ){
 			this.ui.stopAnimation();
-
+			this.speaking = false;	
+						
 			setTimeout( bind(function(){
 				this.fireEvent( "speak", this );
-				this.speaking = false;	
 			}, this ), 300 );			
 		}
 		return this;
@@ -716,6 +733,9 @@ var Unit = Observable.extend({
 		var config = $.extend( BUFFS[ name ],  { id : name } );
 		var buff = new Stuff( config );
 		
+		//失效后删除buff
+		buff.on( "invalid", this.delBuff, this );
+		
 		this.ui.addBuff( buff, function(){
 			this.buffs[ name ] = buff;
 			
@@ -728,6 +748,9 @@ var Unit = Observable.extend({
 	},
 	
 	delBuff	: function( name ){
+		if ( name instanceof Buff )
+			name = name.id;
+		
 		this.buffs[ name ] = null;
 		delete this.buffs[ name ];
 		
