@@ -116,7 +116,22 @@ GOODS = {
 					unit.onIncreaseMP( 50 );
 				}
 			}
-		}
+		},			
+		"taipingqing"	: {
+			id			: "taipingqing",
+			desc	: "太平清领道",
+			count	: 0,
+			name	: "水灵珠",
+			consumable : false,
+			nounit	: true,
+			effect	: 7,
+			src		: "images/item/77-1.png",
+			listeners : {
+				apply	: function( unit ){
+					
+				}
+			}
+		},
 		},		
 		//状态
 		BUFFS = {

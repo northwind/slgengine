@@ -40,7 +40,7 @@ FIGURES = {
 		imgMove	:"images/move/80-1.png",
 		imgAtk	: "images/atk/80-1.png",
 		imgSpc	: "images/spc/80-1.png",
-		imgFace	: "images/face/80-1.png"		
+		imgFace	: "images/face/214-1.png"		
 	},			
 	"cavalryman"	: {  //骑兵
 		imgMove	:"images/move/14-1.png",
@@ -568,7 +568,11 @@ ACTIONGROUPS   = [{
 		params : [ "冲吧。" ]
 	}, 
 	// ---------------------------------------------曹操登场-----------------------------------------
-	{		
+	{
+		type	: 2,
+		action : "moveWinTo",
+		params : [ 0, 0 ]
+	},{		
 		id		: "qibing1",
 		action : "appear"
 	}, {		
@@ -636,6 +640,9 @@ ACTIONGROUPS   = [{
 		params : [  { x : 11,  y : 4 }  ]
 	}, {		
 		id		: "caocao",
+		action : "turnDown"
+	}, {		
+		id		: "caocao",
 		action : "speak",
 		params : [ "我是官军骑兵队长，姓曹名操字孟德。奉朝廷之命讨伐黄巾军，请问阁下尊姓大名。"  ]
 	}, {		
@@ -670,12 +677,12 @@ ACTIONGROUPS   = [{
 		action : "showGoal"
 	},{		
 		type	: 2,
-		action : "lightenCell",
-		params : [ { x : 9, y : 11 }]
+		action : "lightenUnit",
+		params : [ "zhangbao" ]
 	},{		
 		type	: 2,
-		action : "lightenCell",
-		params : [ { x : 10, y : 11 }]
+		action : "lightenUnit",
+		params : [ "zhangliang" ]
 	},
 	// ---------------------------------------------许子将登场-----------------------------------------
 	{		
@@ -796,7 +803,22 @@ ACTIONGROUPS   = [{
 		params : [ 9, 11, 1, 1 ],
 		next	: -1		
 	}]
-},
+},		
+	// ---------------------------------------------从死者身上搜刮物品-----------------------------------------
+{
+	desc: "从死者身上搜刮物品1",
+	event:{
+		active : true,
+		type	: 1,
+		id		: "zhangbao",
+		name   : "dead"
+	},
+	actions : [{
+		id			: "zhangbao",
+		action : "award",
+		params : [ "taipingqing", 1 ]
+	}]	
+},	
 			// ---------------------------------------------检查胜利/失败-----------------------------------------
 {
 	desc: "检查胜利1",
@@ -850,8 +872,7 @@ ACTIONGROUPS   = [{
 		type: 2,
 		action : "checkFail"
 	}]
-}
-
+}	
 ],
 
 CHAPTER = "颍川之战",

@@ -164,8 +164,8 @@ var UnitUI = Observable.extend({
 		ctx.save();
 		
 		//绘制血条
+		var y = dy - 9;
 		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
-			var y = dy - 9;
 			y = y < 0 ? 0 : y;
 			//血条黑色背景
 			ctx.fillStyle = "rgb(0,0,0)";
@@ -554,7 +554,7 @@ var UnitUI = Observable.extend({
 	},
 	
 	//在magic层播放动画
-	gainStuff	: function( stuff, fn, scope ){
+	gainStuff	: function( stuff, num, fn, scope ){
 		var imgs = [], from = this.unit.cell.dy + 16;
 		for (var i=0; i< 8; i++) {
 			imgs.push({
@@ -572,7 +572,7 @@ var UnitUI = Observable.extend({
 		});
 		
 		this.pushTip( {
-			text	: "获得" + stuff.name, color : "rgb(255,255,255)",
+			text	: "获得" + stuff.name + "×" + num , color : "rgb(255,255,255)",
 			from	: [ this.unit.cell.dx, this.unit.cell.dy - 5],	increment : [ 0, 0 ]
 		} );
 		
