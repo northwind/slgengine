@@ -28,14 +28,18 @@ var AIUnit  = Observable.extend({
 		this.running = true;
 		this.unit.auto = true;
 		this.unit.followMe();
-		this.enemy = this.scanEnemy();
-		
-		if (this.enemy) {
-			this.fight(this.enemy);
-		}else{
-			//没有敌人时
-			this.end();
-		}
+
+		this.unit.start( function(){
+			this.enemy = this.scanEnemy();
+			
+			//有敌人并且未锁定时 发动攻击		
+			if ( this.enemy && !this.unit.lock ) {
+				this.fight(this.enemy);
+			}else{
+				this.end();
+			}
+					
+		}, this );
 	},
 	
 	end	: function(){

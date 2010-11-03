@@ -13,8 +13,8 @@ var Toolbar  = Observable.extend({
 	},
 	
 	start	: function( unit ){
-		PANEL.on( "teamStart", this.onTeamStart, this );
-		PANEL.on( "teamEnd", this.onTeamEnd, this );
+		PANEL.unitsLayer.on( "teamStart", this.onTeamStart, this )
+						.on( "teamEnd", this.onTeamEnd, this );
 		
 		this.el = $("#toolbar").show();
 		this.unactiveButtons();
@@ -38,7 +38,7 @@ var Toolbar  = Observable.extend({
 	},
 
 	onTeamStart	: function( team ){
-		if ( team.faction == FACTION && team.team == TEAM ){
+		if ( team == MYTEAM ){
 			this.active = true;
 			this.activeButtons();
 		}else{

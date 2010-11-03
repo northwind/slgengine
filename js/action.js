@@ -84,7 +84,7 @@ var GroupAction = Action.extend({
 		var obj = this.getObj();
 		if (obj) {
 			
-			var oriNext = this.next, index = this.mgr.count(), newNext = this.mgr.count(),
+			var oriNext = this.getNext(), index = this.mgr.count(), newNext = this.mgr.count(),
 				params = this.params.slice( 0, this.params.length -2 );
 			//在动作数组后批次增加每个角色的动作
 			for( var key in obj ){
@@ -103,7 +103,7 @@ var GroupAction = Action.extend({
 			//设置下一个执行索引
 			this.next = newNext;
 			//全部执行完毕后回跳到原来该执行的动作
-			this.actions[ this.actions.length -1 ].next = oriNext;
+			this.mgr.get( this.mgr.count() -1 ).next = oriNext;
 			
 			//没有执行主体
 			if (this.fn) 

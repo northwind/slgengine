@@ -5,13 +5,13 @@ var
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
 	id: "caocao", gx :  7,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "caocao", exp : 199,
-	magicNames	: [ "light", "storm" ], face : "right",
+	magicNames	: [ "light", "storm" ], direct : "right",
 	faction : 1, team : 100, mpMax : 100, mp : 100, name : "曹操", level : 1, attackFreqMax : 2, visiable : false	
 },{
-	id: "qibing1", gx :  6,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "cavalryman", face : "right",
+	id: "qibing1", gx :  6,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "cavalryman", direct : "right",
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "骑兵", level : 1, attackFreqMax : 1, visiable : false	
 },{
-	id: "qibing2", gx :  5,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "cavalryman", face : "right",
+	id: "qibing2", gx :  5,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "cavalryman", direct : "right",
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "骑兵", level : 1, attackFreqMax : 1, visiable : false	
 },{
 	id: "xuzijiang", gx :  9,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "xuzijiang",
@@ -32,64 +32,64 @@ UNITS	= [{
 {
 	id: "firstDie", gx :  7,  gy : 16, range : 2, rangeType : 3, hpMax : 110, hp : 1, symbol	: "archerYellow", miss : 0,
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓箭兵", level : 1, face : "images/face/182-1.png",
-	visiable : true	 	
+	visiable : false	 	
 },{
 	id : "thirdDie", direct:"up", gx :  12,  gy : 17, range : 2, rangeType : 2, hpMax : 110, hp : 20, symbol	: "archerYellow",
-	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓兵", level : 1, face : "images/face/182-1.png"	, visiable : true	
+	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓兵", level : 1, face : "images/face/182-1.png"	, visiable : false	
 },{
 	id : "foota", direct:"up", gx :  10,  gy : 17, range : 1, rangeType : 1, hpMax : 110, hp : 110, symbol	: "footmanYellow", 
-	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "步兵", level : 1, face : "images/face/182-1.png"	, visiable : true	
+	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "步兵", level : 1, face : "images/face/182-1.png"	, visiable : false	
 },{
 	id : "footb", direct:"up", gx :  9,  gy : 18, range : 1, rangeType : 1, hpMax : 110, hp : 110, symbol	: "footmanYellow", 
-	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "步兵", level : 1, face : "images/face/182-1.png"	, visiable : true	
+	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "步兵", level : 1, face : "images/face/182-1.png"	, visiable : false	
 },{
 	id : "secondDie", gx :  12,  gy : 16, range : 1, rangeType : 2, hpMax : 110, hp : 1, symbol	: "enchanterYellow", miss : 0, 
-	faction : 1, team : 200, mpMax : 10, mp : 10, name : "术士", level : 1, face : "images/face/182-1.png", visiable : true	 	
+	faction : 1, team : 200, mpMax : 10, mp : 10, name : "术士", level : 1, face : "images/face/182-1.png", visiable : false	 	
 },
 
 //敌军
 {
-	 id : "zhangbao", gx :  9,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
+	 id : "zhangbao", gx :  9,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 1, symbol	: "sushiBlue",
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张宝", level : 5, face : "images/face/154-1.png"	
 },{
-	 id : "zhangliang", gx :  10,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
+	 id : "zhangliang", gx :  10,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 1, symbol	: "sushiBlue",
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张梁", level : 5, face : "images/face/155-1.png"	
 },{
 	gx :  5,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
 	gx :  5,  gy : 11, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
 	id : "fluster2", gx :  8,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
 	gx :  7,  gy : 11, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
 	id : "fluster", gx :  12,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
 	gx :  12,  gy : 12, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
 	gx :  9,  gy : 14, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
 	gx :  10,  gy : 14, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
-	gx :  9,  gy : 15, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun", exp : 99,
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	gx :  9,  gy : 15, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
 	gx :  10,  gy : 15, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : true	
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false	
 },{
 	id : "second", gx :  12,  gy : 15, range : 1, rangeType : 2, hpMax : 90, hp : 9, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军"
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", visiable : false
 },{
 	id : "first", gx :  6,  gy : 16, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
-	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", direct : "right"
+	 faction : 0, team : 1, mpMax : 5, mp : 5, name : "黄巾军", direct : "right", visiable : false
 }]
 ;  
 

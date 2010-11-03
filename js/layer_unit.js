@@ -16,6 +16,7 @@ var UnitLayer = Layer.extend({
 	init	: function(){
 		this.addEvents( "click");
 		this.addEvents( { name : "roundStart", type : 2 }, { name : "roundEnd", type : 2 }, 
+		                 { name : "battleStart", type : 2 },{ name : "battleOver", type : 2 } ,
 									{ name : "teamStart", type : 2 }, { name :"teamEnd", type : 2 },
 									{ name : "teamOver", type : 2 }, { name : "enter", type : 2 });
 									 
@@ -35,11 +36,12 @@ var UnitLayer = Layer.extend({
 			 .on("keyup", this.onKeyup, this)
 			 .on("paint", this.onPaint, this ); //定时更新
 		
-		this.bindEvent( "roundStart", this.onRoundStart, this )
-			   .bindEvent( "roundEnd", this.onRoundEnd, this )
-			   //.bindEvent( "teamStart", this.onTeamStart, this )	//AI自动接手
-			   .bindEvent( "teamEnd", this.onTeamEnd, this )
-			   .bindEvent( "teamOver", this.onTeamOver, this );
+		this.bindEvent( "battleStart", this.startRound, this )
+			 .bindEvent( "roundStart", this.onRoundStart, this )
+			 .bindEvent( "roundEnd", this.onRoundEnd, this )
+			 //.bindEvent( "teamStart", this.onTeamStart, this )	//AI自动接手
+			 .bindEvent( "teamEnd", this.onTeamEnd, this )
+			 .bindEvent( "teamOver", this.onTeamOver, this );
 		
 		return this;
 	},
@@ -99,7 +101,8 @@ var UnitLayer = Layer.extend({
 	
 	start		: function(){
 		log( "this.unitsLayer.start" );
-		this.startRound();
+		
+		this.fireEvent( "battleStart", this );		
 	},
 	
 	startRound	: function(){
@@ -111,9 +114,9 @@ var UnitLayer = Layer.extend({
 			this.fireEvent( "roundStart", this.round );
 		}
 		else {
-			PANEL._showTopLine("第 " + this.round + " 回合", function(){
+			//PANEL._showTopLine("第 " + this.round + " 回合", function(){
 				this.fireEvent( "roundStart", this.round );
-			}, this);
+			//}, this);
 		}
 	},
 	
@@ -137,8 +140,14 @@ var UnitLayer = Layer.extend({
 			this.onTeamEnd();
 		}else{
 			log( "startTeam : " + team.name );
-			PANEL._showTopLine(team.name + " 阶段" );
-			team.start();
+			var tip = team.name + " 阶段";
+			//将回合信息放在第一个执行的队伍后
+			if ( this.teamIndex == 0 )
+				tip += "<br/><small>第" + this.round + "回合</small>";
+				
+			PANEL._showTopLine( tip, function(){
+				team.start();
+			}, this);
 		}		
 	},
 	
