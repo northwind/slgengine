@@ -550,6 +550,7 @@ var Panel = Component.extend({
 		if ( !( cell instanceof Cell ) ){
 			cell = CellMgr.get( cell.x, cell.y );
 		}
+		this.moveToCell( cell );
 		this.cellLayer.paintCells( ATTACKCOLOR, cell );
 		
 		//2s后回调
@@ -560,6 +561,23 @@ var Panel = Component.extend({
 				fn.call( scope || this );
 		}, 2000 );
 	},
+	lightenUnit	: function( unit, fn, scope ){
+		if ( !( unit instanceof Unit ) ){
+			unit = this.getUnitById( unit );
+		}
+		this.moveToCell( unit.cell );
+		this.cellLayer.paintCells( ATTACKCOLOR, unit.cell );
+		unit.major = true;		//显示主要信息
+		
+		//2s后回调
+		var _self = this;
+		setTimeout( function(){
+			unit.major = false;
+			_self.cellLayer.paintCells( ATTACKCOLOR, {} );
+			if ( fn )
+				fn.call( scope || this );
+		}, 2000 );
+	},		
 	gainStuffOnCell	: function( x, y, stuff, num, fn, scope ){
 		log( "panel gainStuffOnCell : x = " + x + " y = " + y + " stuff = " + stuff );
 		var cell = this.getCell( x, y ), unit;

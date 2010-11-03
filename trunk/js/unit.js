@@ -43,6 +43,7 @@ var Unit = Observable.extend({
 	invincible	: false, //无敌
 	debility : false,	//濒临死亡
 	dead		: false,
+	killer			: null,
 	moving : false,
 	speaking	: false,
 		
@@ -512,7 +513,7 @@ var Unit = Observable.extend({
 	onDead		: function( self, unit, d ){
 		//死亡时锁定角色
 		this.lock = true;
-		
+		this.killer = unit;	//记住杀死他的角色
 		this.bindEvent( "dead", function(){
 					//死了也要触发standby事件
 					//this.fireEvent( "standby", this );			
@@ -774,7 +775,7 @@ var Unit = Observable.extend({
 		if ( !(stuff instanceof Stuff) )
 			stuff = Pocket.get( stuff );
 			
-		this.ui.gainStuff( stuff, function(){
+		this.ui.gainStuff( stuff, num, function(){
 			stuff.count += num;
 			
 			if ( fn )
@@ -784,6 +785,25 @@ var Unit = Observable.extend({
 
 		return this;
 	},
+	
+	//将物品给予杀死自己的人
+	award	: function( stuff, num, fn, scope ){
+		if (!(stuff instanceof Stuff)) 
+			stuff = Pocket.get(stuff);
+				
+		if (this.killer) {
+			this.killer.gainStuff(stuff, num, function(){
+				stuff.count += num;
+				
+				if (fn) 
+					fn.call(scope || this, this, stuff);
+				
+			}, this);
+		}else if ( fn )
+			fn.call(scope || this, this, stuff);
+			
+		return this;
+	},	
 	
 	choose	: function( title, options, fn, scope ){
 		PANEL._choose( this.face, title, options, fn, scope );
