@@ -32,9 +32,10 @@ var Action = Observable.extend({
 	
 	start	: function(){
 		var obj = this.getObj();
-		if ( obj )
+		if ( obj && obj[ this.action ])
 			obj[ this.action ].apply( obj, this.params );
 		else{
+			log( "没有执行主体或没有方法 ： " + obj + " action : " + this.action );
 			//没有执行主体
 			if ( this.fn )
 				this.fn.call( this.scope|| this );

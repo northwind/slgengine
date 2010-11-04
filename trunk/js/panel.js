@@ -61,12 +61,13 @@ var Panel = Component.extend({
 		} )
 		.mousemove( function( e ){
 			if ( drag && e.which == 1 ) {
-				if (x != e.pageX) 
-					el.scrollLeft = (this.scrollLeft -= e.pageX - x);
-				
-				if (y != e.pageY) 
-					el.scrollTop = (this.scrollTop -= e.pageY - y);
-				
+				if (!_self.isScripting()) {		//执行脚本时锁定屏幕
+					if (x != e.pageX) 
+						el.scrollLeft = (this.scrollLeft -= e.pageX - x);
+					
+					if (y != e.pageY) 
+						el.scrollTop = (this.scrollTop -= e.pageY - y);
+				}
 				x = e.pageX;
 				y = e.pageY;
 			}
@@ -78,12 +79,14 @@ var Panel = Component.extend({
 		} )
 		.mousewheel( function( e, delta, x, y){
 			//向下滚动
-			if ( y  == -1 ){
-				_self.moveWinBy( 0, CELL_HEIGHT );
-			}else{
-				_self.moveWinBy( 0, -CELL_HEIGHT );
+			if (!_self.isScripting()) { //执行脚本时锁定屏幕
+				if (y == -1) {
+					_self.moveWinBy(0, CELL_HEIGHT);
+				}
+				else {
+					_self.moveWinBy(0, -CELL_HEIGHT);
+				}
 			}
-			
 			e.preventDefault();
 			return false;
 		} )
@@ -248,6 +251,9 @@ var Panel = Component.extend({
 		}, 1500 );			
 	},
 	
+	showGoal		: function(){
+		this.unitsLayer.showGoal.apply( this.unitsLayer, arguments );
+	},	
 	checkGoal		: function(){
 		this.unitsLayer.checkGoal.apply( this.unitsLayer, arguments );
 	},

@@ -404,7 +404,8 @@ var UnitLayer = Layer.extend({
 		return all;		
 	},
 	
-	getWalkCells : function( cell, step ){
+	//可以移动到的单元格
+	getWalkCells : function( cell, step, walker ){
 		if ( step <= 0 )
 				return {}[ cell.index ]  = cell ;
 		
@@ -415,8 +416,8 @@ var UnitLayer = Layer.extend({
 		
 		function prepare( x,y,parent ){
 			var key = getIndex( x, y ), unit = units[ key ], child =  PANEL.getCell( x, y );
-			//判断是否可以行走/是否已经计算过/如果有单位在单元格上判断是否可以叠加
-			if ( child && !open[key] && !closed[key] && MAP[y] && MAP[y][x] ==0 && (unit ? unit.overlay : true  ) ) {
+			//判断是否可以行走/是否已经计算过/如果有单位判断是否为友军
+			if ( child && !open[key] && !closed[key] && MAP[y] && MAP[y][x] ==0 && (unit ? walker.isFriend( unit.faction ) : true  ) ) {
 				child.parent = parent;
 				open[key] = child;
 			}	
@@ -442,13 +443,17 @@ var UnitLayer = Layer.extend({
 				delete open[ key ];
 			}
 		}
+		//剔除掉友军所占据的单元格
+		for( var key in closed ){
+			if ( units[ key ] )
+				delete closed[ key ];
+		}
 		
 		return closed;
 	},
 	
 	//A* 算法寻路
 	findWay			: function( character, from, to ){
-		//return [ from ];
 		var ret =[], opened = {}, closed = {}, units = this.units, 
 			node = null, minD, tmpNode, faction = character.faction,
 			targetX = to.x, targetY = to.y, loops = 0;
@@ -465,7 +470,7 @@ var UnitLayer = Layer.extend({
 			if (node) {
 				var key = node.index, unit = units[key];
 				
-				if (!open[key] && !closed[key] && node && MAP[node.y][node.x] == 0 && (unit ? (unit.overlay && !unit.isEnemy(faction)) : true)) {
+				if (!open[key] && !closed[key] && node && MAP[node.y][node.x] == 0 && (unit ? ( unit.isFriend(faction) ) : true)) {
 					calcD(node);
 					node.parent = p;
 					opened[node.index] = node;
@@ -525,6 +530,14 @@ var UnitLayer = Layer.extend({
 				step = step.parent;
 			}
 		}
+		//如果终点已经有人站着，则回退一格
+		do{
+			var cell = ret[ 0 ];
+			if ( units[ cell.index ] )
+				ret.shift();
+			else 
+				break;	
+		}while( ret.length > 0 )
 		
 		return ret;				
 	},
@@ -575,7 +588,6 @@ var UnitLayer = Layer.extend({
 		unit.on( "standby", this.deleteClicked, this )
 			//.on( "standby", this.onEnter, this )
 			.on( "move", function( unit ){
-				log( "move event : unit.auto = "  + unit.auto);
 				//运行脚本时不弹框
 				if ( !PANEL.isScripting() && !unit.auto )
 					PANEL.popActionMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
@@ -586,8 +598,12 @@ var UnitLayer = Layer.extend({
 				if ( unit.auto ){
 					PANEL.moveToCell( to );
 				}
-				this.units[ to.index ] = this.units[ from.index ];
-				delete this.units[ from.index ];
+				//已存在的不覆盖
+				if ( !this.units[to.index] ) {
+					this.units[to.index] = unit;
+				}
+				//if ( this.units[from.index] == unit )	//只有是自己的时候才删掉
+					delete this.units[from.index];
 			}, this )
 			//点击角色时显示该角色属性
 			.on( "click", PANEL.showUnitAttr, PANEL )
