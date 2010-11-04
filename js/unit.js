@@ -37,7 +37,7 @@ var Unit = Observable.extend({
 	intelligence : 3,	//智力
 	
 	miss		: 5,  //百分数 躲闪的概率
-	burst		: 40,	//百分数 暴击的概率
+	burst		:  5,	//百分数 暴击的概率
 	enlarge	: 1.5,  //暴击时系数
 	revenge	: 5, //反击
 	invincible	: false, //无敌
@@ -198,7 +198,7 @@ var Unit = Observable.extend({
 		return this;
 	},	
 	getMoves	: function(){
-		return this.layer.getWalkCells( this.cell, this.step );
+		return this.layer.getWalkCells( this.cell, this.step, this );
 	},
 	getAttacks	: function(){
 		return this.layer.getAttackCells( this.cell, this.range, this.rangeType, this.team );
@@ -705,6 +705,7 @@ var Unit = Observable.extend({
 	
 	//一次只能说一句话
 	speak	: function( text, fn, scope ){
+		//PANEL.moveToCell( this.cell );	//镜头对着说话的角色
 		this.speaking = true;
 		this.ui.speak();
 		

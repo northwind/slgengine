@@ -104,7 +104,9 @@ ACTIONGROUPS   = [{
 		action  : "playAnimation",
 		params  : [ "zhuque", 100, 100 ]
 	}]
-},{
+},
+			// --------------------------------------刘备攻击------------------------------------------------
+{
 	desc: "刘备攻击",
 	event:{
 		active : true,
@@ -120,10 +122,38 @@ ACTIONGROUPS   = [{
 		action : "speak",
 		params : [ "这是万民的愤怒！" ]
 	}]	
-},{
+},
+				// -------------------------------------------走到张梁附近-------------------------------------------
+{
+	desc: "走到张梁附近",
+	event:{
+		active : true,
+		type	: 1,
+		id		: "caocao",
+		name   : "standby",
+		condition : [{
+			script : " PANEL.getUnitById('caocao').isAround('zhangliang') "
+		}]
+	},
+	actions : [{
+		id	   : "caocao",
+		action : "speakTo",
+		params : [ "zhangliang", "你就是张梁吧，虽然身为贼军，毕竟也是一军之将，干脆乖乖投降吧。" ]
+	},{
+		id	   : "zhangliang",
+		action : "speakTo",
+		params : [ "caocao", "少废话，看我宰了你！" ]
+	},{
+		id	   : "caocao",
+		action : "speakTo",
+		params : [ "zhangliang", "贼军就是贼军，如此不识实务，不配做以军之将，哼！" ]
+	}]	
+},
+			// -------------------------------------------开场白-------------------------------------------
+{
 	desc	: "开场白",
 	event	: {
-		active	: true,
+		active	: false,
 		type	: 3,
 		name	: "battleStart"
 	},
@@ -220,7 +250,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军阶段1",
 	event: {
-		active : true,
+		active : false,
 		type: 3,
 		name: "teamStart",
 		condition : [{
@@ -242,7 +272,9 @@ ACTIONGROUPS   = [{
 		params : ["再坚持一会儿！<br/>让他们知道官军不是好惹的！"],
 		next	: -1
 	}]
-},{
+},
+				// -------------------------------------------刘备登场-------------------------------------------
+{
 	desc: "敌军阶段1",
 	event: {
 		active : true,
@@ -392,8 +424,7 @@ ACTIONGROUPS   = [{
 	},
 	actions : [{
 		id		: "liubei",
-		action : "followMe",
-		next	: 50
+		action : "followMe"
 	},{
 		id		: "liubei",
 		action : "speak",
@@ -701,7 +732,11 @@ ACTIONGROUPS   = [{
 		params : [ "zhangliang" ]
 	},
 	// ---------------------------------------------许子将登场-----------------------------------------
-	{		
+	{
+		type	: 2,
+		action : "moveWinTo",
+		params : [ 0, 0 ]
+	},{		
 		id			: "xuzijiang",
 		action : "appear"
 	},	{		
@@ -726,7 +761,7 @@ ACTIONGROUPS   = [{
 	},{		
 		type		: 2,
 		action : "choose",
-		params	: [ "请选择", [{ t : "真是求之不得", v : ">" }, { t : "没有这个必要", v : ">" }] ]
+		params	: [ "", [{ t : "真是求之不得", v : ">" }, { t : "没有这个必要", v : ">" }] ]
 	},{		
 		id			: "caocao",
 		action : "speak",
@@ -748,7 +783,8 @@ ACTIONGROUPS   = [{
 	},{		
 		type		: 2,
 		action : "showWhole",
-		params	: [ "开始作战" ]
+		params	: [ "开始作战" ],
+		next		: -1
 	}
 	]
 },
@@ -835,6 +871,49 @@ ACTIONGROUPS   = [{
 		params : [ "taipingqing", 1 ]
 	}]	
 },	
+		// ---------------------------------------------胜利之后-----------------------------------------
+{
+	desc: "胜利之后",
+	event:{
+		active : true,
+		type	: 3,
+		name   : "battleWin"
+	},
+	actions : [{
+		id		: "caocao",
+		action : "speakTo",
+		params  : [ "liubei", "玄德兄只有义军之名，未免可惜，不如和我一起共事吧？" ]
+	},{
+		id		: "liubei",
+		action : "speakTo",
+		params  : [ "caocao", "如今尚有许多地方战火未息，因此虽然承蒙好意相邀，我们还是必须前往讨贼。" ]
+	},{
+		id		: "caocao",
+		action : "speak",
+		params  : [ "是吗，那么我也不便勉强，我还有别的任务，那就后会有期了，改日相见了。" ]
+	},{
+		type	: 3,
+		group	: "MYTEAM",	
+		action : "go",
+		params : [ { x :  10,  y : 18 } ]
+	},{
+		id		: "liubei",
+		action : "speakTo",
+		params  : [ "guanyu", "此人和以往所见官军不同，叫做曹操吗？……" ]
+	},{
+		id		: "guanyu",
+		action : "speakTo",
+		params  : [ "liubei", "乱世之势不可预测，获许日后还会再见。" ]
+	},{
+		id		: "liubei",
+		action : "speakTo",
+		params  : [ "guanyu", "好，我们就一面收拾黄巾军的余孽，一面前往公孙瓒的阵营，到那之后再考虑将来吧。" ]
+	},{
+		id		: "zhangfei",
+		action : "speakTo",
+		params  : [ "liubei", "好，怎么都行，能吃饱饭就行，哈哈哈哈！" ]
+	}]
+},	
 			// ---------------------------------------------检查胜利/失败-----------------------------------------
 {
 	desc: "检查胜利1",
@@ -896,6 +975,7 @@ BGIMAGE	= "images/bigmap/1-1.jpg",
 GOAL = "胜利条件<br/>&nbsp;&nbsp;击毙张宝和张良!<br/>限制回合数&nbsp;10",
 VICTORYN = 2,	//已达成胜利的条件数  当达到一定数量后获得胜利
 FAILEDN = 1, 	//已失败的条件数   达到一定数量后失败
+
 /*
 	0  可以行走
 	1  不可行走
