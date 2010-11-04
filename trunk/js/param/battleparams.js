@@ -107,7 +107,7 @@ ACTIONGROUPS   = [{
 },{
 	desc	: "开场白",
 	event	: {
-		active	: false,
+		active	: true,
 		type	: 3,
 		name	: "battleStart"
 	},
@@ -204,7 +204,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军阶段1",
 	event: {
-		active : false,
+		active : true,
 		type: 3,
 		name: "teamStart",
 		condition : [{
@@ -295,7 +295,7 @@ ACTIONGROUPS   = [{
 {
 	desc: "友军弓兵firstDie阵亡1",
 	event:{
-		active	: false,
+		active	: true,
 		type	: 1,
 		id		: "firstDie",
 		name	: "preDead"
@@ -309,7 +309,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军术士secondDie阵亡1",
 	event:{
-		active	: false,
+		active	: true,
 		type	: 1,
 		id		: "secondDie",
 		name	: "preDead"
@@ -323,7 +323,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军弓兵thirdDie阵亡1",
 	event:{
-		active	: false,
+		active	: true,
 		type	: 1,
 		id		: "thirdDie",
 		name	: "preDead"
