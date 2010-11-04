@@ -385,14 +385,14 @@ var Observable = Class.extend({
     },
 
     suspendEvent : function( eventName ){
-		log( "suspendEvent function : " + eventName );
+		//log( "suspendEvent function : " + eventName );
         var ce = this.getEvent( eventName );
 		if ( ce )
 			ce.pause();
     },
 
     resumeEvent : function( eventName ){
-		log( "resumeEvent function : " + eventName );
+		//log( "resumeEvent function : " + eventName );
         var ce = this.getEvent( eventName );
 		if ( ce )
 			ce.resume();

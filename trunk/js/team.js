@@ -8,6 +8,7 @@ var Team = Manager.extend({
 	faction : 0,
 	team	: 0,
 	layer	: null,
+	readyCount : 0,
 	
 	init	: function(){
 		this.addEvents( "teamStart","teamEnd","teamOver" );
@@ -22,7 +23,8 @@ var Team = Manager.extend({
 				this.remove( unit );
 				if ( !PANEL.isScripting() )
 					this.checkOver( unit );
-			 }, this );
+			 }, this )
+			 .on( "start", this.ready, this );
 				
 		this.reg( unit.id, unit  );
 	},
@@ -32,7 +34,7 @@ var Team = Manager.extend({
 		for ( var key in this.items ) {
 			var unit = this.items[key];
 			//当同一队伍中有任何一个可以移动时跳出循环
-			if ( !unit.lock ) {
+			if ( !unit.standby ) {
 				flag = false;
 				break;
 			}
@@ -59,10 +61,17 @@ var Team = Manager.extend({
 	
 	start			: function(){
 		log( "team : start : " + this.name );
+		this.readyCount = 0;
 		this.each( function(){
-			this.unLock();
+			this.start();
 		} );			
-		this.fireEvent( "teamStart", this );
+	},
+	
+	ready			: function( unit ){
+		this.readyCount++;
+		if ( this.readyCount == this.count() ){
+			this.fireEvent( "teamStart", this );
+		}
 	},
 	
 	end			: function(){

@@ -63,16 +63,22 @@ var Event = Manager.extend({
 	 * index : 第几个参数
 	 * symbol : == | >= | <= | < | > ...
 	 * compare	 :  待对比项
+	 * script  : 自定义脚本
 	 */
 	check	: function(){
 		//log( "event check : " + this.name );
 		var flag = true;
 		if ( this.condition && this.condition.length > 0 ){
 			for (var i=0; i<this.condition.length; i++) {
-				var c = this.condition[i];
+				var c = this.condition[i], str;
 				var l = c.index || 0;
+				if ( c.script )
+					str = "flag=flag && (" + c.script + ")";
+				else
+					str = "flag=flag && ( arguments[ " + l + " ] " + (c.symbol || "==") + c.compare + ")";
+						
 				try {
-					eval("flag=flag && ( arguments[ " + l + " ] " + (c.symbol || "==") + c.compare + ")");
+					eval( str );
 				} 
 				catch (e) {
 					flag = true;
@@ -124,7 +130,7 @@ var Event = Manager.extend({
 	},	
 	
 	stop: function(){
-		log( "event stop function : " + this.name );
+		log( "stop event : " + this.name );
 		delete this.current;
 		this.active = false;
 		//block事件

@@ -72,7 +72,7 @@ var Unit = Observable.extend({
 	
 	standby	: false,	//待机
 	
-	//buffs	: {},	//增益buff
+	//buffs	: [],	//增益buff
 	//magics	: {}, //会的魔法
 	
 	ui		: null,
@@ -83,7 +83,7 @@ var Unit = Observable.extend({
 		this.way = [];
 		this.magicNames = [];
 		this.magics = {};
-		this.buffs = this.buffs || {};
+		this.buffs = this.buffs || [];
 		
 		this.addEvents( "click", "start", "unclick","change", "afterAttack", "walk","speak", "appear", "move" );
 		this.addEvents( { name : "preDead", type : 2 },	{ name : "preAttack", type : 2 }, { name : "upgrade", type : 2 },
@@ -110,19 +110,26 @@ var Unit = Observable.extend({
 	
 	//每回合开始时被调起
 	start		: function( fn, scope ){
-		this.invokeBuff();
-		
-		this.fireEvent( "start", this );
 		if ( fn )
 			fn.call( scope || this, this );
+		
+		this.unLock();	
+		this.applyBuff( 0, function(){
+			log( this.name + " ready to go" );
+			this.fireEvent( "start", this );			
+		}, this );
 	},
 	
-	//调用绑定的状态
-	invokeBuff	: function( fn, scope ){
-		for( var key in  this.buffs ){
-			var buff = this.buffs[ key ];
-			
-			buff.apply( this );
+	//按序调用附加的状态
+	applyBuff	: function( i, fn, scope ){
+		if ( i >= this.buffs.length ){
+			if ( fn )
+				fn.call( scope|| this, this );
+		}else{
+			var buff = this.buffs[ i ];
+			buff.on( "over", function(){
+				this.applyBuff( ++i, fn, scope );
+			}, this, { one : true } ).apply( this );
 		}
 	},
 	
@@ -323,7 +330,7 @@ var Unit = Observable.extend({
 		var hit = this._genHitValue( bursting );
 					
 		this.ui.attack( unit.cell, bursting, hit, function(){
-			log( this.name + "attack over : freq : " + this.attackFreq );
+			//log( this.name + "attack over : freq : " + this.attackFreq );
 			this.attackFreq++;
 			//通知被攻击者
 			unit.attacked( this, hit, function( defender, self, v ){
@@ -708,6 +715,19 @@ var Unit = Observable.extend({
 		
 		return this;
 	},
+	//跟某人说话 自动转向
+	speakTo	: function( unit, text, fn, scope ){
+		if ( !( unit instanceof Unit ) )
+			unit = PANEL.getUnitById( unit ); 
+		
+		var d = this.cell.directT( unit.cell ).replace( /\S/, function( a ){ return a.toUpperCase() } );
+		try {
+			eval( "this.ui.turn" + d + "()"  );
+		} catch (e) {}
+
+		this.speak( text, fn, scope );	
+	},
+	
 	//停止说话300ms后再触发speak事件
 	stopSpeak : function(){
 		if ( this.speaking ){
@@ -732,13 +752,15 @@ var Unit = Observable.extend({
 	//增加角色状态
 	addBuff	: function( name, fn, scope ){
 		var config = $.extend( BUFFS[ name ],  { id : name } );
-		var buff = new Stuff( config );
+		var buff = new Buff( config );
 		
 		//失效后删除buff
-		buff.on( "invalid", this.delBuff, this );
+		buff.on( "invalid", this.removeBuff, this, { one : true } );
 		
 		this.ui.addBuff( buff, function(){
-			this.buffs[ name ] = buff;
+			this.removeBuff( name );
+				
+			this.buffs.push( buff );
 			
 			if ( fn )
 				fn.call( scope || this, this, buff );
@@ -748,13 +770,31 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
-	delBuff	: function( name ){
+	findBuff	: function( name ){
 		if ( name instanceof Buff )
 			name = name.id;
 		
-		this.buffs[ name ] = null;
-		delete this.buffs[ name ];
-		
+		var n = -1;	
+		for (var i=0; i<this.buffs.length; i++) {
+			if (this.buffs[i].id == name) {
+				n = i;
+				break;
+			}
+		}
+		return n;
+	},
+	
+	removeBuff	: function( name, fn, scope ){
+		var n = this.findBuff( name ), b;
+		if (n > -1) {
+			b= this.buffs[ n ];
+			this.buffs.splice(n, 1);
+			b = null;
+		}
+
+		if ( fn )
+			fn.call( scope || this, this );
+						
 		return this;	
 	},
 	
@@ -830,6 +870,15 @@ var Unit = Observable.extend({
 		this.ui.appear( function(){
 			this.fireEvent( "appear", this );
 		}, this );
+	},
+	
+	//判断是否在某角色附近
+	//在相距两步的范围内即判断为在附近
+	isAround	: function( unit ){
+		if ( !( unit instanceof Unit ) )
+			unit = PANEL.getUnitById( unit ); 		
+		
+		return this.cell.distance( unit.cell ) < 3;
 	}
 }); 
 

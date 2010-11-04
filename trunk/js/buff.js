@@ -1,6 +1,6 @@
 /**
  * 状态类
- * 每个物品都有 apply 方法，使用后调用该方法
+ * 每个状态都有 apply 方法，使用时触发
  */
 var Buff = Observable.extend({
 	id		: "", 
@@ -13,7 +13,7 @@ var Buff = Observable.extend({
 	last	: 0, 	//持续回合数
 	
 	init	: function(){
-		this.addEvents( "invalid" );
+		this.addEvents( "invalid", "over" );
 		this.addEvents( { name : "apply", type :2 } );
 		
 		this._super( arguments[0] );
@@ -31,6 +31,7 @@ var Buff = Observable.extend({
 		//减少持续回合数
 		if( this.last == 0 ){
 			this.fireEvent( "invalid", this );
+			this.afterApply();
 			return;
 		}
 		this.last--;

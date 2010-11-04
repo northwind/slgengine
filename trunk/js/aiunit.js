@@ -29,7 +29,7 @@ var AIUnit  = Observable.extend({
 		this.unit.auto = true;
 		this.unit.followMe();
 
-		this.unit.start( function(){
+		//this.unit.start( function(){
 			this.enemy = this.scanEnemy();
 			
 			//有敌人并且未锁定时 发动攻击		
@@ -39,7 +39,7 @@ var AIUnit  = Observable.extend({
 				this.end();
 			}
 					
-		}, this );
+		//}, this );
 	},
 	
 	end	: function(){

@@ -28,7 +28,7 @@ var Panel = Component.extend({
 		this.el = $( "#panel" );
 		this.ct = $("#wrap").width( MAX_W );
 		
-		this.addEvents( "paint", "battleWin", "battleFail", "click","runScript","stopScript","globalClick","mouseleave","mousemove","contextmenu","keydown","keyup" );
+		this.addEvents( "paint", "click","runScript","stopScript","globalClick","mouseleave","mousemove","contextmenu","keydown","keyup" );
 		this.addEvents( { name : "paint", type : 3 } );
 		
 		this._super( config );
@@ -176,6 +176,7 @@ var Panel = Component.extend({
 			this.unitsLayer.remove();
 		
 		this.unitsLayer = LayerMgr.reg( 200, MAX_W, MAX_H, UnitLayer );
+		this.unitsLayer.on( "battleOver", this.onBattleOver, this );
 	},	
 	_createStaticLayer	: function(){
 		if ( this.staticLayer )
@@ -246,40 +247,32 @@ var Panel = Component.extend({
 			_self.lineTimer=0;
 		}, 1500 );			
 	},
-	//显示胜利/失败条件
-	showGoal		: function( fn, scope ){
-		this.showWhole( GOAL, fn, scope ); 
+	
+	checkGoal		: function(){
+		this.unitsLayer.checkGoal.apply( this.unitsLayer, arguments );
 	},
-	checkGoal		: function(fn, scope){
-		VictoryN++;
-		if ( VictoryN >= VICTORYN ){
+	checkFail		: function(){
+		this.unitsLayer.checkFail.apply( this.unitsLayer, arguments );
+	},	
+	//战场结束后
+	onBattleOver	: function( win ){
+		if ( win )
 			this.victory();
-		}else
-			if ( fn )
-				fn.call( scope || this );
+		else
+			this.failed();		
 	},
-	checkFail		: function(fn, scope){
-		FailedN++;
-		if ( FailedN >= FAILEDN ){
-			this.failed();
-		}else
-			if ( fn )
-				fn.call( scope || this );
-	},
-	//TODO 胜利画面
+	
 	victory			: function(){
 		this.showWhole( "胜利！", function(){
-			this.fireEvent( "battleWin" );
 			window.location.reload();
 		}, this );
 	},
 	failed			: function(){
 		this.showWhole( "失败！", function(){
-			this.fireEvent( "battleFail" );
 			window.location.reload();
 		}, this );
 	},
-			
+				
 	//整个战场显示提示信息
 	showWhole		: function( text, fn, scope ){
 		this._showTopLine(  "" , fn, scope );

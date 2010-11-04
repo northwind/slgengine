@@ -11,14 +11,18 @@ var UnitLayer = Layer.extend({
 	overed	 : null,  //滑过的
 	
 	teamIndex	: 0,	//当前哪只队伍在行动
-	round		: 0,    //第几回合
+	
+	victoryN	: 0,
+	failedN		: 0,
+	win			: false,
 	
 	init	: function(){
 		this.addEvents( "click");
 		this.addEvents( { name : "roundStart", type : 2 }, { name : "roundEnd", type : 2 }, 
-		                 { name : "battleStart", type : 2 },{ name : "battleOver", type : 2 } ,
-									{ name : "teamStart", type : 2 }, { name :"teamEnd", type : 2 },
-									{ name : "teamOver", type : 2 }, { name : "enter", type : 2 });
+		                { name : "battleStart", type : 2 },{ name : "battleOver", type : 2 } ,
+						{ name : "teamStart", type : 2 }, { name :"teamEnd", type : 2 },
+						{ name : "teamOver", type : 2 }, { name : "enter", type : 2 },
+						{ name : "battleWin", type : 2 }, { name :"battleFail", type : 2 } );
 									 
 		this._super( arguments[0] );
 		
@@ -41,7 +45,9 @@ var UnitLayer = Layer.extend({
 			 .bindEvent( "roundEnd", this.onRoundEnd, this )
 			 //.bindEvent( "teamStart", this.onTeamStart, this )	//AI自动接手
 			 .bindEvent( "teamEnd", this.onTeamEnd, this )
-			 .bindEvent( "teamOver", this.onTeamOver, this );
+			 .bindEvent( "teamOver", this.onTeamOver, this )
+			 .bindEvent( "battleWin", this.onBattleWin, this )
+			 .bindEvent( "battleFail", this.onBattleFail, this );
 		
 		return this;
 	},
@@ -66,11 +72,11 @@ var UnitLayer = Layer.extend({
 			FRIENDS = t;		
 		//处理team相关的事件 增加回合参数
 		t.on( "teamStart", function( team ){
-			this.fireEvent( "teamStart", team, this.round );
+			this.fireEvent( "teamStart", team, ROUND );
 		}, this ).on( "teamEnd", function( team ){
-			this.fireEvent( "teamEnd", team, this.round );
+			this.fireEvent( "teamEnd", team, ROUND );
 		}, this ).on( "teamOver", function( team ){
-			this.fireEvent( "teamOver", team, this.round );
+			this.fireEvent( "teamOver", team, ROUND );
 		}, this )
 		
 		this.teams.push( t );
@@ -107,15 +113,15 @@ var UnitLayer = Layer.extend({
 	
 	startRound	: function(){
 		//先播放动画再触发事件			
-		this.round++;
-		log( "startRound : " + this.round );
+		ROUND++;
+		log( "startRound : " + ROUND );
 		//第一回合不显示动画
-		if (this.round == 1) {
-			this.fireEvent( "roundStart", this.round );
+		if (ROUND == 1) {
+			this.fireEvent( "roundStart", ROUND );
 		}
 		else {
-			//PANEL._showTopLine("第 " + this.round + " 回合", function(){
-				this.fireEvent( "roundStart", this.round );
+			//PANEL._showTopLine("第 " + ROUND + " 回合", function(){
+				this.fireEvent( "roundStart", ROUND );
 			//}, this);
 		}
 	},
@@ -143,8 +149,9 @@ var UnitLayer = Layer.extend({
 			var tip = team.name + " 阶段";
 			//将回合信息放在第一个执行的队伍后
 			if ( this.teamIndex == 0 )
-				tip += "<br/><small>第" + this.round + "回合</small>";
-				
+				tip += "<br/><small>第" + ROUND + "回合</small>";
+			if ( UNDERCOVER )
+				tip = ROUND;	
 			PANEL._showTopLine( tip, function(){
 				team.start();
 			}, this);
@@ -157,8 +164,8 @@ var UnitLayer = Layer.extend({
 	onTeamEnd	: function(){
 		if ( this.teamIndex++ == this.teams.length - 1 ) {
 			//回合结束
-			log( "roundEnd : " + this.round );
-			this.fireEvent( "roundEnd", this.round );
+			log( "roundEnd : " + ROUND );
+			this.fireEvent( "roundEnd", ROUND );
 		}else{
 			//继续下一个队伍
 			var team = this.getCurrentTeam();
@@ -607,5 +614,35 @@ var UnitLayer = Layer.extend({
 			}
 		}
 		return unit;
-	}
+	},
+	
+	//显示胜利/失败条件
+	showGoal		: function( fn, scope ){
+		PANEL.showWhole( GOAL, fn, scope ); 
+	},
+	checkGoal		: function(fn, scope){
+		this.victoryN++;
+		if ( this.victoryN >= VICTORYN ){
+			this.win = true;
+			this.fireEvent( "battleWin", this );
+		}else
+			if ( fn )
+				fn.call( scope || this );
+	},
+	checkFail		: function(fn, scope){
+		this.failedN++;
+		if ( this.failedN >= FAILEDN ){
+			this.win = false;
+			this.fireEvent( "battleFail", this );
+		}else
+			if ( fn )
+				fn.call( scope || this );
+	},
+	
+	onBattleWin	: function(){
+		this.fireEvent( "battleOver", this.win );
+	},
+	onBattleFail	: function(){
+		this.fireEvent( "battleOver", this.win );
+	}	
 }); 
