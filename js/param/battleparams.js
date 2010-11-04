@@ -105,6 +105,22 @@ ACTIONGROUPS   = [{
 		params  : [ "zhuque", 100, 100 ]
 	}]
 },{
+	desc: "刘备攻击",
+	event:{
+		active : true,
+		type	: 1,
+		id		: "liubei",
+		name   : "preAttack",
+		condition : [{
+			script : "ROUND < 3"
+		}]
+	},
+	actions : [{
+		id			: "liubei",
+		action : "speak",
+		params : [ "这是万民的愤怒！" ]
+	}]	
+},{
 	desc	: "开场白",
 	event	: {
 		active	: true,

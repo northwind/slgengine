@@ -556,10 +556,10 @@ var UnitUI = Observable.extend({
 	//在magic层播放动画
 	gainStuff	: function( stuff, num, fn, scope ){
 		var imgs = [], from = this.unit.cell.dy + 16;
-		for (var i=0; i< 8; i++) {
+		for (var i=0; i< 16; i++) {
 			imgs.push({
 				dx	: this.unit.cell.dx,
-				dy	: from -= 2,
+				dy	: from -= 1,
 				img : stuff.img
 			})
 		}
