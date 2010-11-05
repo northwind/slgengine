@@ -459,22 +459,29 @@ var UnitLayer = Layer.extend({
 			targetX = to.x, targetY = to.y, loops = 0;
 		
 		//直线距离 	
+		
 	    function calcD( tmp ){
 			if ( tmp.d )
 				return tmp.d;
 				
 			var m = targetX - tmp.x , n = targetY - tmp.y;
-	        return tmp.d = Math.sqrt( m *m + n * n );
+	        tmp.d = Math.sqrt( m *m + n * n );
+			//优化 走直线权值偏大 相当于行走路径偏小
+			if ( tmp.parent && tmp.parent.face == tmp.direct( tmp.parent ) )
+				tmp.d -= 0.7;
+				
+			return tmp.d;
 	    } 
 		function insertSon( node, p ){
-			if (node) {
-				var key = node.index, unit = units[key];
-				
-				if (!open[key] && !closed[key] && node && MAP[node.y][node.x] == 0 && (unit ? ( unit.isFriend(faction) ) : true)) {
-					calcD(node);
-					node.parent = p;
-					opened[node.index] = node;
-				}
+			if( !node || node == p ) return;	//抛除父结点 
+			
+			var key = node.index, unit = units[key];
+			
+			if (!open[key] && !closed[key] && node && MAP[node.y][node.x] == 0 && (unit ? ( unit.isFriend(faction) ) : true)) {
+				node.parent = p;
+				calcD(node, p );
+				node.face   = node.direct( p );		//记住子结点相对父结点运动的方向
+				opened[node.index] = node;
 			}
 		}			
 		//获得子节点
@@ -500,7 +507,7 @@ var UnitLayer = Layer.extend({
 			for( var i in opened ){
 				tmpNode = opened[i];
 				var d = calcD( tmpNode );
-				if ( d < minD ){
+				if ( minD > d ){
 					minD = d;
 					node = tmpNode;
 				}	
@@ -514,8 +521,9 @@ var UnitLayer = Layer.extend({
 				opened = {};
 				break;
 			}else{
-				//获得子节点
-				getChildren( node );
+				if ( node )
+					//获得子节点
+					getChildren( node );
 			}
 			
 			//并从OPEN表中删除
@@ -601,9 +609,11 @@ var UnitLayer = Layer.extend({
 				//已存在的不覆盖
 				if ( !this.units[to.index] ) {
 					this.units[to.index] = unit;
+					
+					if ( this.units[from.index] == unit )	//只有是自己的时候才删掉
+						delete this.units[from.index];
 				}
-				//if ( this.units[from.index] == unit )	//只有是自己的时候才删掉
-					delete this.units[from.index];
+				
 			}, this )
 			//点击角色时显示该角色属性
 			.on( "click", PANEL.showUnitAttr, PANEL )

@@ -29,17 +29,14 @@ var AIUnit  = Observable.extend({
 		this.unit.auto = true;
 		this.unit.followMe();
 
-		//this.unit.start( function(){
-			this.enemy = this.scanEnemy();
-			
-			//有敌人并且未锁定时 发动攻击		
-			if ( this.enemy && !this.unit.lock ) {
-				this.fight(this.enemy);
-			}else{
-				this.end();
-			}
-					
-		//}, this );
+		this.enemy = this.scanEnemy();
+		
+		//有敌人并且未锁定时 发动攻击		
+		if ( this.enemy && !this.unit.lock ) {
+			this.fight(this.enemy);
+		}else{
+			this.end();
+		}
 	},
 	
 	end	: function(){
@@ -47,30 +44,40 @@ var AIUnit  = Observable.extend({
 		this.unit.finish();
 	},
 	
-	fight	: function( neighbor ){
-		if ( this.canAttack( neighbor ) ){
-			this.attack( neighbor );
+	fight	: function( enemy ){
+		var attackPoints = this.canAttack( enemy );
+		if ( attackPoints ){
+			this.attack( enemy, attackPoints );
 		}else{
-			this.closeTo( neighbor );
+			this.closeTo( enemy );
 		}
 	},
 	//移动后并攻击敌人
-	attack	: function( enemy ){
-		//在攻击范围内直接攻击
-		if (this.isInRange(enemy.cell)) {
-			this.sword( enemy );
+	attack	: function( enemy, points ){
+		//获得移动距离最小的点
+		var minD = 10000, cell = this.unit.cell, min;
+		for( var index in points ){
+			var d = cell.distance( points[index] );
+			if ( minD > d ){
+				minD = d;
+				min = points[index];
+			}
+		}
+		
+		//没有移动 直接攻击
+		if (min == cell) {
+			this.sword(enemy);
 		}
 		else {
-			var near = this.nearCell(enemy);
 			//显示移动的单元格
 			this.unit.showMoves();
 			setTimeout(bind(function(){
 				this.unit.clearMoves();
 				
-				this.unit.on( "move", function(){
-					this.sword( enemy );
-				}, this, { one:true } );
-				this.unit.moveTo(near );
+				this.unit.on("move", function(){
+					this.sword(enemy);
+				}, this, { 	one: true });
+				this.unit.moveTo( min );
 				
 			}, this), 500);
 		}
@@ -82,10 +89,8 @@ var AIUnit  = Observable.extend({
 		setTimeout(bind(function(){
 			this.unit.clearAttack();
 			
-			this.unit.on("attack", this.end, this, {
-				one: true
-			});
-			this.unit.attack(enemy);
+			this.unit.on("attack", this.end, this, { one: true })
+					 .attack(enemy);
 		}, this), 500);		
 	},
 	
@@ -110,22 +115,25 @@ var AIUnit  = Observable.extend({
 		}
 	},
 	
+	//判断是否可攻击
+	//有返回可供攻击的单元格
+	//没有返回false
 	canAttack	: function( enemy ){
-		var cell = this.nearCell( enemy );
-		if (!cell) 
-			return false;
-		else {
-			if ( enemy.cell.distance(cell) == 1) {
-				//走到最近了
-				return true;
-			}
-			else {
-				return this.isInRange(  enemy.cell );
+		var walks = this.unit.getMoves(), has = false, include = {},  eIndex = enemy.cell.index,
+			range= this.unit.range, rangeType= this.unit.rangeType;
+		//遍历所有移动单元格	
+		for ( var index in walks ){
+			//该单元格可以攻击到 则添加
+			if ( PANEL.unitsLayer.getAttackCells(walks[index], range, rangeType)[ eIndex ] ) {
+				has = true;
+				include[index] = walks[index];
 			}
 		}
+		
+		return has ? include : false;
 	},
 	
-	//找到离敌人最近可移动到的单元格
+	//找到可移动到的 离敌人最近的单元格
 	nearCell	: function( enemy ){
 		var walkCells = this.unit.getMoves(),
 			   min = 10000, near = null, origin = enemy.cell;

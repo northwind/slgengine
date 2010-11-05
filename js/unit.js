@@ -674,7 +674,7 @@ var Unit = Observable.extend({
 						if ( this.auto )
 							callback.call( this );
 						else	
-							this.speak(  "我升级了",  callback, this  );  
+							this.celebrate(  "我升级了",  callback, this  );  
 				   }, this )
 				   .fireEvent( "upgrade", this );
 				   
@@ -728,7 +728,14 @@ var Unit = Observable.extend({
 
 		this.speak( text, fn, scope );	
 	},
-	
+	//举起武器庆贺
+	celebrate	: function( text, fn, scope ){
+		this.lift();
+		this.speak( text, fn, scope );	
+	},	
+	lift		: function( fn, scope ){
+		this.ui.lift( fn, scope );
+	},
 	//停止说话300ms后再触发speak事件
 	stopSpeak : function(){
 		if ( this.speaking ){

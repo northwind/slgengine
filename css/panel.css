@@ -1,9 +1,9 @@
 ._wrap{ margin:0 auto; position:relative; }
 ._panel{	margin:auto;	position:relative;	z-index:1;	overflow:hidden;	-moz-user-select:none;}
-._panel canvas{ 	position : absolute;}
+._panel canvas{ position : absolute; }
 ._panel img, .unselect{	-moz-user-select:none;	border:none;	outline:none;background-repeat:no-repeat;}
 
-._display{ background:#111111; visibility:hidden; height:160px; margin:0 auto;  }
+._display{ background:#111111; visibility:hidden; height:160px; margin:0 auto; overflow:hidden;  }
 ._display ._left{ float:left; width:240px; }
 ._display ._mid{ float:left;  }
 ._ctrl{ float:left; }

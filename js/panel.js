@@ -145,11 +145,19 @@ var Panel = Component.extend({
 	},
 	
 	onResize	: function( e ){
-		WINDOW_HEIGHT = Math.max( $(window).height() - 160 - 23, 250 );
-		WINDOW_WIDTH = Math.min( $(window).width(), 960 );
+		var wTo = Math.min( $(window).width(), 960 ),
+			hTo = Math.max( $(window).height() - 160 - 23, 250 ),
+			wDiff = wTo - WINDOW_WIDTH,
+			hDiff = hTo - WINDOW_HEIGHT;
+			
+		WINDOW_HEIGHT = hTo;
+		WINDOW_WIDTH = wTo;
 		
 		this.ct.width( WINDOW_WIDTH );
 		this.el.css( { width	: WINDOW_WIDTH, height	: WINDOW_HEIGHT	} );
+		this.el.scrollLeft = this.el.scrollLeft - wDiff;
+		this.el.scrollTop  = this.el.scrollTop  - hDiff;
+		
 		this.masklayer.css( { width	: WINDOW_WIDTH, height	: WINDOW_HEIGHT	} );
 		this.display.width( WINDOW_WIDTH );
 	},
