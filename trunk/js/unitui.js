@@ -553,10 +553,29 @@ var UnitUI = Observable.extend({
 		} );			
 	},
 	
+	lift	: function( fn, scope ){
+		var obj = {
+			inter	: SPEED * 2,
+			items	: [ this.imgs.lift[0] ],
+			fn 		: fn, 
+			scope	: scope
+		};
+		
+		this.pushImg( obj );				
+	},
+		
 	//在magic层播放动画
 	gainStuff	: function( stuff, num, fn, scope ){
-		var imgs = [], from = this.unit.cell.dy + 16;
-		for (var i=0; i< 16; i++) {
+		var imgs = [], from = this.unit.cell.dy + 16, last = 16;
+		//人物动画
+		var obj = {
+			inter	: last * 2 - 1,
+			items	: [ this.imgs.lift[0] ]
+		}
+		this.pushImg( obj );			
+		
+		//物品及文字动画
+		for (var i=0; i< last; i++) {
 			imgs.push({
 				dx	: this.unit.cell.dx,
 				dy	: from -= 1,
@@ -577,7 +596,7 @@ var UnitUI = Observable.extend({
 		} );
 		
 		PANEL.playAnimation( a );
-		
+
 		return this;
 	},
 	

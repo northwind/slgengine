@@ -130,7 +130,7 @@ var Figure  = Observable.extend({
 							
 			_self.attacked = [PS.putImgToCanvas( this, 0, CELL_HEIGHT*3, CELL_WIDTH, CELL_HEIGHT )];
 			
-			_self.burst = [PS.putImgToCanvas( this, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
+			_self.lift = [PS.putImgToCanvas( this, 0, CELL_HEIGHT*4, CELL_WIDTH, CELL_HEIGHT )];
 			
 			_self.dright = [PS.putImgToCanvasTurn(  this,  0, CELL_HEIGHT*2, CELL_WIDTH, CELL_HEIGHT ) ];
 			
