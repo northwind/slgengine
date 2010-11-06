@@ -95,14 +95,26 @@ FIGURES = {
 ACTIONGROUPS   = [{
 	desc: "测试",
 	event:{
-		active	: false,
+		active	: true,
 		type	: 3,
 		name	: "battleStart"
 	},	
 	actions	: [{
-		type	: 2,
-		action  : "playAnimation",
-		params  : [ "zhuque", 100, 100 ]
+		id			: "footb",
+		action  : "speakTo",
+		params  : [ "zhangbao", "up" ]
+	},{
+		id			: "footb",
+		action  : "speakTo",
+		params  : [ "foota", "right" ]
+	},{
+		id			: "footb",
+		action  : "speakTo",
+		params  : [ "thirdDie", "right" ]
+	},{
+		id			: "footb",
+		action  : "speakTo",
+		params  : [ "first", "left" ]
 	}]
 },
 			// --------------------------------------刘备攻击------------------------------------------------
@@ -163,15 +175,15 @@ ACTIONGROUPS   = [{
 		params : [ 0, 1000 ]
 	},{
 		id		: "first",
-		action : "speak",
-		params : [ "去死吧" ]
+		action : "speakTo",
+		params : [ "firstDie", "去死吧" ]
 	},{
 		id		: "first",
 		action : "attack",
 		params : [ "firstDie" ]
 	},{
 		id		: "second",
-		action : "speak",
+		action : "excite",
 		params : [ "啊" ]
 	},{
 		id		: "second",
@@ -309,22 +321,16 @@ ACTIONGROUPS   = [{
 		params : ["看起来好像赶上了。不过在这种寡不敌众的情况下，此地的官军好像也陷入了苦战。"]
 	},{
 		id	: "guanyu",
-		action : "turnRight"
-	},{
-		id	: "guanyu",
-		action : "speak",
-		params : ["咱们应该里外夹攻，不过我军兵力还是少了些。"]
+		action : "speakTo",
+		params : [ "liubei", "咱们应该里外夹攻，不过我军兵力还是少了些。"]
 	},{
 		id	: "zhangfei",
-		action : "turnRight"
-	},{
-		id	: "zhangfei",
-		action : "speak",
-		params : ["二哥就会穷担心，我一个人就可以应付他们了。"]
+		action : "speakTo",
+		params : [ "liubei", "二哥就会穷担心，我一个人就可以应付他们了。"]
 	},{
 		id	: "liubei",
-		action : "speak",
-		params : ["咱们可不能丢下官军不管，从背后抄过去直捣鹿岩吧。<br/>冲啊！"]
+		action : "speakTo",
+		params : [ "zhangfei", "咱们可不能丢下官军不管，从背后抄过去直捣鹿岩吧。<br/>冲啊！"]
 	},{
 		id	: "liubei",
 		action : "go",
@@ -516,6 +522,10 @@ ACTIONGROUPS   = [{
 						   { name : "fire", x : 6, y : 5 }, { name : "fire", x : 6, y : 6 } , { name : "fire", x : 6, y : 7 }, { name : "fire", x : 6, y : 8 } , { name : "fire", x : 6, y : 9 },
 						   { name : "fire", x : 5, y : 6 }, { name : "fire", x : 5, y : 7 } , { name : "fire", x : 5, y : 8 }]  ] 
 	},{
+		type	: 2,
+		action		: "sleep",
+		params : [ 500 ]
+	},{
 		id		: "fluster",
 		action : "followMe"
 	},{
@@ -544,9 +554,6 @@ ACTIONGROUPS   = [{
 		id		: "fluster",
 		action : "speak",
 		params : [ "敌人从后面包抄过来了！" ]
-	},{
-		id		: "zhangliang",
-		action : "followMe"
 	},{
 		id	: "zhangliang",
 		action : "turnUp"
@@ -583,10 +590,6 @@ ACTIONGROUPS   = [{
 		group	: "ENEMY",	
 		action : "addBuff",
 		params : [ "confuse" ]
-	},{
-		type	: 2,
-		action : "moveWinTo",
-		params : [ 100, 0 ]
 	},{
 		id		: "guanyu",
 		action : "speak",
@@ -644,61 +647,52 @@ ACTIONGROUPS   = [{
 		id		: "caocao",
 		action : "speak",
 		params : [  "听说这边的官军正在苦战，这火势是……？！"  ]
-	},{		
-		id		: "qibing2",
-		action : "turnRight"
 	}, {		
 		id		: "qibing2",
-		action : "speak",
-		params : [  "队长，好像是那边的人放的火，不过不像是官军……"  ]
-	},{		
-		id		: "caocao",
-		action : "turnRight"
+		action : "speakTo",
+		params : [  "caocao", "队长，好像是那边的人放的火，不过不像是官军……"  ]
 	},{		
 		id		: "caocao",
 		action : "speak",
 		params : [  "恩，好像是义军。"  ]
 	},{		
 		id		: "caocao",
-		action : "turnUp"
-	},{		
-		id		: "caocao",
-		action : "speak",
-		params : [  "你们先去鹿岩，我到义军那边看看！"  ]
+		action : "speakTo",
+		params : [  "qibing2", "你们先去鹿岩，我到义军那边看看！"  ]
 	}, {		
 		id		: "qibing2",
-		action : "speak",
-		params : [  "是"  ]
+		action : "speakTo",
+		params : [  "caocao", "是"  ]
 	}, {		
 		id		: "qibing1",
-		action : "speak",
-		params : [  "是"  ]
+		action : "speakTo",
+		params : [ "caocao",  "是"  ]
 	}, {		
 		id		: "qibing2",
 		action : "go",
 		params : [  { x : 9,  y : 7 }  ]
-	}, {		
+	},  {		
+		id		: "qibing2",
+		action : "turnDown"
+	},{		
 		id		: "qibing1",
 		action : "go",
 		params : [  { x : 10,  y : 7 }  ]
+	},{		
+		id		: "qibing1",
+		action : "turnDown"
 	}, {		
 		id		: "caocao",
 		action : "go",
 		params : [  { x : 11,  y : 4 }  ]
 	}, {		
 		id		: "caocao",
-		action : "turnDown"
-	}, {		
-		id		: "caocao",
-		action : "speak",
-		params : [ "我是官军骑兵队长，姓曹名操字孟德。奉朝廷之命讨伐黄巾军，请问阁下尊姓大名。"  ]
+		action : "speakTo",
+		params : [ "liubei", "我是官军骑兵队长，姓曹名操字孟德。奉朝廷之命讨伐黄巾军，请问阁下尊姓大名。"  ]
 	}, {		
 		id		: "liubei",
-		action : "turnUp"
-	}, {		
-		id		: "liubei",
-		action : "speak",
-		params : [ "我是刘备刘玄德，虽然只是农民出身，但看到当今天下大乱，为了拯救百姓，才率领义兵讨伐的。"  ]
+		action : "speakTo",
+		params : [ "caocao", "我是刘备刘玄德，虽然只是农民出身，但看到当今天下大乱，为了拯救百姓，才率领义兵讨伐的。"  ]
 	}, {		
 		id		: "liubei",
 		action : "speak",
@@ -716,9 +710,15 @@ ACTIONGROUPS   = [{
 		action : "go",
 		params : [ { x : 10, y : 6 }  ]
 	},{		
+		id		: "caocao",
+		action : "turnDown"
+	},{		
 		id		: "liubei",
 		action : "go",
 		params : [ { x : 9, y : 6 }  ]
+	},{		
+		id		: "liubei",
+		action : "turnDown"
 	},{		
 		type	: 2,
 		action : "showGoal"
@@ -741,15 +741,12 @@ ACTIONGROUPS   = [{
 		action : "appear"
 	},	{		
 		id			: "xuzijiang",
-		action : "speak",
-		params : [ "终于要开战了，曹大人。" ]
+		action : "speakTo",
+		params : [ "caocao", "终于要开战了，曹大人。" ]
 	},{		
 		id			: "caocao",
-		action : "turnUp"
-	},{		
-		id			: "caocao",
-		action : "speak",
-		params	: [ "哦？你是刚才那位给我看相的老人家，为何会到战场来？" ]
+		action : "speakTo",
+		params	: [ "xuzijiang", "哦？你是刚才那位给我看相的老人家，为何会到战场来？" ]
 	},{		
 		id			: "xuzijiang",
 		action : "speak",
@@ -803,6 +800,8 @@ ACTIONGROUPS   = [{
 			index : 2,
 			symbol : "==",
 			compare : "12"
+		},{
+			script : " arguments[0].isFriend( FACTION ) "
 		}]		
 	},
 	actions : [{
@@ -825,6 +824,8 @@ ACTIONGROUPS   = [{
 			index : 2,
 			symbol : "==",
 			compare : "13"
+		},{
+			script : " arguments[0].isFriend( FACTION ) "
 		}]		
 	},
 	actions : [{
@@ -847,6 +848,8 @@ ACTIONGROUPS   = [{
 			index : 2,
 			symbol : "==",
 			compare : "11"
+		},{
+			script : " arguments[0].isFriend( FACTION ) "
 		}]		
 	},
 	actions : [{

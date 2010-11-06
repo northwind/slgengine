@@ -20,13 +20,13 @@ UNITS	= [{
 
 //友军
 {
-	id: "liubei", gx :  14,  gy : 1, range : 2, rangeType : 2,  burst	:  35,  hpMax : 110, hp : 110, symbol	: "liubei",
+	id: "liubei", gx :  14,  gy : 1, range : 1, rangeType : 2,  burst	:  35,  hpMax : 110, hp : 110, symbol	: "liubei",
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "刘备", level : 1, visiable : false	
 },{
-	id: "guanyu", gx :  13,  gy : 2, range : 2, rangeType : 2,  burst	:  35, hpMax : 110, hp : 110, symbol	: "guanyu",
+	id: "guanyu", gx :  13,  gy : 2, range : 1, rangeType : 2,  burst	:  35, hpMax : 110, hp : 110, symbol	: "guanyu",
 	faction : 1, team : 200, mpMax : 10,  attackFreqMax : 2,  mp : 10, name : "关羽", level : 1, visiable : false	
 },{
-	id: "zhangfei", gx :  13,  gy : 1, range : 2, rangeType : 2,  burst	:  35, hpMax : 110, hp : 110, symbol	: "zhangfei",
+	id: "zhangfei", gx :  13,  gy : 1, range : 1, rangeType : 2,  burst	:  35, hpMax : 110, hp : 110, symbol	: "zhangfei",
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "张飞", level : 1, visiable : false	
 },
 {
@@ -34,7 +34,7 @@ UNITS	= [{
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓箭兵", level : 1, face : "images/face/183-1.png",
 	visiable : true	 	
 },{
-	id : "thirdDie", direct:"up", gx :  12,  gy : 17, range : 2, rangeType : 2, hpMax : 110, hp : 20, symbol	: "archerYellow",
+	id : "thirdDie", direct:"up", gx :  12,  gy : 17, range : 2, rangeType : 3, hpMax : 110, hp : 20, symbol	: "archerYellow",
 	 faction : 1, team : 200, mpMax : 10, mp : 10, name : "弓兵", level : 1, face : "images/face/184-1.png"	, visiable : true	
 },{
 	id : "foota", direct:"up", gx :  10,  gy : 17, revenge	:  35,  burst	:  15,  range : 1, rangeType : 1, hpMax : 110, hp : 110, symbol	: "footmanYellow", 
@@ -49,10 +49,10 @@ UNITS	= [{
 
 //敌军
 {
-	 id : "zhangbao", gx :  9,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
+	 id : "zhangbao", gx :  9,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1,
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张宝", level : 5, face : "images/face/154-1.png"	
 },{
-	 id : "zhangliang", gx :  10,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue",
+	 id : "zhangliang", gx :  10,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1,
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张梁", level : 5, face : "images/face/155-1.png"	
 },{
 	gx :  5,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",

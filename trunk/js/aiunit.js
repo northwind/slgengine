@@ -121,6 +121,8 @@ var AIUnit  = Observable.extend({
 	canAttack	: function( enemy ){
 		var walks = this.unit.getMoves(), has = false, include = {},  eIndex = enemy.cell.index,
 			range= this.unit.range, rangeType= this.unit.rangeType;
+		//添加自身所处单元格
+		walks[ this.unit.cell.index ] = 	this.unit.cell;
 		//遍历所有移动单元格	
 		for ( var index in walks ){
 			//该单元格可以攻击到 则添加

@@ -17,31 +17,40 @@ var Cell = function( config ){
 Cell.prototype = {
 	parent 	: null,	//用于寻路
 	
-	/*	方位
+	/*	方位  相对于自身
 	 * 			4		3		2
 	 * 			1		0		-1
 	 * 			-2		-3		-4
 	*/		
 	direct	: function( to ){
-		return (to.y > this.y ? 1 : ( to.y == this.y ? 0 : -1 )) * 3 + 
-					(to.x > this.x ? 1 : ( to.x == this.x ? 0 : -1 ));
+		var diffX = to.x - this.x,
+				diffY = this.y - to.y;
+		if ( diffX == 0 && diffY == 0 ) return 0;
+				
+		var d = Math.pow( diffX*diffX + diffY * diffY, 0.5 ),
+			   a = Math.acos( diffY/ d );
+		
+		var r = ( a > Cell.a1 && a <= Cell.a2 ) ? (  diffX > 0 ? -1 : 1 ) : ( diffY > 0 ? 3 : -3 );
+		return r;	
+		//return (to.y > this.y ? 1 : ( to.y == this.y ? 0 : -1 )) * 3 + 
+		//			(to.x > this.x ? 1 : ( to.x == this.x ? 0 : -1 ));
 	},
 
 	directT : function( to ){
 		var n = this.direct( to );
 		
 		switch( n ) {
-			case 3: //下
+			case -3: //下
 				return "down";
-			case -3://上
+			case 3://上
 				return "up";
-			case 2://左上
-			case -1://左下	
-			case -4://左
+			case -2://左上
+			case 1://左下	
+			case 4://左
 				return "left";
-			case 4://右上
-			case -2://右下
-			case 1://右
+			case -4://右上
+			case 2://右下
+			case -1://右
 				return "right";
 			default:
 				return "down";	
@@ -64,6 +73,8 @@ Cell.prototype = {
 		return Math.abs( this.x - cell.x ) +  Math.abs( this.y - cell.y );
 	}			
 };
+Cell.a1 = Math.PI / 4;
+Cell.a2 = 3 * Math.PI / 4;
 /**
  * 获得index值
 */
