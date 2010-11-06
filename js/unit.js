@@ -71,7 +71,7 @@ var Unit = Observable.extend({
 	team	: 1,		//所处队伍 同一阵营下同一队伍为我军，不同队伍为友军
 	
 	standby	: false,	//待机
-	
+	excited	: false,
 	//buffs	: [],	//增益buff
 	//magics	: {}, //会的魔法
 	
@@ -674,7 +674,7 @@ var Unit = Observable.extend({
 						if ( this.auto )
 							callback.call( this );
 						else	
-							this.celebrate(  "我升级了",  callback, this  );  
+							this.excite(  "我升级了",  callback, this  );  
 				   }, this )
 				   .fireEvent( "upgrade", this );
 				   
@@ -705,7 +705,9 @@ var Unit = Observable.extend({
 	
 	//一次只能说一句话
 	speak	: function( text, fn, scope ){
-		//PANEL.moveToCell( this.cell );	//镜头对着说话的角色
+		if ( !PANEL.isInside( this.cell ) )
+			PANEL.moveToCell( this.cell );	//镜头对着说话的角色
+			
 		this.speaking = true;
 		this.ui.speak();
 		
@@ -721,17 +723,26 @@ var Unit = Observable.extend({
 		if ( !( unit instanceof Unit ) )
 			unit = PANEL.getUnitById( unit ); 
 		
-		var d = this.cell.directT( unit.cell ).replace( /\S/, function( a ){ return a.toUpperCase() } );
-		try {
-			eval( "this.ui.turn" + d + "()"  );
-		} catch (e) {}
-
-		this.speak( text, fn, scope );	
+		var d =  this.cell.directT( unit.cell );
+		if ( d != this.ui.direct ){
+			//同方向时没必要转身
+			d = d.replace( /\S/, function( a ){ return a.toUpperCase() } );
+			var fnName = "turn" + d;
+			//转身后再执行
+			this.ui[ fnName ]( function(){
+				this.speak( text, fn, scope );	
+			}, this );			
+		} else	  
+			this.speak( text, fn, scope );	
 	},
 	//举起武器庆贺
-	celebrate	: function( text, fn, scope ){
-		this.lift();
-		this.speak( text, fn, scope );	
+	excite	: function( text, fn, scope ){
+		this.excited = true;
+		this.speak( text, function(){
+			this.excited = false;
+			if ( fn )
+				fn.call( scope|| this, this );
+		}, this );	
 	},	
 	lift		: function( fn, scope ){
 		this.ui.lift( fn, scope );
@@ -759,6 +770,9 @@ var Unit = Observable.extend({
 	
 	//增加角色状态
 	addBuff	: function( name, fn, scope ){
+		if ( !PANEL.isInside( this.cell ) )
+			PANEL.moveToCell( this.cell );	//镜头对着说话的角色
+					
 		var config = $.extend( BUFFS[ name ],  { id : name } );
 		var buff = new Buff( config );
 		

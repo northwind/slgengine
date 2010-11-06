@@ -231,10 +231,12 @@ var Panel = Component.extend({
 		//开始绘制战场
 		this.suspend = false;		
 		//报幕
-		//this._showTopLine( CHAPTER, function(){
-			log("start" );
+		if ( UNDERCOVER )
 			this.unitsLayer.start();
-		//}, this );
+		else	
+			this._showTopLine( CHAPTER, function(){
+				this.unitsLayer.start();
+			}, this );
 	},
 	
 	//战场中间显示提示信息
@@ -323,7 +325,7 @@ var Panel = Component.extend({
 		
 		var sel = ct.find("ul");
 		for (var i=0; i<options.length; i++) {
-			$("<li>").attr( "value", options[i].v ).html( i + ". " + options[i].t ).appendTo( sel );
+			$("<li>").attr( "value", options[i].v ).html( (i + 1) + ". " + options[i].t ).appendTo( sel );
 		}
 		sel.children("li").click( function(){
 			if ( clicked )
@@ -388,6 +390,17 @@ var Panel = Component.extend({
 			dx = Math.max(cell.dx - cx, 0), dy = Math.max( cell.dy - cy, 0 );
 		
 		this.moveWinTo( dx, dy, fn, scope );
+	},
+	//判断单元格是否在窗口内
+	isInside		: function( cell ){
+		var dx = cell.dx, dy = cell.dy;
+		
+		if ( dx < (this.scrollLeft + CELL_WIDTH) || dx > this.scrollLeft + WINDOW_WIDTH + CELL_WIDTH )
+			return false;
+		if ( dy < (this.scrollTop + CELL_HEIGHT) || dy > this.scrollTop + WINDOW_HEIGHT + CELL_HEIGHT )
+			return false;
+		
+		return true;
 	},
 	
 	//设置背景图片

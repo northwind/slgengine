@@ -146,10 +146,11 @@ var UnitLayer = Layer.extend({
 			this.onTeamEnd();
 		}else{
 			log( "startTeam : " + team.name );
-			var tip = team.name + " 阶段";
+			var tip = team.name + "阶段";
 			//将回合信息放在第一个执行的队伍后
 			if ( this.teamIndex == 0 )
-				tip += "<br/><small>第" + ROUND + "回合</small>";
+				tip += "<small>第" + ROUND + "回合</small>";
+			
 			if ( UNDERCOVER )
 				tip = ROUND;	
 			PANEL._showTopLine( tip, function(){
@@ -445,7 +446,7 @@ var UnitLayer = Layer.extend({
 		}
 		//剔除掉友军所占据的单元格
 		for( var key in closed ){
-			if ( units[ key ] )
+			if ( units[ key ] && units[ key ] != walker  )
 				delete closed[ key ];
 		}
 		
@@ -456,10 +457,9 @@ var UnitLayer = Layer.extend({
 	findWay			: function( character, from, to ){
 		var ret =[], opened = {}, closed = {}, units = this.units, 
 			node = null, minD, tmpNode, faction = character.faction,
-			targetX = to.x, targetY = to.y, loops = 0;
+			targetX = to.x, targetY = to.y, loops = 0, rate = 20, weight ;
 		
 		//直线距离 	
-		
 	    function calcD( tmp ){
 			if ( tmp.d )
 				return tmp.d;
@@ -467,8 +467,8 @@ var UnitLayer = Layer.extend({
 			var m = targetX - tmp.x , n = targetY - tmp.y;
 	        tmp.d = Math.sqrt( m *m + n * n );
 			//优化 走直线权值偏大 相当于行走路径偏小
-			if ( tmp.parent && tmp.parent.face == tmp.direct( tmp.parent ) )
-				tmp.d -= 0.7;
+			if ( tmp.parent && rate && tmp.parent.face == tmp.direct( tmp.parent ) )
+				tmp.d -= weight;
 				
 			return tmp.d;
 	    } 
@@ -486,6 +486,7 @@ var UnitLayer = Layer.extend({
 		}			
 		//获得子节点
 		function getChildren( node ){
+			weight = node.d / rate;			//动态更改权值
 			//up
 			insertSon( node.up(), node );
 			//down
@@ -499,6 +500,7 @@ var UnitLayer = Layer.extend({
 		//删除原指针
 		delete from.parent;
 		calcD( from );
+		weight = from.d / rate;
 		opened[ from.index ] = from;
 				
 		while( !_isEmpty( opened ) && loops++ < 100 ){
@@ -604,14 +606,20 @@ var UnitLayer = Layer.extend({
 				//角色移动时及时更新管理器
 				//窗口自动跟随
 				if ( unit.auto ){
-					PANEL.moveToCell( to );
+					if ( !PANEL.isInside( to ) )
+						PANEL.moveToCell( to );
 				}
+				//TODO 优化存储
 				//已存在的不覆盖
 				if ( !this.units[to.index] ) {
 					this.units[to.index] = unit;
 					
-					if ( this.units[from.index] == unit )	//只有是自己的时候才删掉
-						delete this.units[from.index];
+					delete this.units[ unit.tempIndex || from.index];
+					delete unit[ "tempIndex" ];
+				}else{
+					//记录暂时所处的位置 待移动后再删除
+					if ( !unit.tempIndex )
+						unit.tempIndex = from.index;
 				}
 				
 			}, this )

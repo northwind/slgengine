@@ -50,19 +50,12 @@ var CellLayer = Layer.extend({
 	
 	onPaint					: function(){
 		//画格子
-		if ( this.lines || DEBUG ){
+		if ( (this.lines || DEBUG) && this.x > -1 && this.y > -1 ){
 			ctx.save();
 			
 			ctx.fillStyle  = "rgba(255,255,255, 1)";
 			ctx.font = "14px";
 
-/*
-			for (var i=0; i<CELL_XNUM; i++) {
-				for (var j=0; j<CELL_YNUM; j++) {
-					ctx.strokeRect( i *CELL_WIDTH , j* CELL_HEIGHT, CELL_WIDTH , CELL_HEIGHT );
-				}
-			}
-*/
 			ctx.translate( Math.max(0,PANEL.scrollLeft), Math.max(0,PANEL.scrollTop) );
 			ctx.fillText( "(" + this.x + "," + this.y + ")" , 5, 15 );
 			ctx.restore();				

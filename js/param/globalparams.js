@@ -156,7 +156,7 @@ GOODS = {
 				src	   : "images/magic/fire.png",
 				w		: 48,
 				h		: 48,
-				inter   : 3
+				inter   : 5
 			},
 			redStar	: {
 				src	   : "images/magic/35-1.png",

@@ -115,6 +115,10 @@ var UnitUI = Observable.extend({
 					}
 			}else{
 				//执行脚本时，锁定图像
+				if (unit.standby) {
+						//待机
+						this.img = this.imgs.gray(this.direct, this.imgs[this.direct][0]);
+				} else 
 				if (!unit.moving && unit.debility) {
 					//虚弱时
 					this.img = this.imgs.fall[ 0 ];
@@ -401,7 +405,7 @@ var UnitUI = Observable.extend({
 	
 	standby	: function( fn , scope ){
 		var obj = {
-			inter	: 10,
+			inter	: 5,
 			items	: [ this.imgs.gray( this.direct, this.imgs[ this.direct ][0] ) ],
 			fn 		: fn, 
 			scope	: scope
@@ -412,7 +416,12 @@ var UnitUI = Observable.extend({
 
 	speak	: function( fn , scope ){
 		var i=0, items = [], deeps = [ 20,30,40,50,60,70,80,90,100,100,90,80,70,60,50,40,30 ];
-		var status = this.unit.debility ? "fall" : this.direct;
+		var status = this.direct;
+		if ( this.unit.excited )
+			status = "lift";
+		else if ( this.unit.debility  )	
+			status = "fall";
+		
 		for (var i=0; i<deeps.length; i++) {
 			items.push( this.imgs.highlight( status + deeps[i], this.imgs[ status ][0], deeps[i] ) )
 		}
@@ -433,7 +442,7 @@ var UnitUI = Observable.extend({
 	fall		: function( fn, scope ){
 		var obj = {
 			inter	: SPEED,
-			items	: [ this.imgs.fall[1], this.imgs.fall[0], this.imgs.fall[1], this.imgs.fall[0],  this.imgs.fall[1], this.imgs.fall[0] ],
+			items	: [ this.imgs.fall[1], this.imgs.fall[0], this.imgs.fall[1], this.imgs.fall[0],  this.imgs.fall[1] ],
 			fn 		: fn, 
 			scope	: scope
 		}
@@ -442,11 +451,11 @@ var UnitUI = Observable.extend({
 	},
 	
 	turnLeft	: function( fn, scope ){
+		this.direct = "left";
 		var obj = {
 			inter	: SPEED ,
 			items	: [ this.imgs.left[0] ],
 			fn 		: fn, 
-			direct	: "left",
 			scope	: scope
 		};
 		
@@ -454,11 +463,11 @@ var UnitUI = Observable.extend({
 	},		
 	
 	turnRight	: function( fn, scope ){
+		this.direct = "right";
 		var obj = {
 			inter	: SPEED ,
 			items	: [ this.imgs.right[0] ],
 			fn 		: fn, 
-			direct	: "right",
 			scope	: scope
 		};
 		
@@ -466,11 +475,11 @@ var UnitUI = Observable.extend({
 	},
 	
 	turnUp	: function( fn, scope ){
+		this.direct = "up";
 		var obj = {
 			inter	: SPEED ,
 			items	: [ this.imgs.up[0] ],
 			fn 		: fn, 
-			direct	: "up",
 			scope	: scope
 		};
 		
@@ -478,11 +487,11 @@ var UnitUI = Observable.extend({
 	},	
 	
 	turnDown	: function( fn, scope ){
+		this.direct = "down";
 		var obj = {
 			inter	: SPEED,
 			items	: [ this.imgs.down[0] ],
 			fn 		: fn, 
-			direct	: "down",
 			scope	: scope
 		};
 		
@@ -499,9 +508,11 @@ var UnitUI = Observable.extend({
 		return ret.reverse();
 	},			
 	disappear	: function( fn, scope ){
+		var items = this._fillDisappear( 14 );
+		items.push( null );
 		var obj = {
 			inter	: 1,
-			items	: this._fillDisappear( 14 ),
+			items	: items,
 			fn 		: fn, 
 			scope	: scope
 		};
@@ -569,8 +580,8 @@ var UnitUI = Observable.extend({
 		var imgs = [], from = this.unit.cell.dy + 16, last = 16;
 		//人物动画
 		var obj = {
-			inter	: last * 2 - 1,
-			items	: [ this.imgs.lift[0] ]
+			inter	: 4,
+			items	: [ this.imgs.lift[0], this.imgs.lift[0], this.imgs.lift[0], this.imgs.lift[0] ]
 		}
 		this.pushImg( obj );			
 		
