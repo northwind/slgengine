@@ -1,0 +1,87 @@
+<!DOCTYPE>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>PS</title>
+
+		<script type="text/javascript" src="../lib/jquery/jquery-1.4.2.min.js" charset="utf-8"></script>
+		
+	</head>
+	<body>
+		<div style="height:10px;width:100%"></div>
+		<div id="container" style="background:gray;" >
+			<canvas id="canvas" width="800" height="600" >
+				
+			</canvas>
+		</div>
+		<div style="height:40px;width:100%"></div>
+	</body>
+	<script type="text/javascript" src="../js/ps.js" charset="utf-8"></script>				
+	<script>
+	//载入image
+function	_loadImg( src, fn ){
+	var img = new Image();
+	img.onload = fn;
+	img.src = src;
+}
+		
+		$( function(){
+			var ctx = $("#canvas")[0].getContext("2d");
+
+    function getMatrix(radian, x, y) {
+        var Cos = Math.cos(radian), Sin = Math.sin(radian);
+        return {
+            M11: Cos * x, M12:-Sin * y,
+            M21: Sin * x, M22: Cos * y
+        };
+    }
+				
+			//_loadImg( "7.jpg", function(){
+			_loadImg( "images/BTNSteelMelee.jpg", function(){
+				
+				//ctx.translate( this.width, 0 );
+				//var d = getMatrix(  Math.PI,  1, -1 );
+				//ctx.transform( d.M11,  d.M12,  d.M21,  d.M22, 0, 0 );
+			
+				//ctx.drawImage( this, 0, 0  );
+				//var img = ctx.getImageData( 0,0,  this.width, this.height);
+				
+				
+				//ctx.clearRect( 0,0, this.width, this.height );
+				
+				
+				//img = PS.gray( ctx, img );
+				//img = PS.createImageDataTurn( ctx, img,0, this.width, this.height );
+				//img = PS.createImageData( ctx, img,0, this.width, this.height );
+				//ctx.putImageData( img, 0,0 );
+				//img = PS.setColorG( ctx, img, 50 );
+				//img = PS.setColorB( ctx, img, 170 );
+				//img = PS.removeColor( ctx, img, 247, 0, 255 );
+				//img = PS.highlight( ctx, img, 150 );
+				//ctx.putImageData( img, 0, this.height, 0, 0, this.width, this.height );
+				//ctx.putImageData( img, this.width, 0, 0, 0, this.width, this.height );
+				
+				/*
+var img = PS.getCanImageTurn( this ) ;
+				ctx.clearRect( 0,0, this.width, this.height );
+				ctx.drawImage( img, 0, 0  );
+*/
+				//ctx.drawImage( this, 0, 0  );
+				//var data = ctx.getImageData( 0,0,  this.width, this.height);
+				//ctx.clearRect( 0,0, this.width, this.height );
+				//data.length = this.width * this.height * 4;
+				//var cut = PS.cutImageData( data, this.width * this.height / 2  );
+				//alert( cut.length );
+				//delete cut.length;
+				//ctx.putImageData( cut );
+				
+				ctx.drawImage( this, 0, 0 , this.width, this.height /2 , 0, 0 , this.width, this.height /2 );
+			} );	
+			
+			
+		} );
+		
+		
+	</script>
+
+</html>

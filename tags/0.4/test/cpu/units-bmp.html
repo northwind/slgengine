@@ -1,0 +1,61 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<meta charset="utf-8"> 
+	<title>Units</title> 
+	<style>
+		canvas{ position:absolute; }
+		p{ position:absolute; bottom:0px; }
+	</style>
+	<script src="../../lib/jquery/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script> 
+	<script> 
+		$( function(){
+			
+			var img = new Image();
+			img.src = "footman.png";
+			
+			var w = h = 15;
+			var n = w * h; //100			
+			var inter = 20;
+			
+			var ct = $("#ct");
+			var ctx = $("<canvas>").attr( {
+						width	: h * w,
+						height	: w * h
+					} ).css( "zIndex", 1 ).appendTo( ct )[ 0 ].getContext("2d");
+			
+			setInterval( function(){
+				
+				for (var i=0; i< n; i++) {
+					var x = (i % w) * w, y = parseInt(i/ w) * h;
+					
+					//ctx.drawImage( img, x, y, w, h );
+					ctx.drawImage( img, 0, 0, w, h, x, y, w, h );
+				}
+				
+				
+				
+			}, inter );
+			
+			
+			
+			
+		} );
+		
+
+		
+		
+			
+	</script> 
+</head> 
+<body id="canvasdemo"> 
+	<div id="ct">
+		
+	</div>
+	<p>
+		n = 225, i =20, cpu = 28%
+		图片的格式对CPU影响较大，使用BMP变得很小
+	</p>	
+</body> 
+<script></script>
+</html>

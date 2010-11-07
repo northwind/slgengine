@@ -1,0 +1,36 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<meta charset="utf-8"> 
+	<title>Test zIndex</title> 
+	<style>
+		body{ margin:0; padding:0; }
+		body{ width:100%; height:800px; }
+		canvas{ position:absolute; width:100%; height:100%; } 
+	</style>
+	<script src="../lib/jquery/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script> 
+</head> 
+<body> 
+	<canvas id="canvas1" style="zIndex:100; width:980px; height:800px; background:gray; " ></canvas>
+	<canvas id="canvas2" style="zIndex:200;  width:600px; height:400px; alpha:0.5; "></canvas>  
+</body> 
+<script>
+		var c1 = document.getElementById("canvas1").getContext('2d');
+		var img1 = new Image();
+		img1.onload = function(){
+			//c1.drawImage( img1, 0, 0, img1.width,  img1.height );
+			c1.drawImage( img1, 0, 0, 300, 300 );
+			c1.save();
+		};
+		img1.src = "7.jpg";
+		
+		var c2 = document.getElementById("canvas2").getContext('2d');
+		var img2 = new Image();
+		img2.onload = function(){
+			c2.drawImage( img2, 0, 0, img2.width, img2.height );	
+			c2.save();
+		}
+		img2.src = "8.jpg";
+				
+</script>
+</html>

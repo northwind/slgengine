@@ -1,0 +1,65 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<meta charset="utf-8"> 
+	<title>join</title> 
+	<style>
+		canvas{ position:absolute;}
+		p{ position:absolute; bottom:0px; }
+	</style>
+	<script src="../../lib/jquery/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script> 
+	<script> 
+		$( function(){
+			
+			var img = new Image();
+			img.onload = function(){
+			
+				var w = h = 480;
+				var n = w * h; //100			
+				var inter = 200;
+				var m = 1500;
+				
+				var ct = $("#ct");
+				var ctx = $("<canvas>").attr({
+					width: m,
+					height: m
+				}).css("zIndex", 1).appendTo(ct)[0].getContext("2d");
+				
+				ctx.drawImage(img, 0, 0, m, m);
+				var data = ctx.getImageData(0, 0, m, m);
+				
+				setInterval(function(){
+				
+					for (var j = 0; j < h; j++) {
+						for (var i = 0; i < w; i++) {
+							var r = 233, g = 233, b = 233, a = 0;
+							
+							r++;
+							g++;
+							b++;
+							a += 0.2;
+						}
+					}
+					
+					ctx.putImageData( data, 0, 0, m, m );
+					
+				}, inter);
+			}
+			
+			img.src = "large.png";
+
+		} );
+		
+			
+	</script> 
+</head> 
+<body id="canvasdemo"> 
+	<div id="ct">
+		
+	</div>
+	<p>
+		模拟200毫秒刷新 100个 48*48方块 CPU 50+%
+	</p>	
+</body> 
+<script></script>
+</html>
