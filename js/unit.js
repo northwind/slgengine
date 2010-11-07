@@ -226,7 +226,12 @@ var Unit = Observable.extend({
 		PANEL.moveToCell( this.cell, fn, scope );
 		return this;
 	},	
-			
+	//如果角色不在战场内，则显示改单位
+	catchMe	: function(){
+		if ( !PANEL.isInside( this.cell ) )
+			PANEL.moveToCell( this.cell );	//镜头对着说话的角色
+	},
+				
 	canMove	: function( cell ){
 		return !this.moving && !this.lock && this.moves && this.moves[ cell.index ];
 	},
@@ -705,8 +710,7 @@ var Unit = Observable.extend({
 	
 	//一次只能说一句话
 	speak	: function( text, fn, scope ){
-		if ( !PANEL.isInside( this.cell ) )
-			PANEL.moveToCell( this.cell );	//镜头对着说话的角色
+		this.catchMe();
 			
 		this.speaking = true;
 		this.ui.speak();
@@ -737,6 +741,7 @@ var Unit = Observable.extend({
 	},
 	//举起武器庆贺
 	excite	: function( text, fn, scope ){
+		this.catchMe();
 		this.excited = true;
 		this.speak( text, function(){
 			this.excited = false;
@@ -745,12 +750,14 @@ var Unit = Observable.extend({
 		}, this );	
 	},	
 	lift		: function( fn, scope ){
+		this.catchMe();
 		this.ui.lift( fn, scope );
 	},
 	//停止说话300ms后再触发speak事件
 	stopSpeak : function(){
 		if ( this.speaking ){
-			this.ui.stopAnimation();
+			//this.ui.stopAnimation();
+			this.ui.clearAnimation();
 			this.speaking = false;	
 						
 			setTimeout( bind(function(){
@@ -761,6 +768,7 @@ var Unit = Observable.extend({
 	},
 	
 	disappear	: function( fn, scope ){
+		this.catchMe();
 		this.ui.disappear( function(){
 			this.onDead();
 			if ( fn )
@@ -770,8 +778,7 @@ var Unit = Observable.extend({
 	
 	//增加角色状态
 	addBuff	: function( name, fn, scope ){
-		if ( !PANEL.isInside( this.cell ) )
-			PANEL.moveToCell( this.cell );	//镜头对着说话的角色
+		this.catchMe();
 					
 		var config = $.extend( BUFFS[ name ],  { id : name } );
 		var buff = new Buff( config );
@@ -834,6 +841,8 @@ var Unit = Observable.extend({
 	
 	//获得物品
 	gainStuff	: function( stuff, num, fn, scope ){
+		this.catchMe();
+		
 		if ( !(stuff instanceof Stuff) )
 			stuff = Pocket.get( stuff );
 			
@@ -881,10 +890,10 @@ var Unit = Observable.extend({
 			this.gx = x;
 			this.gy = y;
 		}
-
 		this.setCell();
 		this.visiable = true;
 		this.layer.showAt( this );
+		this.catchMe();
 		
 		if ( fn )
 			this.on( "appear", fn, scope, { one : true } );

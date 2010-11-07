@@ -6,7 +6,7 @@ var
 UNITS	= [{
 	id: "caocao", gx :  7,  gy : 0, range : 1, rangeType : 2, hpMax : 110, step:7, hp : 110, symbol	: "caocao", 
 	magicNames	: [ "light", "storm" ], direct : "down",  burst	:  35,
-	faction : 1, team : 100, mpMax : 100, mp : 100, name : "曹操", level : 1, attackFreqMax : 2, visiable : false	
+	faction : 1, team : 100, mpMax : 100, mp : 100, name : "曹操", level : 1,  visiable : false	
 },{
 	id: "qibing1", gx :  6,  gy : 0, range : 1, rangeType : 2, hpMax : 110, hp : 110, symbol	: "cavalryman", direct : "down",
 	faction : 1, team : 200, mpMax : 10, mp : 10, name : "骑兵", level : 1, attackFreqMax : 1, visiable : false, face : "images/face/180-1.png"	
@@ -49,10 +49,10 @@ UNITS	= [{
 
 //敌军
 {
-	 id : "zhangbao", gx :  9,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1,
+	 id : "zhangbao", gx :  9,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1, defnum : 10,
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张宝", level : 5, face : "images/face/154-1.png"	
 },{
-	 id : "zhangliang", gx :  10,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1,
+	 id : "zhangliang", gx :  10,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1, defnum : 10,
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张梁", level : 5, face : "images/face/155-1.png"	
 },{
 	gx :  5,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",

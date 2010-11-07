@@ -95,26 +95,14 @@ FIGURES = {
 ACTIONGROUPS   = [{
 	desc: "测试",
 	event:{
-		active	: true,
+		active	: false,
 		type	: 3,
 		name	: "battleStart"
 	},	
 	actions	: [{
-		id			: "footb",
-		action  : "speakTo",
-		params  : [ "zhangbao", "up" ]
-	},{
-		id			: "footb",
-		action  : "speakTo",
-		params  : [ "foota", "right" ]
-	},{
-		id			: "footb",
-		action  : "speakTo",
-		params  : [ "thirdDie", "right" ]
-	},{
-		id			: "footb",
-		action  : "speakTo",
-		params  : [ "first", "left" ]
+		type	   : 2,
+		action : "playAnimation",
+		params : [ "zhuque", 240, 160 ]
 	}]
 },
 			// --------------------------------------刘备攻击------------------------------------------------
@@ -165,7 +153,7 @@ ACTIONGROUPS   = [{
 {
 	desc	: "开场白",
 	event	: {
-		active	: false,
+		active	: true,
 		type	: 3,
 		name	: "battleStart"
 	},
@@ -262,7 +250,7 @@ ACTIONGROUPS   = [{
 },{
 	desc: "友军阶段1",
 	event: {
-		active : false,
+		active : true,
 		type: 3,
 		name: "teamStart",
 		condition : [{
@@ -882,7 +870,14 @@ ACTIONGROUPS   = [{
 		type	: 3,
 		name   : "battleWin"
 	},
-	actions : [{
+	actions : [{		
+		type :3 ,
+		group	: "ENEMY",
+		action : "disappear"
+	},{
+		id		: "caocao",
+		action : "followMe"
+	},{
 		id		: "caocao",
 		action : "speakTo",
 		params  : [ "liubei", "玄德兄只有义军之名，未免可惜，不如和我一起共事吧？" ]
@@ -895,8 +890,23 @@ ACTIONGROUPS   = [{
 		action : "speak",
 		params  : [ "是吗，那么我也不便勉强，我还有别的任务，那就后会有期了，改日相见了。" ]
 	},{
-		type	: 3,
-		group	: "MYTEAM",	
+		id		: "caocao",
+		action : "go",
+		params : [ { x :  10,  y : 18 } ]
+	},{
+		id		: "qibing1",
+		action : "go",
+		params : [ { x :  10,  y : 18 } ]
+	},{
+		id		: "qibing2",
+		action : "go",
+		params : [ { x :  10,  y : 18 } ]
+	},{
+		id		: "foota",
+		action : "go",
+		params : [ { x :  10,  y : 18 } ]
+	},{
+		id		: "footb",
 		action : "go",
 		params : [ { x :  10,  y : 18 } ]
 	},{
@@ -914,7 +924,8 @@ ACTIONGROUPS   = [{
 	},{
 		id		: "zhangfei",
 		action : "speakTo",
-		params  : [ "liubei", "好，怎么都行，能吃饱饭就行，哈哈哈哈！" ]
+		params  : [ "liubei", "好，怎么都行，能吃饱饭就行，哈哈哈哈！" ],
+		next	: -1
 	}]
 },	
 			// ---------------------------------------------检查胜利/失败-----------------------------------------

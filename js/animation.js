@@ -19,10 +19,14 @@ var Animation = Observable.extend({
 	//h  		: 0,
 	fn		: null,
 	scope   : null,
+	audio	: "",	//音效
 	
 	init	: function(){
 		this.addEvents( "end" );
 		this._super( arguments[0] );
+		
+		if ( this.audio )
+			this.audioObj = SoundMgr.get( this.audio );
 		
 		return this;
 	},
@@ -52,13 +56,16 @@ var Animation = Observable.extend({
 	},
 	
 	play	: function(){
+		if ( this.index == 0 && this.audioObj ){
+				this.audioObj.play();
+		}
+		this.onPaint();
+		
 		if ( this.inter == 1 || ++this.count == this.inter ){
 			this.count = 0;
 			this.next();
 		}	
 					
-		this.onPaint();
-		
 		return this;
 	},
 	

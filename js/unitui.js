@@ -290,6 +290,7 @@ var UnitUI = Observable.extend({
 			var i = 0, from = this.unit.cell, steps = [];
 			way.reverse();
 			//循环添加
+			SoundMgr.play( "movefoot" );
 			while( i < way.length ){
 				var to = way[ i++ ];
 				var direct = from.directT( to );
@@ -303,8 +304,10 @@ var UnitUI = Observable.extend({
 						this.fireEvent( "walk", this, this.cell, cell );
 						this.cell = cell;
 						//移动到最后一个位置时触发move事件
-						if ( cell == way[ way.length-1 ] )
-							this.onMove( cell );
+						if (cell == way[way.length - 1]) {
+							SoundMgr.pause( "movefoot" );
+							this.onMove(cell);
+						}
 					}, 
 					params	: [ to ],
 					direct  : direct,
@@ -372,7 +375,11 @@ var UnitUI = Observable.extend({
 			},{
 				img	: actions[1],  w : 64
 			} ],
-			fn 		: fn, 
+			fn 		: function(){
+				SoundMgr.play( "attack" );
+				if ( fn )
+					fn.apply( scope, arguments );
+			}, 
 			scope	: scope,
 			direct	: direct
 		}
@@ -387,6 +394,7 @@ var UnitUI = Observable.extend({
 		}	
 		this.pushImg( obj1 );
 		this.pushImg( obj2 );
+		//SoundMgr.play( "attack" );
 	},
 
 	dead	: function( fn , scope ){
@@ -401,6 +409,7 @@ var UnitUI = Observable.extend({
 		}
 		
 		this.pushImg( obj );
+		SoundMgr.play( "dead" );
 	},
 	
 	standby	: function( fn , scope ){
@@ -438,7 +447,9 @@ var UnitUI = Observable.extend({
 	stopAnimation	: function(){
 		this.imgStack.shift();
 	},
-	
+	clearAnimation	: function(){
+		this.imgStack.length = 0;
+	},	
 	fall		: function( fn, scope ){
 		var obj = {
 			inter	: SPEED,
@@ -459,7 +470,8 @@ var UnitUI = Observable.extend({
 			scope	: scope
 		};
 		
-		this.pushImg( obj );				
+		this.pushImg( obj );		
+		SoundMgr.play( "turn" );		
 	},		
 	
 	turnRight	: function( fn, scope ){
@@ -471,7 +483,8 @@ var UnitUI = Observable.extend({
 			scope	: scope
 		};
 		
-		this.pushImg( obj );				
+		this.pushImg( obj );			
+		SoundMgr.play( "turn" );	
 	},
 	
 	turnUp	: function( fn, scope ){
@@ -484,6 +497,7 @@ var UnitUI = Observable.extend({
 		};
 		
 		this.pushImg( obj );			
+		SoundMgr.play( "turn" );
 	},	
 	
 	turnDown	: function( fn, scope ){
@@ -495,7 +509,8 @@ var UnitUI = Observable.extend({
 			scope	: scope
 		};
 		
-		this.pushImg( obj );				
+		this.pushImg( obj );	
+		SoundMgr.play( "turn" );			
 	},		
 	_fillDisappear : function( n ){
 		var ret = [];
@@ -528,6 +543,7 @@ var UnitUI = Observable.extend({
 		};
 		
 		this.pushImg( obj );		
+		SoundMgr.play( "appear" );
 	},
 				
 	invincible	: function( fn , scope ){
@@ -562,6 +578,7 @@ var UnitUI = Observable.extend({
 		this.pushTip( {
 			text	: "升级啦",	fn : fn, scope : scope, color : "rgb(255,255,255)"
 		} );			
+		SoundMgr.play( "upgrade" );
 	},
 	
 	lift	: function( fn, scope ){
@@ -607,7 +624,8 @@ var UnitUI = Observable.extend({
 		} );
 		
 		PANEL.playAnimation( a );
-
+		SoundMgr.play( "gain" );
+		
 		return this;
 	},
 	

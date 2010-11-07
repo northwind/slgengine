@@ -62,7 +62,11 @@ var UnitAction = Action.extend({
 	id		: "",
 	
 	getObj	: 	function(){
-		return PANEL.getUnitById( this.id );
+		var unit =  PANEL.getUnitById( this.id );
+		if ( !unit.dead )
+			return unit;
+		else
+			return null;	
 	}
 }); 
 //系统动作

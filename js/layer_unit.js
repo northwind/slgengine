@@ -108,6 +108,8 @@ var UnitLayer = Layer.extend({
 	start		: function(){
 		log( "this.unitsLayer.start" );
 		
+		SoundMgr.play( "battle" );
+		
 		this.fireEvent( "battleStart", this );		
 	},
 	

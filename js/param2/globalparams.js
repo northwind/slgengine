@@ -10,7 +10,7 @@ CELL_YNUM	= 20,
 MAX_H = CELL_HEIGHT * CELL_YNUM,
 MAX_W = CELL_WIDTH * CELL_XNUM,
 
-UNDERCOVER = true, 
+UNDERCOVER = false, 
 DEBUG	= true,
 PANEL = null,
 //窗口的宽高
@@ -156,7 +156,7 @@ GOODS = {
 				src	   : "images/magic/fire.png",
 				w		: 48,
 				h		: 48,
-				inter   : 3
+				inter   : 5
 			},
 			redStar	: {
 				src	   : "images/magic/35-1.png",
