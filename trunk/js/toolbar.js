@@ -6,7 +6,7 @@ var Toolbar  = Observable.extend({
 	active	: false,
 	
 	init	: function(){
-		this.addEvents( "endTeam","saveGame","loadGame","condition","restart" );
+		this.addEvents( "endTeam","saveGame","loadGame","condition","restart", "mute" );
 		this._super( arguments[0] );
 		
 		return this;
@@ -34,7 +34,19 @@ var Toolbar  = Observable.extend({
 		
 		this.on("condition", function(){
 			PANEL.showGoal();
-		})	
+		});
+		
+		this.el.find( "#mute" ).unbind("click").toggle( function(){
+			SoundMgr.turnOff();
+			$(this).html( "开启音效" );
+		}, function(){
+			SoundMgr.turnOn();
+			$(this).html( "关闭音效" );
+		} );	
+		
+		this.on("script", function(){
+			alert( "制作中，敬请期待" );
+		});		
 	},
 
 	onTeamStart	: function( team ){

@@ -174,7 +174,8 @@ GOODS = {
 				src	   : "images/magic/zhuque.png",
 				w		: 300,
 				h		: 300,
-				inter   : 3
+				inter   : 3,
+				audio : "bird"
 			}			
 		},
 		
@@ -214,6 +215,42 @@ GOODS = {
 						//fireman.finish();
 					}
 				}					
+			}
+		},
+		
+		AUDIOS	= {
+			battle	: {
+				src : "audios/battle.ogg", loop : true
+			},
+			attack	: {
+				src : "audios/attack.ogg"
+			},
+			dead	: {
+				src : "audios/dead.ogg"
+			},
+			gain	: {
+				src : "audios/gain.ogg"
+			},
+			movefoot	: {
+				src : "audios/move1.ogg", loop : true
+			},
+			movehorse	: {
+				src : "audios/movehorse.ogg" , loop : true
+			},
+			turn	: {
+				src : "audios/turn.ogg"
+			},
+			upgrade	: {
+				src : "audios/upgrade.ogg"
+			},
+			appear	: {
+				src : "audios/appear.ogg"
+			},
+			bird		: {
+				src : "audios/bird.ogg"
+			},
+			script	: {
+				src : "audios/open.ogg"
 			}
 		};
 		

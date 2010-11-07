@@ -11,6 +11,7 @@ $(function(){
 	
 	process.on("end", function(){
 		log( "process end" );
+		SoundMgr.load();
 		var p = new Panel();
 	}).start();	
 	

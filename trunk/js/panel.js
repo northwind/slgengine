@@ -61,7 +61,8 @@ var Panel = Component.extend({
 		} )
 		.mousemove( function( e ){
 			if ( drag && e.which == 1 ) {
-				if (!_self.isScripting()) {		//执行脚本时锁定屏幕
+				//if (!_self.isScripting()) {		//执行脚本时锁定屏幕
+				if ( true ){
 					if (x != e.pageX) 
 						el.scrollLeft = (this.scrollLeft -= e.pageX - x);
 					
@@ -79,7 +80,8 @@ var Panel = Component.extend({
 		} )
 		.mousewheel( function( e, delta, x, y){
 			//向下滚动
-			if (!_self.isScripting()) { //执行脚本时锁定屏幕
+			//if (!_self.isScripting()) { //执行脚本时锁定屏幕
+			if ( true ){
 				if (y == -1) {
 					_self.moveWinBy(0, CELL_HEIGHT);
 				}
@@ -155,8 +157,8 @@ var Panel = Component.extend({
 		
 		this.ct.width( WINDOW_WIDTH );
 		this.el.css( { width	: WINDOW_WIDTH, height	: WINDOW_HEIGHT	} );
-		this.el.scrollLeft = this.el.scrollLeft - wDiff;
-		this.el.scrollTop  = this.el.scrollTop  - hDiff;
+		this.moveWinTo( this.scrollLeft - wDiff, this.scrollTop  - hDiff  );
+		log( "scrollTop : " + this.scrollTop + " scrollLeft : " + this.scrollLeft );
 		
 		this.masklayer.css( { width	: WINDOW_WIDTH, height	: WINDOW_HEIGHT	} );
 		this.display.width( WINDOW_WIDTH );
@@ -250,8 +252,8 @@ var Panel = Component.extend({
 				height  : 100,
 				width	: MAX_W,
 				background : "",
-				//top		: (WINDOW_HEIGHT -200)/2
-				top		: 25
+				top		: (WINDOW_HEIGHT -100)/2 
+				//top		: 25
 		}).show();
 		
 		var _self = this;
@@ -395,9 +397,9 @@ var Panel = Component.extend({
 	isInside		: function( cell ){
 		var dx = cell.dx, dy = cell.dy;
 		
-		if ( dx < (this.scrollLeft + CELL_WIDTH) || dx > this.scrollLeft + WINDOW_WIDTH + CELL_WIDTH )
+		if ( dx < (this.scrollLeft - CELL_WIDTH ) || dx > this.scrollLeft + WINDOW_WIDTH - CELL_WIDTH )
 			return false;
-		if ( dy < (this.scrollTop + CELL_HEIGHT) || dy > this.scrollTop + WINDOW_HEIGHT + CELL_HEIGHT )
+		if ( dy < (this.scrollTop - CELL_HEIGHT  ) || dy > this.scrollTop + WINDOW_HEIGHT - CELL_HEIGHT )
 			return false;
 		
 		return true;
