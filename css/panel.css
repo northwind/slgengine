@@ -1,3 +1,12 @@
+* { padding:0;margin:0;}
+body {}
+
+.clear{ font-size:0px; line-height:0px; height:0px; clear:both; }
+
+#download{ display:none; padding-top:150px; }
+#download a{ text-decoration:none; margin:30px; }
+#download img{ border:none; }
+
 ._wrap{ margin:0 auto; position:relative; }
 ._panel{	margin:auto;	position:relative;	z-index:1;	overflow:hidden;	-moz-user-select:none;}
 ._panel canvas{ position : absolute; }

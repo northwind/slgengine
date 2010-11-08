@@ -11,7 +11,7 @@ MAX_H = CELL_HEIGHT * CELL_YNUM,
 MAX_W = CELL_WIDTH * CELL_XNUM,
 
 UNDERCOVER = false, 
-DEBUG	= true,
+DEBUG	= false,
 PANEL = null,
 //窗口的宽高
 WINDOW_WIDTH = 960,
