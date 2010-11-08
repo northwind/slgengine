@@ -892,7 +892,9 @@ HighLightDeep = 190,    //高亮度
 
 STRENGTHHP	= 10, //一点力量增加的血量
 AGILITYDEF  = 0.5, //一点敏捷增加的防御值
-INTELLIGENCEMP = 10  //一点智力增加的魔法值
+INTELLIGENCEMP = 10,  //一点智力增加的魔法值
+
+PATH = "http://www.sinaimg.cn/cj/newjs/slg/"
 ;  
 //物品 魔法
 var 
@@ -1708,7 +1710,14 @@ var Figure  = Observable.extend({
 				imgAtk	: "images/atk/0.png",
 				imgSpc	: "images/spc/0.png",
 				imgFace	: "images/face/0.png"
-			} )
+			} );
+		}else{
+			$.extend( config, {
+				imgMove	: PATH + config.imgMove,
+				imgAtk	: PATH + config.imgAtk,
+				imgSpc	: PATH + config.imgSpc,
+				imgFace	: PATH + config.imgFace
+			} );			
 		}		
 		this.addEvents( "load" );
 		this._super( config );
@@ -4885,7 +4894,7 @@ var ActionMenu = Win.extend({
 	
 	createAction	: function( text, img, onclick ){
 		var li = $("<li>").appendTo( this.ul ), _self = this;;
-		var btn = $("<button>").text( text ).css( "background-image", "url(" + img + ")" ) .click( function( e ){
+		var btn = $("<button>").text( text ).css( "background-image", "url(" + PATH + img + ")" ) .click( function( e ){
 			//if (  e.which == 1 )
 				if ( ($(this).attr( "disabled" )+"") != "true" )
 					onclick.call( _self, e, text );
@@ -5983,19 +5992,20 @@ PS.prototype = {
 
 	//将图像灰化
 	grayImg		: function( img ){
-		var ret = new Image(), can = this.canvas, c = this.ctx;
+		var ret = document.createElement("canvas"),
+			   c = ret.getContext("2d");
 		var w = img.width, h = img.height;
 		
-		can.width = w;
-		can.height = h;
-		
+		ret.width = w;
+		ret.height = h;
+				
 		c.drawImage( img, 0, 0 );
-		var imgdata = this.gray( c, c.getImageData( 0,0, w, h ) );
-		c.putImageData( imgdata, 0, 0 );
-		
-		var data = can.toDataURL();
-		ret.src = data;		
-		
+		var data = c.getImageData( 0,0, w, h );
+		try {
+			var imgdata = this.gray( c, data );
+			c.putImageData( imgdata, 0, 0 );
+		} catch (e) {}
+
 		return ret;
 	},
 		
@@ -6115,21 +6125,22 @@ PS.prototype = {
 		return ret;
 	},
 	
-	//将图像灰化
+	//高亮整个图片
 	highlightImg		: function( img, n ){
-		var ret = new Image(), can = this.canvas, c = this.ctx;
+		var ret = document.createElement("canvas"),
+			   c = ret.getContext("2d");
 		var w = img.width, h = img.height;
 		
-		can.width = w;
-		can.height = h;
-		
+		ret.width = w;
+		ret.height = h;
+				
 		c.drawImage( img, 0, 0 );
-		var imgdata = this.highlight( c, c.getImageData( 0,0, w, h ), n );
-		c.putImageData( imgdata, 0, 0 );
-		
-		var data = can.toDataURL();
-		ret.src = data;		
-		
+		var data = c.getImageData( 0,0, w, h );
+		try {
+			var imgdata = this.highlight( c, data, n );
+			c.putImageData( imgdata, 0, 0 );
+		} catch (e) {}
+
 		return ret;
 	},
 		
@@ -6185,7 +6196,7 @@ var Sound = Observable.extend({
 	init	: function(){
 		this._super( arguments[0] );
 		
-		var audio = new Audio( this.src );
+		var audio = new Audio( PATH + this.src );
 		this.audio = audio;
 		
 		var _self = this;
@@ -6315,6 +6326,7 @@ var Process = Observable.extend({
 		for( var name in BUFFS ){
 			(function(){
 				var buff = BUFFS[ name ];
+				buff.src = PATH + buff.src;
 				_loadImg( buff.src, function(){
 					buff.img = this;
 					i++;
@@ -6335,6 +6347,7 @@ var Process = Observable.extend({
 		for( var name in GOODS ){
 			(function(){
 				var buff = GOODS[ name ];
+				buff.src = PATH + buff.src;
 				_loadImg( buff.src, function(){
 					buff.img = this;
 					i++;
@@ -6355,6 +6368,7 @@ var Process = Observable.extend({
 		for( var name in ANIMATIONS ){
 			(function(){
 				var a = ANIMATIONS[ name ];
+				a.src = PATH + a.src;
 				_loadImg( a.src, function(){
 					//切割图片
 					var totalH = this.height, n = totalH / a.h, imgs = [];
@@ -6892,8 +6906,9 @@ var Panel = Component.extend({
 		this.hideUnitAttr();	
 		this.speaking = true;
 		this.speakUnit = unit;
-			
-		$("#face").attr( "src", unit.face );
+		
+		if ( !UNDERCOVER )	
+			$("#face").attr( "src", unit.face );
 		$("._speak h2").text( unit.name );
 		$("._speech").show();
 		
@@ -8028,7 +8043,7 @@ ACTIONGROUPS   = [{
 ],
 
 CHAPTER = "颍川之战",
-BGIMAGE	= "images/bigmap/1-1.jpg",
+BGIMAGE	= PATH + "images/bigmap/1-1.jpg",
 GOAL = "胜利条件<br/>&nbsp;&nbsp;击毙张宝和张良!<br/>限制回合数&nbsp;10",
 VICTORYN = 2,	//已达成胜利的条件数  当达到一定数量后获得胜利
 FAILEDN = 1, 	//已失败的条件数   达到一定数量后失败

@@ -11,7 +11,7 @@ var Sound = Observable.extend({
 	init	: function(){
 		this._super( arguments[0] );
 		
-		var audio = new Audio( this.src );
+		var audio = new Audio( PATH + this.src );
 		this.audio = audio;
 		
 		var _self = this;

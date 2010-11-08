@@ -17,7 +17,14 @@ var Figure  = Observable.extend({
 				imgAtk	: "images/atk/0.png",
 				imgSpc	: "images/spc/0.png",
 				imgFace	: "images/face/0.png"
-			} )
+			} );
+		}else{
+			$.extend( config, {
+				imgMove	: PATH + config.imgMove,
+				imgAtk	: PATH + config.imgAtk,
+				imgSpc	: PATH + config.imgSpc,
+				imgFace	: PATH + config.imgFace
+			} );			
 		}		
 		this.addEvents( "load" );
 		this._super( config );
