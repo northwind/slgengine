@@ -461,8 +461,9 @@ var Panel = Component.extend({
 		this.hideUnitAttr();	
 		this.speaking = true;
 		this.speakUnit = unit;
-			
-		$("#face").attr( "src", unit.face );
+		
+		if ( !UNDERCOVER )	
+			$("#face").attr( "src", unit.face );
 		$("._speak h2").text( unit.name );
 		$("._speech").show();
 		

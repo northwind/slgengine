@@ -137,19 +137,20 @@ PS.prototype = {
 
 	//将图像灰化
 	grayImg		: function( img ){
-		var ret = new Image(), can = this.canvas, c = this.ctx;
+		var ret = document.createElement("canvas"),
+			   c = ret.getContext("2d");
 		var w = img.width, h = img.height;
 		
-		can.width = w;
-		can.height = h;
-		
-		c.drawImage( img, 0, 0 );
-		var imgdata = this.gray( c, c.getImageData( 0,0, w, h ) );
-		c.putImageData( imgdata, 0, 0 );
-		
-		var data = can.toDataURL();
-		ret.src = data;		
-		
+		ret.width = w;
+		ret.height = h;
+				
+		c.drawImage( img, 0, 0, w, h );
+		var data = c.getImageData( 0,0, w, h );
+		try {
+			var imgdata = this.gray( c, data );
+			c.putImageData( imgdata, 0, 0 );
+		} catch (e) {}
+
 		return ret;
 	},
 		
@@ -269,21 +270,22 @@ PS.prototype = {
 		return ret;
 	},
 	
-	//将图像灰化
+	//高亮整个图片
 	highlightImg		: function( img, n ){
-		var ret = new Image(), can = this.canvas, c = this.ctx;
+		var ret = document.createElement("canvas"),
+			   c = ret.getContext("2d");
 		var w = img.width, h = img.height;
 		
-		can.width = w;
-		can.height = h;
-		
+		ret.width = w;
+		ret.height = h;
+				
 		c.drawImage( img, 0, 0 );
-		var imgdata = this.highlight( c, c.getImageData( 0,0, w, h ), n );
-		c.putImageData( imgdata, 0, 0 );
-		
-		var data = can.toDataURL();
-		ret.src = data;		
-		
+		var data = c.getImageData( 0,0, w, h );
+		try {
+			var imgdata = this.highlight( c, data, n );
+			c.putImageData( imgdata, 0, 0 );
+		} catch (e) {}
+
 		return ret;
 	},
 		

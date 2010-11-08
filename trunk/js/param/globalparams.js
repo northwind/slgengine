@@ -41,7 +41,9 @@ HighLightDeep = 190,    //高亮度
 
 STRENGTHHP	= 10, //一点力量增加的血量
 AGILITYDEF  = 0.5, //一点敏捷增加的防御值
-INTELLIGENCEMP = 10  //一点智力增加的魔法值
+INTELLIGENCEMP = 10,  //一点智力增加的魔法值
+
+PATH = "http://www.sinaimg.cn/cj/newjs/slg/"
 ;  
 //物品 魔法
 var 

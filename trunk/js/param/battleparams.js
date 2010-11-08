@@ -985,7 +985,7 @@ ACTIONGROUPS   = [{
 ],
 
 CHAPTER = "颍川之战",
-BGIMAGE	= "images/bigmap/1-1.jpg",
+BGIMAGE	= PATH + "images/bigmap/1-1.jpg",
 GOAL = "胜利条件<br/>&nbsp;&nbsp;击毙张宝和张良!<br/>限制回合数&nbsp;10",
 VICTORYN = 2,	//已达成胜利的条件数  当达到一定数量后获得胜利
 FAILEDN = 1, 	//已失败的条件数   达到一定数量后失败

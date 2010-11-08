@@ -21,7 +21,7 @@ var ActionMenu = Win.extend({
 	
 	createAction	: function( text, img, onclick ){
 		var li = $("<li>").appendTo( this.ul ), _self = this;;
-		var btn = $("<button>").text( text ).css( "background-image", "url(" + img + ")" ) .click( function( e ){
+		var btn = $("<button>").text( text ).css( "background-image", "url(" + PATH + img + ")" ) .click( function( e ){
 			//if (  e.which == 1 )
 				if ( ($(this).attr( "disabled" )+"") != "true" )
 					onclick.call( _self, e, text );

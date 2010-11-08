@@ -24,6 +24,7 @@ var Process = Observable.extend({
 		for( var name in BUFFS ){
 			(function(){
 				var buff = BUFFS[ name ];
+				buff.src = PATH + buff.src;
 				_loadImg( buff.src, function(){
 					buff.img = this;
 					i++;
@@ -44,6 +45,7 @@ var Process = Observable.extend({
 		for( var name in GOODS ){
 			(function(){
 				var buff = GOODS[ name ];
+				buff.src = PATH + buff.src;
 				_loadImg( buff.src, function(){
 					buff.img = this;
 					i++;
@@ -64,6 +66,7 @@ var Process = Observable.extend({
 		for( var name in ANIMATIONS ){
 			(function(){
 				var a = ANIMATIONS[ name ];
+				a.src = PATH + a.src;
 				_loadImg( a.src, function(){
 					//切割图片
 					var totalH = this.height, n = totalH / a.h, imgs = [];
