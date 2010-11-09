@@ -2,6 +2,88 @@
  * 玩家存储的信息
  */
 var 
+//形象集合
+FIGURES = {
+	"caocao"	: {
+		imgMove	:"images/move/109-1.png",
+		imgAtk	: "images/atk/109-1.png",
+		imgSpc	: "images/spc/109-1.png",
+		imgFace	: "images/face/1-1.png"		
+	},
+	"liubei"	: {
+		imgMove	:"images/move/145-1.png",
+		imgAtk	: "images/atk/145-1.png",
+		imgSpc	: "images/spc/145-1.png",
+		imgFace	: "images/face/40-1.png"		
+	},	
+	"guanyu"	: {
+		imgMove	:"images/move/146-1.png",
+		imgAtk	: "images/atk/146-1.png",
+		imgSpc	: "images/spc/146-1.png",
+		imgFace	: "images/face/14-1.png"		
+	},	
+	"zhangfei"	: {
+		imgMove	:"images/move/147-1.png",
+		imgAtk	: "images/atk/147-1.png",
+		imgSpc	: "images/spc/147-1.png",
+		imgFace	: "images/face/41-1.png"		
+	},			
+	"xuzijiang"	: {
+		imgMove	:"images/move/80-1.png",
+		imgAtk	: "images/atk/80-1.png",
+		imgSpc	: "images/spc/80-1.png",
+		imgFace	: "images/face/214-1.png"		
+	},			
+	"cavalryman"	: {  //骑兵
+		imgMove	:"images/move/14-1.png",
+		imgAtk	: "images/atk/14-1.png",
+		imgSpc	: "images/spc/14-1.png",
+		imgFace	: "images/face/181-1.png"			
+	},	
+	"archer"	: {
+		imgMove	:"images/move/26-1.png",
+		imgAtk	: "images/atk/26-1.png",
+		imgSpc	: "images/spc/26-1.png",
+		imgFace	: "images/face/178-1.png"			
+	},
+	"footman" :	{
+		imgMove	:"images/move/1-1.png",
+		imgAtk	: "images/atk/1-1.png",
+		imgSpc	: "images/spc/1-1.png",
+		imgFace	: "images/face/23-1.png"			
+	},
+	"huangjinjun"	: {
+		imgMove	:"images/move/103-1.png",
+		imgAtk	: "images/atk/103-1.png",
+		imgSpc	: "images/spc/103-1.png",
+		imgFace	: "images/face/192-1.png"			
+	},		
+	"sushiBlue" :	{
+		imgMove	:"images/move/84-1.png",
+		imgAtk	: "images/atk/84-1.png",
+		imgSpc	: "images/spc/84-1.png",
+		imgFace	: "images/face/154-1.png"			
+	},	
+	"enchanterYellow"	:  {  //魔法师
+		imgMove	:"images/move/71-1.png",
+		imgAtk	: "images/atk/71-1.png",
+		imgSpc	: "images/spc/71-1.png",
+		imgFace	: "images/face/176-1.png"			
+	},
+	"footmanYellow" :	{
+		imgMove	:"images/move/2-1.png",
+		imgAtk	: "images/atk/2-1.png",
+		imgSpc	: "images/spc/2-1.png",
+		imgFace	: "images/face/180-1.png"			
+	},
+	"archerYellow"	: {
+		imgMove	:"images/move/23-1.png",
+		imgAtk	: "images/atk/23-1.png",
+		imgSpc	: "images/spc/23-1.png",
+		imgFace	: "images/face/16-1.png"			
+	}		
+},
+
 //UNIT集合，配置项参考UNIT类
 UNITS	= [{
 	id: "caocao", gx :  7,  gy : 0, range : 1, rangeType : 2, hpMax : 110, step:7, hp : 110, symbol	: "caocao", 
