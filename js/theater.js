@@ -1,7 +1,6 @@
 /**
- * 面板类
- * 显示层的容器，负责所有场景均会用到的功能
- * 具体的绘制功能由各个层负责
+ * 剧场类
+ * 管理场景间的切换
  */
 var Panel = Component.extend({
 	w		: WINDOW_WIDTH,
@@ -146,6 +145,7 @@ var Panel = Component.extend({
 			 		
 		return this;		
 	},
+	
 	
 	onResize	: function( e ){
 		var wTo = Math.min( $(window).width(), 960 ),

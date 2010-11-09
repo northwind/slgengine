@@ -10,7 +10,7 @@ CELL_YNUM	= 20,
 MAX_H = CELL_HEIGHT * CELL_YNUM,
 MAX_W = CELL_WIDTH * CELL_XNUM,
 
-UNDERCOVER = false, 
+UNDERCOVER = true, 
 DEBUG	= true,
 PANEL = null,
 //窗口的宽高
@@ -43,7 +43,7 @@ STRENGTHHP	= 10, //一点力量增加的血量
 AGILITYDEF  = 0.5, //一点敏捷增加的防御值
 INTELLIGENCEMP = 10,  //一点智力增加的魔法值
 
-PATH = "http://www.sinaimg.cn/cj/newjs/slg/"
+PATH = ""
 ;  
 //物品 魔法
 var 
