@@ -170,7 +170,11 @@ EventImd.prototype = {
 			
 			l.fn.apply( l.scope, arguments );
 		}
-    }
+    },
+	
+	clearListeners	: function(){
+		 this.listeners.length = 0
+	}
 };
 /**
  * 默认消息
