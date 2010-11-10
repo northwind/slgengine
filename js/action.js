@@ -62,7 +62,7 @@ var UnitAction = Action.extend({
 	id		: "",
 	
 	getObj	: 	function(){
-		var unit =  PANEL.getUnitById( this.id );
+		var unit =  this.playground.getUnitById( this.id );
 		if ( !unit.dead )
 			return unit;
 		else
@@ -121,3 +121,11 @@ var GroupAction = Action.extend({
 		}	
 	}	
 }); 
+//局域动作
+var GroundAction = Action.extend({
+	
+	getObj	: 	function(){
+		return this.playground;
+	}
+}); 
+

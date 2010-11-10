@@ -126,7 +126,7 @@ var AIUnit  = Observable.extend({
 		//遍历所有移动单元格	
 		for ( var index in walks ){
 			//该单元格可以攻击到 则添加
-			if ( PANEL.unitsLayer.getAttackCells(walks[index], range, rangeType)[ eIndex ] ) {
+			if (  PLAYGROUND.unitsLayer.getAttackCells(walks[index], range, rangeType)[ eIndex ] ) {
 				has = true;
 				include[index] = walks[index];
 			}
@@ -141,7 +141,7 @@ var AIUnit  = Observable.extend({
 			   min = 10000, near = null, origin = enemy.cell;
 		for( var index in walkCells ){
 			var cell = walkCells[ index ], d = origin.distance( cell ), 
-					unit = PANEL.unitsLayer.getUnitByIndex( cell.index );
+					unit = PLAYGROUND.unitsLayer.getUnitByIndex( cell.index );
 			//排除已站人的单元格		
 			if ( (!unit || ( unit && unit.overlay ) ) && d < min ){
 				min = d;
@@ -164,18 +164,16 @@ var AIUnit  = Observable.extend({
 	
 	//找到离自己最近的敌人
 	scanEnemy	: function(){
-		var units = PANEL.unitsLayer.units, min = 10000, neighbor = null, origin = this.unit.cell,
+		var units = ENEMY.members(), min = 10000, neighbor = null, origin = this.unit.cell,
 				faction = this.unit.faction;
 				
 		for( var key in units ){
 			var unit = units[ key ];
-			if ( unit.isEnemy( faction ) ){
-				var d = origin.distance( unit.cell );
-				if ( d < min  ){
-					min = d;
-					neighbor = unit;
-				}				
-			}
+			var d = origin.distance( unit.cell );
+			if ( d < min  ){
+				min = d;
+				neighbor = unit;
+			}				
 		}
 		
 		return neighbor;

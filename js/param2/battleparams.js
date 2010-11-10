@@ -2,6 +2,16 @@
  * 战场参数
  */
 var 
+CELL_WIDTH	= 48,
+CELL_HEIGHT	= 48,
+CELL_XNUM	= 20,
+CELL_YNUM	= 20,
+
+MAX_H = CELL_HEIGHT * CELL_YNUM,
+MAX_W = CELL_WIDTH * CELL_XNUM,
+
+DISPLAY_HEIGHT = 160,
+
 //队伍集合
 TEAMS	= [{
 	faction : 1, team : 100, name : "我军"
@@ -10,87 +20,7 @@ TEAMS	= [{
 },{
 	faction : 0, team : 1, name : "敌军"
 }],
-//形象集合
-FIGURES = {
-	"caocao"	: {
-		imgMove	:"images/move/109-1.png",
-		imgAtk	: "images/atk/109-1.png",
-		imgSpc	: "images/spc/109-1.png",
-		imgFace	: "images/face/1-1.png"		
-	},
-	"liubei"	: {
-		imgMove	:"images/move/145-1.png",
-		imgAtk	: "images/atk/145-1.png",
-		imgSpc	: "images/spc/145-1.png",
-		imgFace	: "images/face/40-1.png"		
-	},	
-	"guanyu"	: {
-		imgMove	:"images/move/146-1.png",
-		imgAtk	: "images/atk/146-1.png",
-		imgSpc	: "images/spc/146-1.png",
-		imgFace	: "images/face/14-1.png"		
-	},	
-	"zhangfei"	: {
-		imgMove	:"images/move/147-1.png",
-		imgAtk	: "images/atk/147-1.png",
-		imgSpc	: "images/spc/147-1.png",
-		imgFace	: "images/face/41-1.png"		
-	},			
-	"xuzijiang"	: {
-		imgMove	:"images/move/80-1.png",
-		imgAtk	: "images/atk/80-1.png",
-		imgSpc	: "images/spc/80-1.png",
-		imgFace	: "images/face/214-1.png"		
-	},			
-	"cavalryman"	: {  //骑兵
-		imgMove	:"images/move/14-1.png",
-		imgAtk	: "images/atk/14-1.png",
-		imgSpc	: "images/spc/14-1.png",
-		imgFace	: "images/face/181-1.png"			
-	},	
-	"archer"	: {
-		imgMove	:"images/move/26-1.png",
-		imgAtk	: "images/atk/26-1.png",
-		imgSpc	: "images/spc/26-1.png",
-		imgFace	: "images/face/178-1.png"			
-	},
-	"footman" :	{
-		imgMove	:"images/move/1-1.png",
-		imgAtk	: "images/atk/1-1.png",
-		imgSpc	: "images/spc/1-1.png",
-		imgFace	: "images/face/23-1.png"			
-	},
-	"huangjinjun"	: {
-		imgMove	:"images/move/103-1.png",
-		imgAtk	: "images/atk/103-1.png",
-		imgSpc	: "images/spc/103-1.png",
-		imgFace	: "images/face/192-1.png"			
-	},		
-	"sushiBlue" :	{
-		imgMove	:"images/move/84-1.png",
-		imgAtk	: "images/atk/84-1.png",
-		imgSpc	: "images/spc/84-1.png",
-		imgFace	: "images/face/154-1.png"			
-	},	
-	"enchanterYellow"	:  {  //魔法师
-		imgMove	:"images/move/71-1.png",
-		imgAtk	: "images/atk/71-1.png",
-		imgSpc	: "images/spc/71-1.png",
-		imgFace	: "images/face/176-1.png"			
-	},
-	"footmanYellow" :	{
-		imgMove	:"images/move/2-1.png",
-		imgAtk	: "images/atk/2-1.png",
-		imgSpc	: "images/spc/2-1.png",
-		imgFace	: "images/face/180-1.png"			
-	},
-	"archerYellow"	: {
-		imgMove	:"images/move/23-1.png",
-		imgAtk	: "images/atk/23-1.png",
-		imgSpc	: "images/spc/23-1.png",
-		imgFace	: "images/face/16-1.png"			
-	}		
-},
+
 
 ACTIONGROUPS   = [{
 	desc: "测试",
@@ -100,7 +30,7 @@ ACTIONGROUPS   = [{
 		name	: "battleStart"
 	},	
 	actions	: [{
-		type	   : 2,
+		type	   : 4,
 		action : "playAnimation",
 		params : [ "zhuque", 240, 160 ]
 	}]
@@ -153,7 +83,7 @@ ACTIONGROUPS   = [{
 {
 	desc	: "开场白",
 	event	: {
-		active	: true,
+		active	: false,
 		type	: 3,
 		name	: "battleStart"
 	},
@@ -260,10 +190,6 @@ ACTIONGROUPS   = [{
 		}]
 	},
 	actions: [{
-		type	: 2,
-		action : "moveWinTo",
-		params : [ 0, 1000 ]
-	},{
 		id	: "foota",
 		action : "swing"
 	},{
@@ -291,10 +217,6 @@ ACTIONGROUPS   = [{
 		}]
 	},
 	actions: [{
-		type	: 2,
-		action : "moveWinTo",
-		params : [ 400, 0 ]
-	},{
 		id			: "liubei",
 		action : "appear"
 	},{
@@ -439,7 +361,7 @@ ACTIONGROUPS   = [{
 		id		: "zhangfei",
 		action : "swing"
 	},{
-		type : 2,	
+		type : 4,	
 		action : "addStatic",
 		params : [ "fire", 13, 5 ] 
 	},{
@@ -454,7 +376,7 @@ ACTIONGROUPS   = [{
 		id		   : "guanyu",
 		action : "swing"
 	},{
-		type : 2,	
+		type : 4,	
 		action : "addStatic",
 		params : [ [{ name : "fire", x : 7, y : 5 }, { name : "fire", x : 6, y : 4 }]  ] 
 	},{
@@ -496,11 +418,11 @@ ACTIONGROUPS   = [{
 		action : "speak",
 		params : [ "谁？！" ]
 	},{
-		type	   : 2,
+		type	   : 4,
 		action : "playAnimation",
 		params : [ "zhuque", 240, 160 ]
 	},{
-		type : 2,	
+		type : 4,	
 		action : "addStatic",
 		params : [ [{ name : "fire", x : 15, y : 5 }, { name : "fire", x : 15, y : 6 } , { name : "fire", x : 15, y : 7 },
 						   { name : "fire", x : 14, y : 4 }, { name : "fire", x : 14, y : 5 } , { name : "fire", x : 14, y : 6 },  { name : "fire", x : 14, y : 7 } , { name : "fire", x : 14, y : 8 },
@@ -606,11 +528,7 @@ ACTIONGROUPS   = [{
 		params : [ "冲吧。" ]
 	}, 
 	// ---------------------------------------------曹操登场-----------------------------------------
-	{
-		type	: 2,
-		action : "moveWinTo",
-		params : [ 0, 0 ]
-	},{		
+	{		
 		id		: "qibing1",
 		action : "appear"
 	}, {		
@@ -708,23 +626,19 @@ ACTIONGROUPS   = [{
 		id		: "liubei",
 		action : "turnDown"
 	},{		
-		type	: 2,
+		type	: 4,
 		action : "showGoal"
 	},{		
-		type	: 2,
+		type	: 4,
 		action : "lightenUnit",
 		params : [ "zhangbao" ]
 	},{		
-		type	: 2,
+		type	: 4,
 		action : "lightenUnit",
 		params : [ "zhangliang" ]
 	},
 	// ---------------------------------------------许子将登场-----------------------------------------
-	{
-		type	: 2,
-		action : "moveWinTo",
-		params : [ 0, 0 ]
-	},{		
+	{		
 		id			: "xuzijiang",
 		action : "appear"
 	},	{		
@@ -793,7 +707,7 @@ ACTIONGROUPS   = [{
 		}]		
 	},
 	actions : [{
-		type: 2,
+		type: 4,
 		action : "gainStuffOnCell",
 		params : [ 13, 12, 1, 1 ],
 		next	: -1		
@@ -817,7 +731,7 @@ ACTIONGROUPS   = [{
 		}]		
 	},
 	actions : [{
-		type: 2,
+		type: 4,
 		action : "gainStuffOnCell",
 		params : [ 13, 13, 1, 1 ],
 		next	: -1		
@@ -841,7 +755,7 @@ ACTIONGROUPS   = [{
 		}]		
 	},
 	actions : [{
-		type: 2,
+		type: 4,
 		action : "gainStuffOnCell",
 		params : [ 9, 11, 1, 1 ],
 		next	: -1		
@@ -938,7 +852,7 @@ ACTIONGROUPS   = [{
 		name   : "dead"		
 	},
 	actions : [{
-		type: 2,
+		type: 4,
 		action : "checkGoal"
 	}]
 },{
@@ -950,7 +864,7 @@ ACTIONGROUPS   = [{
 		name   : "dead"		
 	},
 	actions : [{
-		type: 2,
+		type: 4,
 		action : "checkGoal"
 	}]
 },{
@@ -962,7 +876,7 @@ ACTIONGROUPS   = [{
 		name   : "dead"		
 	},
 	actions : [{
-		type: 2,
+		type: 4,
 		action : "checkFail"
 	}]
 },{
@@ -978,7 +892,7 @@ ACTIONGROUPS   = [{
 		}]		
 	},
 	actions : [{
-		type: 2,
+		type: 4,
 		action : "checkFail"
 	}]
 }	

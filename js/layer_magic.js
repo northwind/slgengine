@@ -30,5 +30,12 @@ var MagicLayer = Layer.extend({
 		}, this, { one : true } );
 		
 		this.items.push( a );
-	}				
+	},
+	
+	destroy			: function(){
+		PANEL.un("paint", this.onPaint, this )
+		this.items.length = 0;
+		
+		this._super();	 
+	}					
 }); 

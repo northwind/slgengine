@@ -260,14 +260,14 @@ var Observable = Class.extend({
 	 * this.fireEvent( "name", argumetns, ... );
 	*/	
     fireEvent : function( name ){
-        //if(this.eventsSuspended !== true){
+        if(this.eventsSuspended !== true){
 			var ce = this.getEvent( name );
 						
             if ( ce ) {
 				return ce.fire.apply(ce, Array.prototype.slice.call(arguments, 1));
 			}else if ( DEBUG )
 				log( "no event : " + name );
-        //}
+        }
     },
 	
 	/** 

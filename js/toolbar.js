@@ -4,6 +4,7 @@
  */
 var Toolbar  = Observable.extend({
 	active	: false,
+	playground : null,
 	
 	init	: function(){
 		this.addEvents( "endTeam","saveGame","loadGame","condition","restart", "mute" );
@@ -13,8 +14,8 @@ var Toolbar  = Observable.extend({
 	},
 	
 	start	: function( unit ){
-		PANEL.unitsLayer.on( "teamStart", this.onTeamStart, this )
-						.on( "teamEnd", this.onTeamEnd, this );
+		this.playground.unitsLayer.on( "teamStart", this.onTeamStart, this )
+									.on( "teamEnd", this.onTeamEnd, this );
 		
 		this.el = $("#toolbar").show();
 		this.unactiveButtons();
@@ -29,11 +30,11 @@ var Toolbar  = Observable.extend({
 		} );
 		
 		this.on( "endTeam", function(){
-			PANEL.unitsLayer.finishTeam( FACTION, TEAM );
+			this.playground.unitsLayer.finishTeam( FACTION, TEAM );
 		}, this );	
 		
 		this.on("condition", function(){
-			PANEL.showGoal();
+			this.playground.showGoal();
 		});
 		
 		this.el.find( "#mute" ).unbind("click").toggle( function(){
@@ -73,5 +74,3 @@ var Toolbar  = Observable.extend({
 	}
 				
 }); 
-
-var Toolbar = new Toolbar();

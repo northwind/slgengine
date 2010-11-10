@@ -2,72 +2,101 @@
  * 战场类
  */
 var Battle = Observable.extend({
+	w			:0,
+	h			:0,
 	
 	cellLayer	: null,    //zIndex : 100
 	unitsLayer : null, //zIndex : 200
 	staticLayer : null,   //zIndex : 300
 	winLayer : null,   //zIndex : 400
+	toolbar	: null,
+	
+	map		: null,
+	actions	: null,
+	name	: "", 
+	teams	: null,
+	goal	: "",
 	
 	init		: function( config ){
 		this._super( config );
 		
-		//创建的顺序既是绘画时的先后顺序
-		this._createCellLayer();
-		this._createStaticLayer();
-		this._createUnitLayer();
-		this._createWinLayer();
-		this._createMagicLayer();
+		this.map = MAP;
+		this.actions = ACTIONGROUPS;
 		
-		this.on( "keydown", this.onKeydown, this );			
-		this.on( "globalClick", this.onGlobalClick, this );
+		//创建的顺序既是绘画时的先后顺序
+		this.cellLayer = new CellLayer( { playground : this } );
+		this.unitsLayer = new UnitLayer( { playground : this } );
+		this.unitsLayer.on( "battleOver", this.onBattleOver, this );
+		
+		this.staticLayer = new StaticLayer( { playground : this } );
+		this.staticLayer.on( "add", function( x, y, a ){
+			//TODO 根据动画属性判断是否增加 
+			MAP[ y ][ x ]++;
+		}, this ).on( "remove", function( x,y,a ){
+			MAP[ y ][ x ] = Math.max( 0, --MAP[ y ][ x ] );
+		}, this );
+		
+		this.winLayer = new WinLayer( { playground : this } );
+		this.magicLayer = new MagicLayer( { playground : this } );
+		
+		PANEL.on( "keydown", this.onKeydown, this );			
+		PANEL.on( "globalClick", this.onGlobalClick, this );
+		
+		this.toolbar = new Toolbar( { playground : this } );
+		this.ai = new AIController( { playground : this } );
+	
+		canvas.width	= MAX_W;
+		canvas.height	= MAX_H;
+		
+		PANEL.consoleHeight = 160 + 23;
+		PANEL.onResize();
+		
+		PANEL.setBgImage( this.bg || BGIMAGE );
+		this.board = $( "._board" );
+		this.display = $("._display");
 		
 		return this;		
 	},
 	
-	load		: function(){
-		
-	},
-	
-	hung		: function(){
-		
-	},
-		
-	onKeydown	: function( e ){
-		log( "keydown : " + e.which );
-		if ( this.speaking && ( e.which == 32 || e.which == 27 || e.which == 13 ) ){
-			e.preventDefault();
-			this.stopSpeak();
-		}
-	},	
-	
-	onGlobalClick		: function( e ){
-		if ( this.speaking ){
-			this.stopSpeak();
-		}
-	},
-	
 	start				: function(){
 		Pocket.start();
-		Toolbar.start();
-		ScriptMgr.load();
-		AIController.start();
+		this.toolbar.start();
+		this.attachEvents();
+		this.ai.start();
 		
-		canvas.height = MAX_H;
-		$( canvas ).show();
-
 		//显示控制面板
 		this.display.css( "visibility", "visible" );
-		this.setBgImage( BGIMAGE );
-		this.board = $( "._board" );
+		
 		//开始绘制战场
-		this.suspend = false;		
-		//报幕
-		if ( UNDERCOVER )
+		PANEL._showTopLine( this.name, function(){
 			this.unitsLayer.start();
-		else	
-			this._showTopLine( CHAPTER, function(){
-				this.unitsLayer.start();
-			}, this );
+		}, this );
+	},
+	
+	attachEvents	: function(){
+		for (var i=0; i<this.actions.length; i++) {
+			var g = this.actions[i];
+			
+			if ( g.event && g.event.active === true ){
+				var e, econfig = $.extend( {
+					actions	: g.actions,
+					playground : this
+				} ,g.event );
+				
+				if ( econfig.type == 1 )
+					e = new UnitEvent( econfig );
+				else if ( econfig.type == 2 )
+					e= new SysEvent( econfig );
+				else if ( econfig.type == 3 )
+					e= new BattleEvent( econfig );	
+				else if ( econfig.type == 4 )
+					e= new GroundEvent( econfig );		
+				else
+					e = new Event( econfig );
+				
+				e.hung();						
+			}
+		}		
 	},
 	
 	showGoal		: function(){
@@ -88,12 +117,12 @@ var Battle = Observable.extend({
 	},
 	
 	victory			: function(){
-		this.showWhole( "胜利！", function(){
+		PANEL.showWhole( "胜利！", function(){
 			window.location.reload();
 		}, this );
 	},
 	failed			: function(){
-		this.showWhole( "失败！", function(){
+		PANEL.showWhole( "失败！", function(){
 			window.location.reload();
 		}, this );
 	},
@@ -102,26 +131,13 @@ var Battle = Observable.extend({
 		var cx = WINDOW_WIDTH /2, cy = WINDOW_HEIGHT /2,
 			dx = Math.max(cell.dx - cx, 0), dy = Math.max( cell.dy - cy, 0 );
 		
-		this.moveWinTo( dx, dy, fn, scope );
+		PANEL.moveWinTo( dx, dy, fn, scope );
 	},
 	//判断单元格是否在窗口内
 	isInside		: function( cell ){
 		var dx = cell.dx, dy = cell.dy;
 		
-		if ( dx < (this.scrollLeft - CELL_WIDTH ) || dx > this.scrollLeft + WINDOW_WIDTH - CELL_WIDTH )
-			return false;
-		if ( dy < (this.scrollTop - CELL_HEIGHT  ) || dy > this.scrollTop + WINDOW_HEIGHT - CELL_HEIGHT )
-			return false;
-		
-		return true;
-	},
-	
-	//设置背景图片
-	setBgImage	: function( url ){
-		if ( !UNDERCOVER )
-			canvas.style.background = "url('" + url + "') no-repeat";
-			
-		return this;
+		return PANEL.isInside( dx + CELL_WIDTH, dy + CELL_WIDTH );
 	},
 	
 	showUnitAttr		: function( unit ){
@@ -160,7 +176,21 @@ var Battle = Observable.extend({
 	hideUnitAttr	: function(){
 		this.board.hide();
 	},
+
+	onKeydown	: function( e ){
+		log( "keydown : " + e.which );
+		if ( this.speaking && ( e.which == 32 || e.which == 27 || e.which == 13 ) ){
+			e.preventDefault();
+			this.stopSpeak();
+		}
+	},	
 	
+	onGlobalClick		: function( e ){
+		if ( this.speaking ){
+			this.stopSpeak();
+		}
+	},
+		
 	speaking		: false,	
 	speakTimer		: 0,	
 	speakText		: "",
@@ -284,6 +314,25 @@ var Battle = Observable.extend({
 			unit.gainStuff( stuff, num, fn, scope ) 
 		}else if ( fn )
 			fn.call( scope || this );
+	},
+	
+	destroy	: function(){
+		this.cellLayer.destroy();
+		this.unitsLayer.destroy();
+		this.staticLayer.destroy();
+		this.winLayer.destroy();
+		this.magicLayer.destroy();
+		
+		PANEL.un( "keydown", this.onKeydown, this );			
+		PANEL.un( "globalClick", this.onGlobalClick, this );		
+		
+		this._super();
+		
+		this.cellLayer = null;
+		this.unitsLayer = null;
+		this.staticLayer = null;
+		this.winLayer = null;
+		this.magicLayer = null;
 	}
 });
 

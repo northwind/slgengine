@@ -21,38 +21,41 @@ var WinLayer = Component.extend({
 		this.items = [];
 		
 		//点击右键时取消菜单
-		PANEL.on("keydown", function( e ){
-			if ( this.hasWindow() && !this.busy ) {
-				//按ESC时
-				if ( e.which == 27 ) {
-					e.preventDefault();
-					e.stopPropagation();
-					
-					this.onContextmenu();
-				} else
-				//管理器主动调用onKeydown
-				if ( !this.passby() )
-					this.items[ 0 ].onKeydown( e );
-			}	
-		}, this ).on( "contextmenu", function( e ){
-			if ( this.hasWindow() && !this.busy ) {
-				e.stopPropagation();
-				
-				this.onContextmenu();
-			}
-		}, this );		
+		PANEL.on("keydown", this.onKeydown, this )
+			 .on("contextmenu", this.onContextmenu, this );		
 		
 		return this;
 	},
 	
+	onKeydown			: function( e ){
+		if ( this.hasWindow() && !this.busy ) {
+			//按ESC时
+			if ( e.which == 27 ) {
+				e.preventDefault();
+				e.stopPropagation();
+				
+				this.onContextmenu();
+			} else
+			//管理器主动调用onKeydown
+			if ( !this.passby() )
+				this.items[ 0 ].onKeydown( e );
+		}			
+	},
+	
 	//触发右键/ESC
-	onContextmenu		: function(){
-		if (this.conceal) {
-			this.conceal = false;
-			this.items[0].show();
+	onContextmenu		: function( e ){
+		if (this.hasWindow() && !this.busy) {
+			if (e) 
+				e.stopPropagation();
+			
+			
+			if (this.conceal) {
+				this.conceal = false;
+				this.items[0].show();
+			}
+			else 
+				this.items[0].cansel();
 		}
-		else 
-			this.items[0].cansel();		
 	},
 	
 	popActionMenu		: function( unit, x, y ){
@@ -110,5 +113,14 @@ var WinLayer = Component.extend({
 	
 	unlock			: function(){
 		this.busy = false;
-	}				
+	},
+	
+	destroy			: function(){
+		PANEL.un("keydown", this.onKeydown, this )
+			 .un("contextmenu", this.onContextmenu, this );	
+			 
+		this.items.length = 0;
+		
+		this._super();	 
+	}							
 }); 

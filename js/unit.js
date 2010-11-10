@@ -104,6 +104,7 @@ var Unit = Observable.extend({
 		
 		//绑定事件回调函数
 		this.bindEvent( "attack", this.onAttack, this );
+		this.on( "walk", this.onWalk, this );
 		
 		return this;
 	},
@@ -134,7 +135,7 @@ var Unit = Observable.extend({
 	},
 	
 	setCell		: function(){
-		this.cell = this.oriCell = PANEL.getCell( this.gx, this.gy );
+		this.cell = this.oriCell = this.layer.playground.getCell( this.gx, this.gy );
 		return this;
 	},
 	
@@ -206,30 +207,30 @@ var Unit = Observable.extend({
 	//显示可移动单元格
 	showMoves	: function(){
 		this.moves = this.getMoves();
-		PANEL.cellLayer.paintCells( MOVECOLOR, this.moves );
+		this.layer.playground.cellLayer.paintCells( MOVECOLOR, this.moves );
 		return this.moves;
 	},
 	clearMoves	: function(){
-		PANEL.cellLayer.paintCells( MOVECOLOR, {} );
+		this.layer.playground.cellLayer.paintCells( MOVECOLOR, {} );
 	},
 	//获得可攻击的格子
 	showAttack	: function(){
 		this.attacks = this.getAttacks();
-		PANEL.cellLayer.paintCells( ATTACKCOLOR, this.attacks );
+		this.layer.playground.cellLayer.paintCells( ATTACKCOLOR, this.attacks );
 		return this.attacks;
 	},
 	clearAttack	: function(){
-		PANEL.cellLayer.paintCells( ATTACKCOLOR, {} );
+		this.layer.playground.cellLayer.paintCells( ATTACKCOLOR, {} );
 	},
 	//窗口移动到可以显示该角色
 	followMe		: function( fn, scope ){
-		PANEL.moveToCell( this.cell, fn, scope );
+		this.layer.playground.moveToCell( this.cell, fn, scope );
 		return this;
 	},	
 	//如果角色不在战场内，则显示改单位
 	catchMe	: function(){
-		if ( !PANEL.isInside( this.cell ) )
-			PANEL.moveToCell( this.cell );	//镜头对着说话的角色
+		if ( !this.layer.playground.isInside( this.cell ) )
+			this.layer.playground.moveToCell( this.cell );	//镜头对着说话的角色
 	},
 				
 	canMove	: function( cell ){
@@ -299,6 +300,10 @@ var Unit = Observable.extend({
 		return this;
 	},
 	
+	onWalk		: function(){
+		this.catchMe();
+	},
+	
 	onMove	: function( cell ){
 		this.moving = false;
 		this.fireEvent( "move", this, this.cell );
@@ -306,7 +311,7 @@ var Unit = Observable.extend({
 	
 	attack			: function( unit, fn, scope ){
 		if (typeof unit == "string")
-			unit = PANEL.getUnitById( unit );
+			unit = this.layer.playground.getUnitById( unit );
 		
 		if ( unit ){
 			delete this.attacks;
@@ -381,6 +386,7 @@ var Unit = Observable.extend({
 	
 	//挥击武器 只播放动画
 	swing		: function( fn, scope ){
+		this.catchMe();
 		this.ui.attack( null, false, 0, fn, scope );		
 	},
 	
@@ -550,7 +556,7 @@ var Unit = Observable.extend({
 		
 	hideAttack	: function(){
 		delete this.attacks;
-		PANEL.unitsLayer._removeCells();
+		this.layer.playground.unitsLayer._removeCells();
 	},
 	
 	onDecreaseMP	: function( n ){
@@ -718,14 +724,14 @@ var Unit = Observable.extend({
 		if ( fn )
 			this.on( "speak", fn, scope, { one : true } );
 			
-		PANEL.speak( this, text );
+		this.layer.playground.speak( this, text );
 		
 		return this;
 	},
 	//跟某人说话 自动转向
 	speakTo	: function( unit, text, fn, scope ){
 		if ( !( unit instanceof Unit ) )
-			unit = PANEL.getUnitById( unit ); 
+			unit = this.layer.playground.getUnitById( unit ); 
 		
 		var d =  this.cell.directT( unit.cell );
 		if ( d != this.ui.direct ){
@@ -907,7 +913,7 @@ var Unit = Observable.extend({
 	//在相距两步的范围内即判断为在附近
 	isAround	: function( unit ){
 		if ( !( unit instanceof Unit ) )
-			unit = PANEL.getUnitById( unit ); 		
+			unit = this.layer.playground.getUnitById( unit ); 		
 		
 		return this.cell.distance( unit.cell ) < 3;
 	}

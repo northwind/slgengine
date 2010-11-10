@@ -4,8 +4,6 @@
  * 具体的绘制功能由各个层负责
  */
 var Panel = Component.extend({
-	w		: WINDOW_WIDTH,
-	h		: WINDOW_HEIGHT,
 	cls   : "_panel",
 	suspend	: true,  //停止更新
 	drawable: true,   //可以绘画
@@ -20,7 +18,7 @@ var Panel = Component.extend({
 	
 	init		: function( config ){
 		this.el = $( "#panel" );
-		this.ct = $("#wrap").width( MAX_W );
+		this.ct = $("#wrap");
 		
 		this.addEvents( "start", "stop", "click","runScript","stopScript","globalClick","mouseleave","mousemove","contextmenu","keydown","keyup" );
 		this.addEvents( { name : "paint", type : 3 } );
@@ -29,9 +27,11 @@ var Panel = Component.extend({
 		
 		//初始化画布 开始隐藏
 		canvas = $("#canvas")[0];
-		canvas.width = MAX_W;
-		canvas.height = MAX_H; 
+		canvas.width = 0;
+		canvas.height = 0; 
 		ctx = canvas.getContext("2d");
+		
+		//TODO 初始化窗口宽高
 				
 		//mask layer
 		this.masklayer = $("#masklayer").addClass("_masklayer");
@@ -73,10 +73,10 @@ var Panel = Component.extend({
 			//if (!_self.isScripting()) { //执行脚本时锁定屏幕
 			if ( true ){
 				if (y == -1) {
-					_self.moveWinBy(0, CELL_HEIGHT);
+					_self.moveWinBy(0, CELL_HEIGHT || 48 );
 				}
 				else {
-					_self.moveWinBy(0, -CELL_HEIGHT);
+					_self.moveWinBy(0, -CELL_HEIGHT || 48 );
 				}
 			}
 			e.preventDefault();
@@ -130,7 +130,6 @@ var Panel = Component.extend({
 		this.moveWinTo( this.scrollLeft - wDiff, this.scrollTop  - hDiff  );
 		
 		this.masklayer.css( { width	: WINDOW_WIDTH, height	: WINDOW_HEIGHT	} );
-		this.display.width( WINDOW_WIDTH );
 	},
 	
 	load			: function( obj ){
@@ -147,11 +146,17 @@ var Panel = Component.extend({
 		delete this.item;
 		return this;
 	},
+	
+	clear	: function(){
+		this.purgeListeners();
+	},
 
 	//  更改游戏速度
 	speed			: function( n ){
 		this.dps = n;
-		return this.start();
+		this.stop();
+		this.repaint();
+		return this;
 	},
 
 	start				: function(){
@@ -168,7 +173,7 @@ var Panel = Component.extend({
 	
 	repaint	: function(){
 		//触发器
-		var inter = 1000 / this.dps, item = this.item;
+		var inter = 1000 / this.dps, _self = this, item = this.item;
 		this.timer = setInterval( function(){
 			//TODO 优化为只需要重新的地方才清除
 			ctx.clearRect( 0,0, MAX_W, MAX_H );
@@ -295,7 +300,25 @@ var Panel = Component.extend({
 		
 		return this;
 	},
-	
+
+	//判断某个位置是否在窗口内
+	isInside		: function( dx, dy ){
+		if ( dx < (this.scrollLeft) || dx > this.scrollLeft + WINDOW_WIDTH )
+			return false;
+		if ( dy < (this.scrollTop) || dy > this.scrollTop + WINDOW_HEIGHT)
+			return false;
+		
+		return true;
+	},
+
+	//设置背景图片
+	setBgImage	: function( url ){
+		if ( !UNDERCOVER )
+			canvas.style.background = "url('" + url + "') no-repeat";
+			
+		return this;
+	},
+			
 	mask		: function (){
 		this.masklayer.show();
 		return this;			  
@@ -328,6 +351,5 @@ var Panel = Component.extend({
 	}
 });
 
-PANEL = new Panel();
 
 
