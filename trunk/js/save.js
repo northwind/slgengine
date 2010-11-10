@@ -11,7 +11,11 @@ var Save = Observable.extend({
 		
 		this.items = [ {
 			type	: 1,
-			filename: "param/playerparams.js"
+			filename: "js/param/playerparams.js"
+		},{
+			type	: 2,
+			id		: "1",
+			filename: "js/param/scene/1.js"
 		} ];
 		
 		return this;
@@ -20,42 +24,47 @@ var Save = Observable.extend({
 	show	: function(){},
 	
 	choose	: function( n ){
-		if ( this.items[ n ] ){
+		var item = this.items[ n ];
+		
+		if ( item ){
+			PANEL.clear();
 			
-			$.getScript( this.items[ n ].filename, function(){
-				
+			if (item.type == 2) {
+				//初始化一个新战场
+				PLAYGROUND = new Theater( { name : CHAPTER,
+					bg	: BGIMAGE,
+					goal : GOAL
+				 } );
+				PLAYGROUND.start();				
+			}
+			else 
+				if (item.type == 1) {
+					_self = this;
+					$.getScript(this.items[n].filename, function(){
+						_self.load();
+					});
+				}
+		}
+	},
+	
+	load	: function(){
 				//初始化进度条
 				var process = new Process();
 				
 				process.on("end", function(){
 					log( "process end" );
-					SoundMgr.load();
 					
 					//初始化一个新战场
-					var b = new Battle( { name : "123" } );
-					b.load();
+					PLAYGROUND = new Battle( { name : CHAPTER,
+						bg	: BGIMAGE,
+						goal : GOAL
+					 } );
+					PLAYGROUND.start();
 					
-					//加载战场 开始更新
-					PANEL.load( b ).start();
-					
-				}).start();					
-				
-			} );
-		}
+				}).start();				
 	}
 	
 }); 
 
 Save = new Save();
-
-//程序暂时的入口
-$( function(){
-	
-	if ( $.browser.msie )
-		return false;
-	
-	//Save.show();
-	Save.choose( 0 );
-	
-} );
 

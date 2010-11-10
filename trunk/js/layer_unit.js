@@ -232,7 +232,7 @@ var UnitLayer = Layer.extend({
 				this.units[ index ].hpLineForce = true;
 				
 		//没有弹出菜单时右键才有效
-		if ( e.which == 27 && PANEL.winLayer.passby() ){
+		if ( e.which == 27 && this.playground.winLayer.passby() ){
 			if ( this.clicked )
 				this.clicked.unClick();
 			
@@ -249,7 +249,7 @@ var UnitLayer = Layer.extend({
 	},		
 	
 	onMousemove	: function( e ){
-		var  cell = PANEL.getCell( e );
+		var  cell = this.playground.getCell( e );
 		if (cell) {
 			var unit = this.getUnitByIndex( cell.index );
 			//已经存在则隐藏
@@ -264,13 +264,13 @@ var UnitLayer = Layer.extend({
 	},
 	
 	canClick	: function(){
-		return PANEL.winLayer.passby() && !PANEL.isScripting();
+		return this.playground.winLayer.passby() && !PANEL.isScripting();
 	},
 	
 	onClick	: function( e ){
 		//有弹出菜单时不触发click
 		if ( this.canClick() ) {
-			var cell = PANEL.getCell(e),
+			var cell = this.playground.getCell(e),
 				unit = this.getUnitByIndex( cell.index );
 			
 			//注册的事件返回false时不继续执行
@@ -309,13 +309,13 @@ var UnitLayer = Layer.extend({
 	},
 	
 	_removeCells			: function(){
-		PANEL.cellLayer.paintCells( MOVECOLOR, {} );
-		PANEL.cellLayer.paintCells( ATTACKCOLOR, {} );
-		PANEL.cellLayer.strokeCells( ATTACKCOLOR, {} );
+		this.playground.cellLayer.paintCells( MOVECOLOR, {} );
+		this.playground.cellLayer.paintCells( ATTACKCOLOR, {} );
+		this.playground.cellLayer.strokeCells( ATTACKCOLOR, {} );
 	},
 	
 	showAttackCells		: function( obj ){
-		PANEL.cellLayer.paintCells( ATTACKCOLOR, obj );
+		this.playground.cellLayer.paintCells( ATTACKCOLOR, obj );
 	},
 	
 	//得到以cell为中心，相隔range的所有cell
@@ -324,7 +324,7 @@ var UnitLayer = Layer.extend({
 		
 		for ( i= x-range ; i<=x + range; i++) {
 			for ( j= y-range ; j<=y + range; j++) {
-					var node = PANEL.getCell( i, j);
+					var node = this.playground.getCell( i, j);
 					if ( node )
 						all[ node.index ] = node;
 			}
@@ -412,13 +412,13 @@ var UnitLayer = Layer.extend({
 		if ( step <= 0 )
 				return {}[ cell.index ]  = cell ;
 		
-		var open = {}, closed = {}, units = this.units;
+		var open = {}, closed = {}, units = this.units, playground = this.playground;
 		//删除原指针
 		delete cell.parent;
 		open[ cell.index ] = cell;
 		
 		function prepare( x,y,parent ){
-			var key = getIndex( x, y ), unit = units[ key ], child =  PANEL.getCell( x, y );
+			var key = getIndex( x, y ), unit = units[ key ], child =  playground.getCell( x, y );
 			//判断是否可以行走/是否已经计算过/如果有单位判断是否为友军
 			if ( child && !open[key] && !closed[key] && MAP[y] && MAP[y][x] ==0 && (unit ? walker.isFriend( unit.faction ) : true  ) ) {
 				child.parent = parent;
@@ -556,7 +556,7 @@ var UnitLayer = Layer.extend({
 			
 	onContextmenu	: function( e ){
 		//没有弹出菜单时右键才有效
-		if ( !PANEL.winLayer.hasWindow() ) {
+		if ( !this.playground.winLayer.hasWindow() ) {
 			if ( this.clicked )
 				this.clicked.unClick();
 			
@@ -602,14 +602,14 @@ var UnitLayer = Layer.extend({
 			.on( "move", function( unit ){
 				//运行脚本时不弹框
 				if ( !PANEL.isScripting() && !unit.auto )
-					PANEL.popActionMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
+					this.playground.popActionMenu( unit, unit.cell.dx - CELL_WIDTH * 2, unit.cell.dy - CELL_HEIGHT );
 			}, this )
 			.on( "walk", function( unit, from, to ){
 				//角色移动时及时更新管理器
 				//窗口自动跟随
 				if ( unit.auto ){
-					if ( !PANEL.isInside( to ) )
-						PANEL.moveToCell( to );
+					if ( !this.playground.isInside( to ) )
+						this.playground.moveToCell( to );
 				}
 				//TODO 优化存储
 				//已存在的不覆盖
@@ -626,16 +626,16 @@ var UnitLayer = Layer.extend({
 				
 			}, this )
 			//点击角色时显示该角色属性
-			.on( "click", PANEL.showUnitAttr, PANEL )
+			.on( "click", this.playground.showUnitAttr, this.playground )
 			//状态更改时重新显示该角色属性
 			.on( "change", function( unit ){
 				if ( unit == this.clicked )
-					PANEL.showUnitAttr( unit );
+					this.playground.showUnitAttr( unit );
 			}, this )
 			//取消点击时,隐藏该角色属性
 			.on( "unclick", function( unit ){
 				if ( unit == this.clicked )
-					PANEL.hideUnitAttr();
+					this.playground.hideUnitAttr();
 					
 				this.deleteClicked( unit );
 			}, this )
@@ -680,5 +680,19 @@ var UnitLayer = Layer.extend({
 	},
 	onBattleFail	: function(){
 		this.fireEvent( "battleOver", this.win );
-	}	
+	},
+	
+	destroy			: function(){
+		PANEL.un("click", this.onClick, this)
+			 .un("contextmenu", this.onContextmenu, this)
+			 .un("mousemove", this.onMousemove, this)
+			 .un("keydown", this.onKeydown, this)
+			 .un("keyup", this.onKeyup, this)
+			 .un("paint", this.onPaint, this ); //定时更新
+			 
+		this.items.length = 0;
+		this.units = {};
+		
+		this._super();	 
+	}			
 }); 

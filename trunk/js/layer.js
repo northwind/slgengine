@@ -37,15 +37,5 @@ var Layer = Observable.extend({
 	//interface
 	clear	: function(){
 		
-	},		
-	
-	destroy	: function(){
-		//销毁这层上的所有单元
-		this.items.each( function(){
-			if ( this.destroy )
-				this.destroy();
-		} );
-	
-		this._super();
 	}
 });

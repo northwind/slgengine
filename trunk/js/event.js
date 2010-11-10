@@ -6,6 +6,7 @@
  * type	: 事件类型 1 角色事件 2系统事件 
  * current : 当前动作
  * index	: 从第几个动作开始执行
+ * playground : event执行环境
  */
 var Event = Manager.extend({
 	name : "",
@@ -15,6 +16,7 @@ var Event = Manager.extend({
 	current	: null,
 	index	: 0, 
 	condition : null,
+	playground : null,
 	
 	init	: function( config ){
 		this._super( arguments[0] );
@@ -37,6 +39,7 @@ var Event = Manager.extend({
 					index	: i,
 					type	: 1,
 					mgr		: this,
+					playground : this.playground,
 					actions	: this.actions,
 					fn	: this.next,
 					scope : this
@@ -48,6 +51,8 @@ var Event = Manager.extend({
 					a = new SysAction( config );
 				else if ( config.type == 3 )
 					a = new GroupAction( config );
+				else if ( config.type == 4 )
+					a = new GroundAction( config );	
 				else
 					a = new Action( config );	
 					
@@ -143,7 +148,7 @@ var UnitEvent = Event.extend({
 	id		: "",  //角色ID
 	
 	getObj	: 	function(){
-		return PANEL.getUnitById( this.id );
+		return this.playground.getUnitById( this.id );
 	}
 }); 
 //系统事件
@@ -157,40 +162,14 @@ var SysEvent = Event.extend({
 var BattleEvent = Event.extend({
 	
 	getObj	: 	function(){
-		return PANEL.unitsLayer;
+		return this.playground.unitsLayer;
+	}
+}); 
+//局域事件
+var GroundEvent = Event.extend({
+	
+	getObj	: 	function(){
+		return this.playground;
 	}
 }); 
 
-
-//事件管理器 执行某个事件需从这里接入
-var ScriptMgr = Manager.extend({
-	current	: null,	
-	
-	//工厂模式生成事件对象
-	load	: function(){
-		for (var i=0; i<ACTIONGROUPS.length; i++) {
-			var g = ACTIONGROUPS[i];
-			
-			if ( g.event && g.event.active === true ){
-				var e, econfig = $.extend( {
-					actions	: g.actions
-				} ,g.event );
-				
-				if ( econfig.type == 1 )
-					e = new UnitEvent( econfig );
-				else if ( econfig.type == 2 )
-					e= new SysEvent( econfig );
-				else if ( econfig.type == 3 )
-					e= new BattleEvent( econfig );	
-				else
-					e = new Event( econfig );
-				
-				this.reg( i, e);
-				e.hung();						
-			}
-		}
-		return this;
-	}		
-}); 
-
-ScriptMgr = new ScriptMgr();

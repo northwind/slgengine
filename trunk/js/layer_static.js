@@ -56,6 +56,12 @@ var StaticLayer = Layer.extend({
 		this.fireEvent("remove", x, y, a, this );
 		if ( fn )
 			fn.call( scope || this, this );		
-	}
-				
+	},
+	
+	destroy			: function(){
+		PANEL.un("paint", this.onPaint, this )
+		this.items = null;
+		
+		this._super();	 
+	}				
 }); 

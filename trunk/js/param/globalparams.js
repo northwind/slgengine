@@ -4,19 +4,13 @@
 var 
 CELL_WIDTH	= 48,
 CELL_HEIGHT	= 48,
-CELL_XNUM	= 20,
-CELL_YNUM	= 20,
 
-MAX_H = CELL_HEIGHT * CELL_YNUM,
-MAX_W = CELL_WIDTH * CELL_XNUM,
-
-UNDERCOVER = false, 
-DEBUG	= false,
+UNDERCOVER = true, 
+DEBUG	= true,
 PANEL = null,
 //窗口的宽高
 WINDOW_WIDTH = 960,
 WINDOW_HEIGHT= 480,
-DISPLAY_HEIGHT = 160,
 
 SPEED	= 8,	//调节unit切换图片的速度
 STEP	= 4 ,	//调节走路速度

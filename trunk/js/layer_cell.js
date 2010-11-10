@@ -13,8 +13,8 @@ var CellLayer = Layer.extend({
 		this._super( arguments[0] );
 		
 		PANEL.on("mousemove", this.activeCell, this )
-					 .on("paint", this.onPaint, this )
-					 .on("mouseleave", this.unactiveCell, this );
+			 .on("paint", this.onPaint, this )
+			 .on("mouseleave", this.unactiveCell, this );
 		
 		return this;
 	},
@@ -147,6 +147,14 @@ var CellLayer = Layer.extend({
 			this.cells = {};
 			
 		return this;	
+	},
+	
+	destroy			: function(){
+		PANEL.un("mousemove", this.activeCell, this )
+			 .un("paint", this.onPaint, this )
+			 .un("mouseleave", this.unactiveCell, this );
+		
+		this._super();	 
 	}
 			
 }); 

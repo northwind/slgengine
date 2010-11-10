@@ -169,7 +169,7 @@ var UnitUI = Observable.extend({
 		
 		//绘制血条
 		var y = dy - 9;
-		if ( unit.hpLine || PANEL.unitsLayer.hpLineForce ) {
+		if ( unit.hpLine || unit.layer.hpLineForce ) {
 			y = y < 0 ? 0 : y;
 			//血条黑色背景
 			ctx.fillStyle = "rgb(0,0,0)";
@@ -623,7 +623,7 @@ var UnitUI = Observable.extend({
 			from	: [ this.unit.cell.dx, this.unit.cell.dy - 5],	increment : [ 0, 0 ]
 		} );
 		
-		PANEL.playAnimation( a );
+		this.unit.layer.playground.playAnimation( a );
 		SoundMgr.play( "gain" );
 		
 		return this;
@@ -654,6 +654,6 @@ var UnitUI = Observable.extend({
 			scope : scope			
 		});
 		
-		PANEL.playAnimation( a );		
+		this.unit.layer.playground.playAnimation( a );		
 	}	
 }); 

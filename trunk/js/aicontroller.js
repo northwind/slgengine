@@ -8,6 +8,7 @@ var AIController = Observable.extend({
 	running	: false,
 	suspend	: false,	//暂停
 	active	: true,
+	playground	: null,
 	
 	init: function(){
 		this._super(arguments[0]);
@@ -22,8 +23,8 @@ var AIController = Observable.extend({
 		PANEL.on( "runScript", this.pause, this )
 			 .on( "stopScript", this.goon, this );
 		
-		PANEL.unitsLayer.on( "teamStart", this.onTeamStart, this )
-					    .on( "teamEnd", this.onTeamEnd, this );	 
+		this.playground.unitsLayer.on( "teamStart", this.onTeamStart, this )
+					    		   .on( "teamEnd", this.onTeamEnd, this );	 
 	},
 	
 	getAITeam	: function(){
@@ -72,4 +73,3 @@ var AIController = Observable.extend({
 	
 }); 
 
-AIController = new AIController();
