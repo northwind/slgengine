@@ -4,9 +4,9 @@
  * email	: norristong_x@qq.com
  */
 
-(function(){
+//(function(){
 	
-	
+
 	
 
 /*!
@@ -241,8 +241,9 @@ function handler(event) {
 }
 
 })(jQuery);/**
- * 工具集
- */
+ * 工具�??
+ */	
+			
 if ( window.console == undefined )
 	console = {};
 if ( console.debug == undefined )
@@ -252,7 +253,7 @@ function log( str ){
 		console.debug( str );
 }	
 /*
- * 获得index值
+ * 获得index�??
 */
 function getIndex( x, y ){
 	return x * CELL_YNUM + y;
@@ -264,7 +265,7 @@ function getIndex( x, y ){
 	return true;	
 }
 /*
- * 输入event或者具体数值返回相对坐标值
+ * 输入event或�??�具体数值返回相对坐标�????
 */
 function getPoints( x, y ){
 	if (typeof x == "number") {
@@ -275,9 +276,8 @@ function getPoints( x, y ){
 	}
 	
 	if ( x.layerY ){
-		//events时
-		y = x.layerY;
-		x = x.layerX;
+		y = x.offsetY || x.layerY;
+		x = x.offsetX || x.layerX;
 	}
 	
 	var o =  {
@@ -294,13 +294,13 @@ function	_loadImg( src, onload, onerror ){
 	img.src = src;
 }
 
-//获取时间戳
+//获取时间�??
 var __d = new Date();
 function getTime(){
 	return __d.getTime() + "" + Math.round( (Math.random() * 1000) );
 }
 
-//绑定作用域
+//绑定作用�??
 function bind( fn,scope ){
 	return function(){
 		if ( fn )
@@ -321,7 +321,7 @@ function bind( fn,scope ){
   var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
 
   // The base Class implementation (does nothing)
-  this.Class = function(){};
+  window.Class = function(){};
   
   // Create a new Class that inherits from this class
   Class.extend = function(prop) {
@@ -376,6 +376,8 @@ function bind( fn,scope ){
     return Class;
   };
 })();
+
+
 /**
  * 观察者设计模式
  * 所有对象具有事件响应的能力
@@ -892,9 +894,7 @@ HighLightDeep = 190,    //高亮度
 
 STRENGTHHP	= 10, //一点力量增加的血量
 AGILITYDEF  = 0.5, //一点敏捷增加的防御值
-INTELLIGENCEMP = 10,  //一点智力增加的魔法值
-
-PATH = "http://www.sinaimg.cn/cj/newjs/slg/"
+INTELLIGENCEMP = 10  //一点智力增加的魔法值
 ;  
 //物品 魔法
 var 
@@ -920,7 +920,7 @@ GOODS = {
 			2	: {
 			id			: 2,
 			desc	: "下雨",
-			count	: 1,
+			count	: 0,
 			name	: "水灵珠",
 			consumable : false,
 			nounit	: true,
@@ -1073,37 +1073,38 @@ GOODS = {
 		
 		AUDIOS	= {
 			battle	: {
-				src : "audios/battle.ogg", loop : true
+				src : "audios/battle.mp3", 
+				loop : true
 			},
 			attack	: {
-				src : "audios/attack.ogg"
+				src : "audios/attack.mp3"
 			},
 			dead	: {
-				src : "audios/dead.ogg"
+				src : "audios/dead.mp3"
 			},
 			gain	: {
-				src : "audios/gain.ogg"
+				src : "audios/gain.mp3"
 			},
 			movefoot	: {
-				src : "audios/move1.ogg", loop : true
+				src : "audios/move1.mp3", loop : true
 			},
 			movehorse	: {
-				src : "audios/movehorse.ogg" , loop : true
+				src : "audios/movehorse.mp3" , loop : true
 			},
 			turn	: {
-				src : "audios/turn.ogg"
+				src : "audios/turn.mp3"
 			},
 			upgrade	: {
-				src : "audios/upgrade.ogg"
+				src : "audios/upgrade.mp3"
 			},
 			appear	: {
-				src : "audios/appear.ogg"
+				src : "audios/appear.mp3"
 			},
 			bird		: {
-				src : "audios/bird.ogg"
+				src : "audios/bird.mp3"
 			},
 			script	: {
-				src : "audios/open.ogg"
+				src : "audios/open.mp3"
 			}
 		};
 		
@@ -1710,14 +1711,7 @@ var Figure  = Observable.extend({
 				imgAtk	: "images/atk/0.png",
 				imgSpc	: "images/spc/0.png",
 				imgFace	: "images/face/0.png"
-			} );
-		}else{
-			$.extend( config, {
-				imgMove	: PATH + config.imgMove,
-				imgAtk	: PATH + config.imgAtk,
-				imgSpc	: PATH + config.imgSpc,
-				imgFace	: PATH + config.imgFace
-			} );			
+			} )
 		}		
 		this.addEvents( "load" );
 		this._super( config );
@@ -2241,7 +2235,11 @@ var UnitUI = Observable.extend({
 				img	: first,  w : 64
 			},{
 				img	: actions[1],  w : 64
-			} ],
+			}, {
+				img	: actions[2],  w : 64
+			}, {
+				img	: actions[3],  w : 64
+			}],
 			fn 		: function(){
 				SoundMgr.play( "attack" );
 				if ( fn )
@@ -2250,18 +2248,18 @@ var UnitUI = Observable.extend({
 			scope	: scope,
 			direct	: direct
 		}
-		var obj2 = {
-			inter	: ASPEED,
-			items	: [ {
-				img	: actions[2],  w : 64
-			}, {
-				img	: actions[3],  w : 64
-			}],
-			direct	: direct
-		}	
+//		var obj2 = {
+//			inter	: ASPEED,
+//			items	: [ {
+//				img	: actions[2],  w : 64
+//			}, {
+//				img	: actions[3],  w : 64
+//			}],
+//			direct	: direct
+//		}	
 		this.pushImg( obj1 );
-		this.pushImg( obj2 );
-		//SoundMgr.play( "attack" );
+		//this.pushImg( obj2 );
+		SoundMgr.play( "attack" );
 	},
 
 	dead	: function( fn , scope ){
@@ -4048,7 +4046,8 @@ var UnitLayer = Layer.extend({
 		function prepare( x,y,parent ){
 			var key = getIndex( x, y ), unit = units[ key ], child =  PANEL.getCell( x, y );
 			//判断是否可以行走/是否已经计算过/如果有单位判断是否为友军
-			if ( child && !open[key] && !closed[key] && MAP[y] && MAP[y][x] ==0 && (unit ? walker.isFriend( unit.faction ) : true  ) ) {
+			if ( child && !open[key] && !closed[key] && MAP[y] && MAP[y][x] ==0 && (unit ? walker.isFriend( unit.faction ) : true  )  &&
+			     child.distance( cell ) <= step ) {
 				child.parent = parent;
 				open[key] = child;
 			}	
@@ -4087,7 +4086,7 @@ var UnitLayer = Layer.extend({
 	findWay			: function( character, from, to ){
 		var ret =[], opened = {}, closed = {}, units = this.units, 
 			node = null, minD, tmpNode, faction = character.faction,
-			targetX = to.x, targetY = to.y, loops = 0, rate = 20, weight ;
+			targetX = to.x, targetY = to.y, loops = 0, cost = 1;
 		
 		//直线距离 	
 	    function calcD( tmp ){
@@ -4096,9 +4095,8 @@ var UnitLayer = Layer.extend({
 				
 			var m = targetX - tmp.x , n = targetY - tmp.y;
 	        tmp.d = Math.sqrt( m *m + n * n );
-			//优化 走直线权值偏大 相当于行走路径偏小
-			if ( tmp.parent && rate && tmp.parent.face == tmp.direct( tmp.parent ) )
-				tmp.d -= weight;
+			//曼哈顿启发函数
+			//tmp.d = Math.abs(m) + Math.abs(n);
 				
 			return tmp.d;
 	    } 
@@ -4110,13 +4108,11 @@ var UnitLayer = Layer.extend({
 			if (!open[key] && !closed[key] && node && MAP[node.y][node.x] == 0 && (unit ? ( unit.isFriend(faction) ) : true)) {
 				node.parent = p;
 				calcD(node, p );
-				node.face   = node.direct( p );		//记住子结点相对父结点运动的方向
 				opened[node.index] = node;
 			}
 		}			
 		//获得子节点
 		function getChildren( node ){
-			weight = node.d / rate;			//动态更改权值
 			//up
 			insertSon( node.up(), node );
 			//down
@@ -4130,7 +4126,6 @@ var UnitLayer = Layer.extend({
 		//删除原指针
 		delete from.parent;
 		calcD( from );
-		weight = from.d / rate;
 		opened[ from.index ] = from;
 				
 		while( !_isEmpty( opened ) && loops++ < 100 ){
@@ -4786,7 +4781,7 @@ var MagicBox = Win.extend({
 		
 		this.table = $( '<table cellspacing="0" ><thead>' +
                 			    '<tr><td width="150px" >名称</td><td align="center" width="100px">功效</td>' +
-								'<td align="center" width="40px">消耗MP</td>' +
+								'<td align="center" width="40px">MP</td>' +
                 			    '</tr></thead><tbody></tbody></table>' ).appendTo( this.content );
 		
 		PANEL.unitsLayer.on( "click", this.onClick, this );
@@ -4894,7 +4889,7 @@ var ActionMenu = Win.extend({
 	
 	createAction	: function( text, img, onclick ){
 		var li = $("<li>").appendTo( this.ul ), _self = this;;
-		var btn = $("<button>").text( text ).css( "background-image", "url(" + PATH + img + ")" ) .click( function( e ){
+		var btn = $("<button>").text( text ).css( "background-image", "url(" + img + ")" ) .click( function( e ){
 			//if (  e.which == 1 )
 				if ( ($(this).attr( "disabled" )+"") != "true" )
 					onclick.call( _self, e, text );
@@ -5522,7 +5517,7 @@ var UnitAction = Action.extend({
 	
 	getObj	: 	function(){
 		var unit =  PANEL.getUnitById( this.id );
-		if ( !unit.dead )
+		if ( unit && !unit.dead )
 			return unit;
 		else
 			return null;	
@@ -5992,20 +5987,19 @@ PS.prototype = {
 
 	//将图像灰化
 	grayImg		: function( img ){
-		var ret = document.createElement("canvas"),
-			   c = ret.getContext("2d");
+		var ret = new Image(), can = this.canvas, c = this.ctx;
 		var w = img.width, h = img.height;
 		
-		ret.width = w;
-		ret.height = h;
-				
+		can.width = w;
+		can.height = h;
+		
 		c.drawImage( img, 0, 0 );
-		var data = c.getImageData( 0,0, w, h );
-		try {
-			var imgdata = this.gray( c, data );
-			c.putImageData( imgdata, 0, 0 );
-		} catch (e) {}
-
+		var imgdata = this.gray( c, c.getImageData( 0,0, w, h ) );
+		c.putImageData( imgdata, 0, 0 );
+		
+		var data = can.toDataURL();
+		ret.src = data;		
+		
 		return ret;
 	},
 		
@@ -6125,22 +6119,21 @@ PS.prototype = {
 		return ret;
 	},
 	
-	//高亮整个图片
+	//将图像灰化
 	highlightImg		: function( img, n ){
-		var ret = document.createElement("canvas"),
-			   c = ret.getContext("2d");
+		var ret = new Image(), can = this.canvas, c = this.ctx;
 		var w = img.width, h = img.height;
 		
-		ret.width = w;
-		ret.height = h;
-				
+		can.width = w;
+		can.height = h;
+		
 		c.drawImage( img, 0, 0 );
-		var data = c.getImageData( 0,0, w, h );
-		try {
-			var imgdata = this.highlight( c, data, n );
-			c.putImageData( imgdata, 0, 0 );
-		} catch (e) {}
-
+		var imgdata = this.highlight( c, c.getImageData( 0,0, w, h ), n );
+		c.putImageData( imgdata, 0, 0 );
+		
+		var data = can.toDataURL();
+		ret.src = data;		
+		
 		return ret;
 	},
 		
@@ -6196,13 +6189,22 @@ var Sound = Observable.extend({
 	init	: function(){
 		this._super( arguments[0] );
 		
-		var audio = new Audio( PATH + this.src );
-		this.audio = audio;
+		this.audio = $("<AUDIO>").appendTo( "body" )[0];
 		
-		var _self = this;
-		audio.addEventListener( "ended", function(){
-			_self.onEnd();
-		} , true );
+		//if ( !$.browser.msie && this.loop )
+		if ( this.loop )
+		    $( this.audio ).attr( "loop", "true" );
+		else{ 
+//		    var _self = this;
+//		    this.audio.onEnded = function(){
+//			    _self.onEnd();
+//		    };		
+		}
+		if ( !$.browser.msie )
+		    this.src = this.src.replace( ".mp3", ".ogg" );
+		    
+		$("<SOURCE>").attr( "src", this.src ).appendTo( this.audio );
+		//this.audio.src = this.src;
 		
 		return this;
 	},
@@ -6211,45 +6213,39 @@ var Sound = Observable.extend({
 		this.playing = true;
 		if (!this.pausing) {
 			this.pausing = false;
-			this.audio.load();
-			this.audio.play();
+			try{
+			    if ( !$.browser.msie )
+			        this.audio.load();
+			        
+			    this.audio.play();
+			}catch (e) {}	
 		}
 	},
 	
 	pause: function(){
 		this.pausing = true;
-		this.audio.pause();
+		try{
+		    this.audio.pause();
+		}catch (e) {}	
 	},
 	
 	onEnd	: function(){
 		log( "audio end : " + this.src );
 		this.playing = false;
 		if ( this.loop ){
-			this.play();
+		    try{
+			    this.play();
+			}catch (e) {}	
 		}
 	},
 	
 	turnOn	: function(){
 		this.audio.volume = 1;
-/*
-		this.audio.muted = false;
-		if ( this.playing ){
-			this.audio.pause();
-			this.audio.play();
-		}
-*/		
 	},
 	
 	//无声
 	turnOff	: function(){
 		this.audio.volume = 0;
-/*
-		this.audio.muted = true;
-		if ( this.playing ){
-			this.audio.pause();
-			this.audio.play();
-		}
-*/
 	}		
 }); 
 
@@ -6326,7 +6322,6 @@ var Process = Observable.extend({
 		for( var name in BUFFS ){
 			(function(){
 				var buff = BUFFS[ name ];
-				buff.src = PATH + buff.src;
 				_loadImg( buff.src, function(){
 					buff.img = this;
 					i++;
@@ -6347,7 +6342,6 @@ var Process = Observable.extend({
 		for( var name in GOODS ){
 			(function(){
 				var buff = GOODS[ name ];
-				buff.src = PATH + buff.src;
 				_loadImg( buff.src, function(){
 					buff.img = this;
 					i++;
@@ -6368,7 +6362,6 @@ var Process = Observable.extend({
 		for( var name in ANIMATIONS ){
 			(function(){
 				var a = ANIMATIONS[ name ];
-				a.src = PATH + a.src;
 				_loadImg( a.src, function(){
 					//切割图片
 					var totalH = this.height, n = totalH / a.h, imgs = [];
@@ -6463,7 +6456,8 @@ var Panel = Component.extend({
 	staticLayer : null,   //zIndex : 300
 	winLayer : null,   //zIndex : 400
 	
-	dps		 :  24, //帧数
+	//dps		 :  24, //帧数
+	dps		 :  32, //帧数
 	
 	lineTimer: 0,
 	
@@ -6719,19 +6713,24 @@ var Panel = Component.extend({
 	},	
 	//战场结束后
 	onBattleOver	: function( win ){
-		if ( win )
+		if ( win ){
 			this.victory();
-		else
+		}
+		else{
 			this.failed();		
+		}
 	},
 	
 	victory			: function(){
 		this.showWhole( "胜利！", function(){
+		    alert( "牛！再来一把。" );
 			window.location.reload();
 		}, this );
 	},
 	failed			: function(){
 		this.showWhole( "失败！", function(){
+            alert( "菜！再来一把。" );
+
 			window.location.reload();
 		}, this );
 	},
@@ -6762,7 +6761,7 @@ var Panel = Component.extend({
 	_choose		: function( src, title, options, fn, scope ){
 		this.mask();
 		
-		var ct = $("._options").clone(), _self = this, clicked = false;
+		var ct = $("._options").clone( true ), _self = this, clicked = false;
 		if ( src )
 			ct.find(".face").show().find("img").attr("src", src );
 		else
@@ -6788,12 +6787,14 @@ var Panel = Component.extend({
 			$(this).toggleClass("active");
 		} );
 		
-		$("#maskUp").empty().append( ct.show() ).css({
+		$("#maskUp").empty().append( ct ).css({
 				height  : 200,
 				width	: MAX_W,
 				background : "none",
 				top		: (WINDOW_HEIGHT -200)/2
 		}).show();
+		
+		ct.show()
 	},					
 	
 	showGrid			: function(){
@@ -6906,9 +6907,8 @@ var Panel = Component.extend({
 		this.hideUnitAttr();	
 		this.speaking = true;
 		this.speakUnit = unit;
-		
-		if ( !UNDERCOVER )	
-			$("#face").attr( "src", unit.face );
+			
+		$("#face").attr( "src", unit.face );
 		$("._speak h2").text( unit.name );
 		$("._speech").show();
 		
@@ -7050,7 +7050,7 @@ var Panel = Component.extend({
 		log( "panel gainStuffOnCell : x = " + x + " y = " + y + " stuff = " + stuff );
 		var cell = this.getCell( x, y ), unit;
 		if ( cell && (unit = this.getUnitByIndex( cell.index )) ){
-			unit.gainStuff( stuff, num, fn, scope ) 
+			unit.gainStuff( stuff, num, fn, scope );
 		}else if ( fn )
 			fn.call( scope || this );
 	}
@@ -7157,10 +7157,10 @@ ACTIONGROUPS   = [{
 		type	: 3,
 		name	: "battleStart"
 	},	
-	actions	: [{
-		type	   : 2,
-		action : "playAnimation",
-		params : [ "zhuque", 240, 160 ]
+	actions	: [{		
+		type		: 2,
+		action : "choose",
+		params	: [ "", [{ t : "真是求之不得", v : ">" }, { t : "没有这个必要", v : ">" }] ]
 	}]
 },
 			// --------------------------------------刘备攻击------------------------------------------------
@@ -7804,7 +7804,7 @@ ACTIONGROUPS   = [{
 	},{		
 		type		: 2,
 		action : "choose",
-		params	: [ "", [{ t : "真是求之不得", v : ">" }, { t : "没有这个必要", v : ">" }] ]
+		params	: [ "", [{ t : "没有这个必要", v : ">" }, { t : "没有这个必要", v : ">" }] ]
 	},{		
 		id			: "caocao",
 		action : "speak",
@@ -7909,7 +7909,7 @@ ACTIONGROUPS   = [{
 {
 	desc: "从死者身上搜刮物品1",
 	event:{
-		active : true,
+		active : false,
 		type	: 1,
 		id		: "zhangbao",
 		name   : "dead"
@@ -7927,11 +7927,15 @@ ACTIONGROUPS   = [{
 		active : true,
 		type	: 3,
 		name   : "battleWin"
+		//name   : "battleStart"
 	},
 	actions : [{		
 		type :3 ,
 		group	: "ENEMY",
 		action : "disappear"
+	},{ type : 3,
+	    group: "FRIENDS",
+	    action : "start"
 	},{
 		id		: "caocao",
 		action : "followMe"
@@ -8043,7 +8047,7 @@ ACTIONGROUPS   = [{
 ],
 
 CHAPTER = "颍川之战",
-BGIMAGE	= PATH + "images/bigmap/1-1.jpg",
+BGIMAGE	= "images/bigmap/1-1.jpg",
 GOAL = "胜利条件<br/>&nbsp;&nbsp;击毙张宝和张良!<br/>限制回合数&nbsp;10",
 VICTORYN = 2,	//已达成胜利的条件数  当达到一定数量后获得胜利
 FAILEDN = 1, 	//已失败的条件数   达到一定数量后失败
@@ -8128,10 +8132,10 @@ UNITS	= [{
 
 //敌军
 {
-	 id : "zhangbao", gx :  9,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1, defnum : 10,
+	 id : "zhangbao", gx :  9,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1, defnum : 9,
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张宝", level : 5, face : "images/face/154-1.png"	
 },{
-	 id : "zhangliang", gx :  10,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1, defnum : 10,
+	 id : "zhangliang", gx :  10,  gy : 11, range : 1, rangeType : 2, hpMax : 92, hp : 92, symbol	: "sushiBlue", step : 1, defnum : 9,
 	 faction : 0, team : 1, mpMax : 48, mp : 48, name : "张梁", level : 5, face : "images/face/155-1.png"	
 },{
 	gx :  5,  gy : 10, range : 1, rangeType : 2, hpMax : 90, hp : 90, symbol	: "huangjinjun",
@@ -8173,27 +8177,27 @@ UNITS	= [{
 ;  
 
 		
-		/**
- * 程序主入门
- */
+		
+
 $(function(){
 	
-	if ( $.browser.msie )
+	if ( $.browser.msie && $.browser.version < 9 ) {
+	    
+		$("#download").show();
 		return false;
+	}else{
+	    var process = new Process();
+    	
+	    process.on("end", function(){
+		    log( "process end" );
+		    SoundMgr.load();
+		    var p = new Panel();
+	    }).start();	
 	
-	//初始化进度条
-	var process = new Process();
-	
-	process.on("end", function(){
-		log( "process end" );
-		SoundMgr.load();
-		var p = new Panel();
-	}).start();	
-	
-	
+	}
 		
  });	
 	
 	
-})();
+//})();
 

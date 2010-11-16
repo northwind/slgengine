@@ -3,7 +3,7 @@ body {}
 
 .clear{ font-size:0px; line-height:0px; height:0px; clear:both; }
 
-#download{ display:none; padding-top:150px; }
+#download{ display:none;  _display:block; padding-top:150px; }
 #download a{ text-decoration:none; margin:30px; }
 #download img{ border:none; }
 
@@ -12,7 +12,7 @@ body {}
 ._panel canvas{ position : absolute; }
 ._panel img, .unselect{	-moz-user-select:none;	border:none;	outline:none;background-repeat:no-repeat;}
 
-._display{ background:#111111; visibility:hidden; height:160px; margin:0 auto; overflow:hidden;  }
+._display{ background:#111111; visibility:hidden; _display:none; height:160px; margin:0 auto; overflow:hidden;  }
 ._display ._left{ float:left; width:240px; }
 ._display ._mid{ float:left;  }
 ._ctrl{ float:left; }
