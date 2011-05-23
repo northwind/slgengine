@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+		<title>Drawing api</title>
+	</head>
+	<body>
+		<canvas id="canvas"></canvas>
+		
+		<script type="text/javascript" src="../lib/jquery/jquery-1.4.2.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/ps.js" charset="utf-8"></script>
+		<script>
+			
+			//载入image
+			function	_loadImg( src, fn ){
+				var img = new Image();
+				img.onload = fn;
+				img.src = src;
+			}
+			
+			var canvas = $("#canvas")[0], ctx = canvas.getContext("2d");
+			
+			_loadImg( "../images/move/1-1.png", function(){
+				
+				var frames = 11;
+				var h = this.height / frames;
+				var w = this.width;
+				
+				canvas.width = this.width;
+				canvas.height = this.height;
+				
+				//var c1 = PS.putImgToCanvas( this, 0, 0, w, h );
+				//var c2 = PS.putImgToCanvas( this, 0, h, w, h );
+				
+				ctx.drawImage( this, 0, 0, w, this.height );
+				var c1 = ctx.getImageData( 0,0,  w, h);
+				var c2 = ctx.getImageData( 0,h,  w, h);
+				
+				setTimeout( function(){
+					ctx.clearRect( 0, 0, canvas.width, canvas.height );
+				
+					var tmp;
+					setInterval( function(){
+						
+						tmp = tmp == c1 ? c2 : c1; 
+						//ctx.clearRect( 0, 0, w, h );
+						//ctx.drawImage( tmp, 0, 0 );
+						ctx.putImageData( tmp, 0, 0 );
+							
+					}, 100 );
+				
+				}, 300 );
+			});
+			
+		</script>
+		
+	</body>
+</html>
