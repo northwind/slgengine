@@ -30,16 +30,27 @@
 				canvas.width = this.width;
 				canvas.height = this.height;
 				
-				var c1 = PS.putImgToCanvas( this, 0, 0, w, h );
-				var c2 = PS.putImgToCanvas( this, 0, h, w, h );
+				//var c1 = PS.putImgToCanvas( this, 0, 0, w, h );
+				//var c2 = PS.putImgToCanvas( this, 0, h, w, h );
+				
+				ctx.drawImage( this, 0, 0, w, this.height );
+				var c1 = ctx.getImageData( 0,0,  w, h);
+				var c2 = ctx.getImageData( 0,h,  w, h);
+				
+				setTimeout( function(){
+					ctx.clearRect( 0, 0, canvas.width, canvas.height );
 				
 					var tmp;
 					setInterval( function(){
 						
 						tmp = tmp == c1 ? c2 : c1; 
-						ctx.clearRect( 0, 0, w, h );
-						ctx.drawImage( tmp, 0, 0 );
+						//ctx.clearRect( 0, 0, w, h );
+						//ctx.drawImage( tmp, 0, 0 );
+						ctx.putImageData( tmp, 0, 0 );
+							
 					}, 400 );
+				
+				}, 300 );
 			});
 			
 		</script>
