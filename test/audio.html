@@ -5,9 +5,16 @@
 		<title>audio</title>
 	</head>
 	<body>
+		
+		<div style="height:100px;" ></div>
+		<!--
 <audio src="../audios/open.ogg" id="sound" autobuffer autoplay  controls >  
    Your browser does not support the <code>audio</code> element.  
 </audio> 	
+	-->
+<audio src="../audios/battle.mp3" id="sound" autobuffer autoplay  controls >  
+   Your browser does not support the <code>audio</code> element.  
+</audio> 
 	
 		<button id="play">play</button>
 		<button id="pause">pause</button>
@@ -15,8 +22,7 @@
 		<button id="on">on</button>
 		<script>
 			
-			//var audio = new Audio( "../audios/upgrade.ogg" );
-			var audio = new Audio( "../audios/battle.ogg" );
+			//var audio = new Audio( "../audios/battle.ogg" );
 			
 			audio = document.getElementById( "sound" );
 			//audio.volume = 1;
@@ -25,7 +31,7 @@
 				console.debug( "ended"  );
 			}, false );
 			audio.addEventListener( "durationchange", function(){
-				console.debug( "durationchange"  );
+				//console.debug( "durationchange"  );
 			}, false );			
 			audio.addEventListener( "emptied", function(){
 				console.debug( "emptied"  );
@@ -54,7 +60,6 @@
 			audio.addEventListener( "timeupdate", function(){
 				//播放时间改变就会触发该事件
 				//console.debug( "timeupdate"  );
-				
 			}, false );								
 			audio.addEventListener( "volumechange", function(){
 				console.debug( "volumechange"  );
@@ -69,8 +74,8 @@
 				console.debug( "stalled"  );
 			}, false );						
 						
-			document.getElementById( "play" ).click = function(){
-				audio.load();
+			document.getElementById( "play" ).onclick = function(){
+				//audio.load();
 				audio.play();
 			}
 			document.getElementById( "pause" ).onclick = function(){
